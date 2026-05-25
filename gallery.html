@@ -95,10 +95,8 @@
       <!-- Rendered dynamically from localStorage via JavaScript -->
     </div>
 
-    <!-- Show more -->
-    <div class="page-indicator">
-      <p style="color:var(--muted);font-size:14px;margin-bottom:8px;">10 of 26 photos shown</p>
-      <button class="btn btn-ghost" onclick="alert('Add 16 more photos to the gallery grid.')">Load More</button>
+    <div class="page-indicator" id="galleryIndicator" style="display:none;">
+      <p id="galleryCount" style="color:var(--muted);font-size:14px;margin-bottom:8px;"></p>
     </div>
   </div>
 </section>
@@ -182,6 +180,13 @@
       if (grid) grid.appendChild(div);
     });
 
+    // Update dynamic photo counter
+    var indicator = document.getElementById('galleryIndicator');
+    var countEl = document.getElementById('galleryCount');
+    if (indicator && countEl && data.length > 0) {
+      countEl.textContent = data.length + ' photo(s) in gallery';
+      indicator.style.display = '';
+    }
     // Re-attach filter after items are rendered
     attachFilter();
   }
