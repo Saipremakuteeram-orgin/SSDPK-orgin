@@ -102,12 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const typingId = showTyping();
 
     try {
-      const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\${apiKey}\`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{
-            parts: [{ text: \`SYSTEM CONTEXT: \${pageContext}\n\nUSER QUESTION: \${text}\` }]
+            parts: [{ text: `SYSTEM CONTEXT: ${pageContext}\n\nUSER QUESTION: ${text}` }]
           }]
         })
       });
@@ -137,10 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function appendMessage(role, text) {
     const div = document.createElement('div');
-    div.className = \`chat-msg \${role}\`;
+    div.className = `chat-msg ${role}`;
     
     // Simple markdown parsing for bold text if gemini returns it
-    let htmlText = text.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
+    let htmlText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     div.innerHTML = htmlText;
     
     messagesArea.appendChild(div);
