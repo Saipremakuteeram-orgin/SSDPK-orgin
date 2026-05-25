@@ -11,5 +11,6 @@
 const SUPABASE_URL = 'https://fnmbiapynzfdxgybxtyd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZubWJpYXB5bnpmZHhneWJ4dHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY4MjQsImV4cCI6MjA5NTI3MjgyNH0.ax8tV7UhJ5XcfQDZ4Gbyga8kuqVro5zoPwo9d-5hVNg';
 
-// Initialise the Supabase client using the globally imported CDN library
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialise the Supabase client using the globally imported CDN library.
+// We use 'var' to prevent syntax conflicts with the Supabase CDN's global variable declaration.
+var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
