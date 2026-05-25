@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' }
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="css/theme.css?v=1.0.4">
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <img src="logo.jpg" alt="SSPK" class="nav-logo-img">
+      SSPK
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="events.html">Events</a>
+      <a href="dashboard.html" class="donate-btn">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page header -->
+<section class="page-header">
+  <h1>About the Trust</h1>
+  <p>Our story, mission, and guiding light.</p>
+</section>
+
+<!-- About content -->
+<section class="section">
+  <div class="container">
+    <div class="grid-2" style="align-items:center;">
+      <div>
+        <h2 style="font-family:var(--font-heading);font-size:clamp(24px,3vw,36px);margin-bottom:16px;">Love All, Serve All</h2>
+        <div style="width:50px;height:3px;background:var(--accent);margin-bottom:20px;border-radius:2px;"></div>
+        <p style="margin-bottom:16px;font-size:16px;line-height:1.8;">
+          <strong>Sathya Sai Prema Kuterram</strong> is a spiritual trust established to propagate the universal teachings of Sri Sathya Sai Baba. Rooted in the core principles of <em>Truth, Right Conduct, Peace, Love, and Non-Violence</em>, the trust serves as a beacon of spiritual light and selfless service.
+        </p>
+        <p style="margin-bottom:16px;font-size:16px;line-height:1.8;">
+          Our name — <em>Prema Kuterram</em> — means "Abode of Love." We strive to be exactly that: a home where love guides every action, every service, and every relationship.
+        </p>
+        <p style="font-size:16px;line-height:1.8;">
+          Through regular bhajans, study circles, seva activities, and community programs, we bring together devotees and seekers from all walks of life, fostering a community built on compassion, mutual respect, and devotion.
+        </p>
+      </div>
+      <div style="aspect-ratio:4/3;background:linear-gradient(135deg,var(--accent-light),var(--accent));border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:72px;color:white;">
+        &#x1F64F;
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Core values -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">Our Core Values</h2>
+    <div class="section-divider"></div>
+    <p class="section-subtitle">The five human values that guide everything we do.</p>
+    <div class="feature-grid">
+      <div class="card feature-card">
+        <div class="feature-icon">&#x1F4A1;</div>
+        <h3 class="card-title">Truth <em style="font-size:12px;color:var(--muted);display:block;font-style:normal;">Sathya</em></h3>
+        <p class="card-text">Living and speaking truth in thought, word, and deed.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">&#x270C;&#xFE0F;</div>
+        <h3 class="card-title">Right Conduct <em style="font-size:12px;color:var(--muted);display:block;font-style:normal;">Dharma</em></h3>
+        <p class="card-text">Acting with integrity, responsibility, and righteousness.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">&#x261E;&#xFE0F;</div>
+        <h3 class="card-title">Peace <em style="font-size:12px;color:var(--muted);display:block;font-style:normal;">Shanti</em></h3>
+        <p class="card-text">Cultivating inner calm and harmony in all relationships.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">&#x2764;&#xFE0F;</div>
+        <h3 class="card-title">Love <em style="font-size:12px;color:var(--muted);display:block;font-style:normal;">Prema</em></h3>
+        <p class="card-text">Unconditional love for all beings as expressions of the divine.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">&#x1F54A;&#xFE0F;</div>
+        <h3 class="card-title">Non-Violence <em style="font-size:12px;color:var(--muted);display:block;font-style:normal;">Ahimsa</em></h3>
+        <p class="card-text">Compassion and harmlessness in thought, word, and action.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Activities -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Our Activities</h2>
+    <div class="section-divider"></div>
+    <p class="section-subtitle">Programs and initiatives that bring our mission to life.</p>
+    <div class="grid-3">
+      <div class="card">
+        <div style="height:160px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:40px;">&#x1F549;&#xFE0F;</div>
+        <div class="card-body">
+          <h3 class="card-title">Bhajans & Prayer</h3>
+          <p class="card-text">Weekly devotional singing sessions. Open to all — every Sunday evening.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div style="height:160px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:40px;">&#x1F4D6;</div>
+        <div class="card-body">
+          <h3 class="card-title">Study Circle</h3>
+          <p class="card-text">Discussions on Sai teachings, Vedantic philosophy, and spiritual texts.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div style="height:160px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:40px;">&#x1F372;</div>
+        <div class="card-body">
+          <h3 class="card-title">Seva (Service)</h3>
+          <p class="card-text">Food distribution, health camps, educational support, and community outreach.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div>
+      <p class="footer-brand">Sathya Sai Prema Kuterram</p>
+      <p>A spiritual trust dedicated to the teachings of Sri Sathya Sai Baba. Love All, Serve All.</p>
+    </div>
+    <div>
+      <h4>Pages</h4>
+      <a href="index.html">Home</a><br>
+      <a href="about.html">About</a><br>
+      <a href="gallery.html">Gallery</a><br>
+      <a href="events.html">Events</a><br>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div>
+      <h4>Activities</h4>
+      <a href="events.html">Bhajans</a><br>
+      <a href="events.html">Seva</a><br>
+      <a href="events.html">Study Circle</a><br>
+      <a href="gallery.html">Gallery</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Email: info@sathyasaipremakuterrram.org</p>
+      <p>Phone: +91-XXXXXXXXXX</p>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Sathya Sai Prema Kuterram. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js?v=1.0.4"></script>
+</body>
+</html>

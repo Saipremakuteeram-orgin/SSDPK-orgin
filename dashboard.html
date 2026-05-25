@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sathya Sai Trust — Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' }
+        }
+      }
+    }
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="css/theme.css?v=1.0.4">
+<style>
+  .hidden { display: none !important; }
+  
+  .auth-container {
+    max-width: 480px;
+    margin: 0 auto 60px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .auth-header h2 {
+    font-family: var(--font-heading);
+    color: var(--fg);
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  .auth-header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  
+  .input-group { margin-bottom: 16px; }
+  .input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--fg);
+  }
+  .input-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+  .input-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px oklch(62% 0.16 50 / 0.15);
+  }
+  .required-asterisk { color: var(--danger); }
+  
+  .auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .auth-switch a {
+    color: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* OTP Modal */
+  .otp-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 14, 12, 0.5);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .otp-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .otp-modal {
+    background: var(--bg);
+    padding: 32px;
+    border-radius: var(--radius-md);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .otp-modal-overlay.active .otp-modal {
+    transform: translateY(0);
+  }
+
+  /* Membership Card */
+  .membership-card-wrap {
+    perspective: 1000px;
+    max-width: 440px;
+    margin: 0 auto 40px;
+  }
+  .member-card {
+    background: linear-gradient(135deg, #fbe79b 0%, #d49539 30%, #fef3c5 50%, #d49539 70%, #9e5b12 100%);
+    border: 1px solid rgba(255, 235, 170, 0.6);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(232, 139, 42, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.8), inset 0 -1px 1px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+    color: #4a2c11;
+    text-align: left;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease;
+    aspect-ratio: 1.586 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .member-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.6) 30%, transparent 40%);
+    pointer-events: none;
+    transform: translateZ(1px);
+    mix-blend-mode: overlay;
+  }
+  .member-card > * {
+    transform: translateZ(40px);
+  }
+  .atm-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .atm-bank-name {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #241508;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .atm-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .atm-chip-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .atm-chip {
+    width: 45px;
+    height: 35px;
+    background: linear-gradient(135deg, #e0c879, #b89b4b);
+    border-radius: 6px;
+    position: relative;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+  .atm-chip::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(90deg, transparent 48%, rgba(0,0,0,0.2) 48%, rgba(0,0,0,0.2) 52%, transparent 52%),
+      linear-gradient(0deg, transparent 30%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0.2) 34%, transparent 34%, transparent 66%, rgba(0,0,0,0.2) 66%, rgba(0,0,0,0.2) 70%, transparent 70%);
+  }
+  .atm-contactless {
+    width: 24px;
+    height: 24px;
+    color: #6e5c4f;
+    opacity: 0.8;
+  }
+  .atm-card-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: #241508;
+    letter-spacing: 0.2em;
+    text-shadow: -1px -1px 0px rgba(255,255,255,1), 1px 1px 1px rgba(0,0,0,0.4);
+    margin-top: 12px;
+  }
+  .atm-card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 12px;
+  }
+  .atm-label {
+    display: block;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(36, 21, 8, 0.7);
+    margin-bottom: 2px;
+  }
+  .atm-name {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #241508;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .atm-date {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #241508;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* Admin Dashboard */
+  .admin-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+  .admin-user-row {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .admin-user-row:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <img src="logo.jpg" alt="SSPK" class="nav-logo-img">
+      SSPK
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="events.html">Events</a>
+      <a href="dashboard.html" class="donate-btn active">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page header -->
+<section class="page-header">
+  <h1>Member Portal</h1>
+  <p>Access your digital membership and manage your profile.</p>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+
+    <!-- VIEW 1: Authentication -->
+    <div id="authView" class="auth-container">
+      
+      <!-- Login Form -->
+      <div id="loginWrapper">
+        <div class="auth-header">
+          <h2>Welcome Back</h2>
+          <p>Sign in with your registered phone number.</p>
+        </div>
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="loginPhone">Phone Number <span class="required-asterisk">*</span></label>
+            <input type="tel" id="loginPhone" placeholder="Enter your 10-digit number" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Send OTP</button>
+        </form>
+        <div class="auth-switch">
+          New to the trust? <a id="showSignupBtn">Register here</a>
+        </div>
+      </div>
+
+      <!-- Sign Up Form -->
+      <div id="signupWrapper" class="hidden">
+        <div class="auth-header">
+          <h2>Trust Registration</h2>
+          <p>Become a member of the Sathya Sai family.</p>
+        </div>
+        <form id="signupForm">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div class="input-group">
+              <label for="regFname">First Name <span class="required-asterisk">*</span></label>
+              <input type="text" id="regFname" required>
+            </div>
+            <div class="input-group">
+              <label for="regLname">Last Name <span class="required-asterisk">*</span></label>
+              <input type="text" id="regLname" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="regPhone">Phone Number <span class="required-asterisk">*</span></label>
+            <input type="tel" id="regPhone" required>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div class="input-group">
+              <label for="regPlace">Place (Optional)</label>
+              <input type="text" id="regPlace">
+            </div>
+            <div class="input-group">
+              <label for="regDistrict">District (Optional)</label>
+              <input type="text" id="regDistrict">
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="regAddress">Complete Address (Optional)</label>
+            <input type="text" id="regAddress">
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top: 8px;">Register & Send OTP</button>
+        </form>
+        <div class="auth-switch">
+          Already registered? <a id="showLoginBtn">Sign in</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: Logged In Dashboard -->
+    <div id="dashboardView" class="hidden">
+      <div style="text-align:center; margin-bottom: 24px;">
+        <button id="logoutBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Sign Out</button>
+      </div>
+
+      <div class="membership-card-wrap">
+        <div class="member-card" data-tilt>
+          <div class="atm-card-header">
+            <span class="atm-bank-name">Sathya Sai Prema Kuteeram</span>
+            <img src="logo.jpg" alt="Logo" class="atm-logo">
+          </div>
+          
+          <div class="atm-chip-row">
+            <div class="atm-chip"></div>
+            <svg class="atm-contactless" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2.5-1.5-2.5S8 10.62 8 12a2.5 2.5 0 0 0 .5 2.5z"/>
+              <path d="M12.5 17.5A6.5 6.5 0 0 0 16 12c0-3.59-1.5-6.5-3.5-6.5S9 8.41 9 12a6.5 6.5 0 0 0 3.5 5.5z"/>
+              <path d="M16.5 20.5A10.5 10.5 0 0 0 21 12c0-5.8-2-10.5-4.5-10.5S12 6.2 12 12a10.5 10.5 0 0 0 4.5 8.5z"/>
+            </svg>
+          </div>
+          
+          <div class="atm-card-number" id="cardId">####</div>
+          
+          <div style="font-size: 11px; font-style: italic; color: #241508; margin-top: 8px; line-height: 1.4; text-shadow: 0 1px 0 rgba(255,255,255,0.9); font-weight: 600;">
+            "With the love of Swami,<br>
+            you are a member of Sathya Sai Brindhavan & Sri Sai Kanchi Periyava Illam."
+          </div>
+          
+          <div class="atm-card-info" style="margin-top: auto;">
+            <div class="atm-cardholder">
+              <span class="atm-label">Member</span>
+              <div class="atm-name" id="cardName">Member Name</div>
+            </div>
+            <div class="atm-valid">
+              <span class="atm-label">Valid Thru</span>
+              <div class="atm-date">LIFETIME</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="text-align:center; margin-bottom: 24px;">
+        <button id="downloadCardBtn" class="btn btn-primary" style="padding:10px 24px; font-size:14px; font-weight: 600;">Download Digital Card</button>
+      </div>
+
+      <p style="text-align:center; color:var(--muted); max-width:500px; margin: 0 auto;">
+        Welcome to your digital portal. Please present this card during physical events or study circles.
+      </p>
+    </div>
+
+    <!-- VIEW 3: Admin Dashboard -->
+    <div id="adminView" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+        <h2 style="font-family:var(--font-heading); color:var(--accent-dark);">Admin Console</h2>
+        <button id="adminLogoutBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Logout Admin</button>
+      </div>
+      
+      <div class="admin-panel">
+        <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Registered Members</h3>
+        <div id="adminUserList">
+          <!-- Dynamic user list -->
+        </div>
+      </div>
+      
+      <!-- Event Management Panel -->
+      <div class="admin-panel">
+        <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Event Management</h3>
+        <div style="margin-bottom: 20px;">
+          <button id="showAddEventBtn" class="btn btn-primary" style="font-size:13px; padding:6px 14px;">+ Add New Event</button>
+        </div>
+        
+        <form id="addEventForm" class="hidden" style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom: 20px;">
+          <h4 style="margin-bottom:12px; font-weight:600;">Add/Edit Event</h4>
+          <input type="hidden" id="eventIdInput">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <input type="text" id="eventTitle" placeholder="Event Title" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <select id="eventCategory" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+              <option value="bhajan">Bhajan</option>
+              <option value="seva">Seva</option>
+              <option value="study">Study Circle</option>
+              <option value="celebration">Celebration</option>
+            </select>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <input type="date" id="eventDate" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="text" id="eventTime" placeholder="Time (e.g. 6:00 PM)" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="text" id="eventVenue" placeholder="Venue" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <textarea id="eventDesc" placeholder="Event Description" required rows="2" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; margin-bottom:12px; background:var(--surface); color:var(--fg);"></textarea>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <input type="text" id="eventCoord" placeholder="Coordinator Name" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="tel" id="eventContact" placeholder="Contact Number" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" style="padding:6px 14px; font-size:13px;">Save Event</button>
+            <button type="button" id="cancelEventBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Cancel</button>
+          </div>
+        </form>
+        
+        <div id="adminEventList" style="display:flex; flex-direction:column; gap:12px;">
+          <!-- Dynamic event list -->
+        </div>
+      </div>
+
+      <!-- Gallery Management Panel -->
+      <div class="admin-panel">
+        <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Gallery Management</h3>
+        <form id="addGalleryForm" style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom: 20px;">
+          <h4 style="margin-bottom:12px; font-weight:600;">Upload New Image</h4>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <input type="file" id="galleryImageInput" accept="image/*" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <select id="galleryCategory" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+              <option value="bhajan">Bhajan</option>
+              <option value="seva">Seva</option>
+              <option value="event">Events</option>
+              <option value="community">Community</option>
+            </select>
+          </div>
+          <input type="text" id="galleryCaption" placeholder="Image Caption" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; margin-bottom:12px; background:var(--surface); color:var(--fg);">
+          <button type="submit" id="uploadGalleryBtn" class="btn btn-primary" style="padding:6px 14px; font-size:13px;">Upload to Gallery</button>
+        </form>
+        
+        <div id="adminGalleryList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:12px;">
+          <!-- Dynamic gallery list -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- OTP Verification Modal -->
+<div class="otp-modal-overlay" id="otpModal">
+  <div class="otp-modal">
+    <h3 style="font-family:var(--font-heading); margin-bottom:12px; font-size:20px;">Verify Phone</h3>
+    <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">
+      Enter the 4-digit OTP sent to <br><strong id="otpDisplayPhone" style="color:var(--fg);"></strong>
+    </p>
+    <form id="otpForm">
+      <input type="text" id="otpCode" placeholder="Enter OTP (Use 1234)" required maxlength="4" style="width:100px; text-align:center; font-size:24px; letter-spacing:4px; padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:20px; background:var(--bg); color:var(--fg);">
+      <div style="display:flex; gap:12px; justify-content:center;">
+        <button type="button" class="btn btn-outline" id="cancelOtpBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Verify</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div>
+      <p class="footer-brand">Sathya Sai Trust</p>
+      <p>A spiritual trust dedicated to the teachings of Sri Sathya Sai Baba. Love All, Serve All.</p>
+    </div>
+    <div>
+      <h4>Pages</h4>
+      <a href="index.html">Home</a><br>
+      <a href="about.html">About</a><br>
+      <a href="gallery.html">Gallery</a><br>
+      <a href="events.html">Events</a><br>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div>
+      <h4>Activities</h4>
+      <a href="events.html">Bhajans</a><br>
+      <a href="events.html">Seva</a><br>
+      <a href="events.html">Study Circle</a><br>
+      <a href="gallery.html">Gallery</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Email: info@sathyasaipremakuterrram.org</p>
+      <p>Phone: +91-XXXXXXXXXX</p>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Sathya Sai Trust. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js?v=1.0.4"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/dashboard-app.js?v=1.0.4"></script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' }
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="css/theme.css?v=1.0.4">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="css/chatbot.css">
+<style>
+  .gallery-filter {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .gallery-filter button {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .gallery-filter button.active,
+  .gallery-filter button:hover {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    border-color: var(--accent);
+  }
+  .gallery-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  .gallery-empty .icon { font-size: 48px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <img src="logo.jpg" alt="SSPK" class="nav-logo-img">
+      SSPK
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="events.html">Events</a>
+      <a href="dashboard.html" class="donate-btn">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page header -->
+<section class="page-header">
+  <h1>Gallery</h1>
+  <p>Moments of devotion, service, and community — captured through the years.</p>
+</section>
+
+<!-- Gallery -->
+<section class="section">
+  <div class="container">
+    <!-- Filter -->
+    <div class="gallery-filter">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="bhajan">Bhajans</button>
+      <button data-filter="seva">Seva</button>
+      <button data-filter="event">Events</button>
+      <button data-filter="community">Community</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="gallery-grid" id="galleryGrid">
+      <!-- Rendered dynamically from localStorage via JavaScript -->
+    </div>
+
+    <!-- Show more -->
+    <div class="page-indicator">
+      <p style="color:var(--muted);font-size:14px;margin-bottom:8px;">10 of 26 photos shown</p>
+      <button class="btn btn-ghost" onclick="alert('Add 16 more photos to the gallery grid.')">Load More</button>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div>
+      <p class="footer-brand">Sathya Sai Prema Kuterram</p>
+      <p>A spiritual trust dedicated to the teachings of Sri Sathya Sai Baba. Love All, Serve All.</p>
+    </div>
+    <div>
+      <h4>Pages</h4>
+      <a href="index.html">Home</a><br>
+      <a href="about.html">About</a><br>
+      <a href="gallery.html">Gallery</a><br>
+      <a href="events.html">Events</a><br>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div>
+      <h4>Activities</h4>
+      <a href="events.html">Bhajans</a><br>
+      <a href="events.html">Seva</a><br>
+      <a href="events.html">Study Circle</a><br>
+      <a href="gallery.html">Gallery</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Email: info@sathyasaipremakuterrram.org</p>
+      <p>Phone: +91-XXXXXXXXXX</p>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Sathya Sai Prema Kuterram. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="js/supabase-client.js"></script>
+<script src="js/main.js?v=1.0.4"></script>
+<script>
+// Gallery logic — powered by Supabase
+(function() {
+  // Credentials loaded from js/supabase-client.js (must be included before this script)
+  // If supabase client is not available, fall back gracefully
+  const sb = (typeof supabase !== 'undefined') ? supabase : null;
+
+  var grid = document.getElementById('galleryGrid');
+  if (grid) grid.innerHTML = '<p style="padding:40px; color:var(--muted); text-align:center;">Loading gallery...</p>';
+
+  async function loadGallery() {
+    if (!sb) {
+      if (grid) grid.innerHTML = '<p style="color:var(--muted); text-align:center; padding:40px;">Gallery not configured yet. Add your Supabase credentials to js/supabase-client.js</p>';
+      return;
+    }
+    const { data, error } = await sb.from('gallery').select('*').order('created_at', { ascending: false });
+    if (error || !data) {
+      if (grid) grid.innerHTML = '<p style="color:red; text-align:center;">Failed to load gallery.</p>';
+      return;
+    }
+
+    if (grid) grid.innerHTML = '';
+    data.forEach(function(item) {
+      var div = document.createElement('div');
+      div.className = 'gallery-item';
+      div.setAttribute('data-category', item.category);
+      div.setAttribute('data-caption', item.caption);
+      if (item.src_url) {
+        div.style.backgroundImage = 'url(' + item.src_url + ')';
+        div.style.backgroundSize = 'cover';
+        div.style.backgroundPosition = 'center';
+        div.innerHTML = '<div class="gallery-caption">' + item.caption + '</div>';
+      } else {
+        div.innerHTML = '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + item.caption + '</div>';
+      }
+      if (grid) grid.appendChild(div);
+    });
+
+    // Re-attach filter after items are rendered
+    attachFilter();
+  }
+
+  function attachFilter() {
+    var filters = document.querySelectorAll('.gallery-filter button');
+    var items = document.querySelectorAll('.gallery-item');
+    filters.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        filters.forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        var cat = this.getAttribute('data-filter');
+        items.forEach(function(item) {
+          if (cat === 'all' || item.getAttribute('data-category') === cat) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
+  loadGallery();
+})();
+</script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sathya Sai Prema Kuterram — Home</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' }
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="css/theme.css?v=1.0.4">
+<style>
+/* ---- Flow Tree — SVG Branch Animation ---- */
+.flowtree-section {
+  position: relative;
+  overflow: hidden;
+}
+.flowtree-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, oklch(58% 0.14 50 / 0.06), transparent 70%);
+  pointer-events: none;
+}
+
+.flowtree {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 40px 20px;
+  position: relative;
+  min-height: 200px;
+  user-select: none;
+}
+
+/* Root node */
+.tree-root {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: var(--fg);
+  border-radius: 14px;
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 2.5vw, 26px);
+  font-weight: 700;
+  box-shadow: 0 4px 24px oklch(58% 0.14 50 / 0.35);
+  border: 2px solid oklch(70% 0.12 50 / 0.3);
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.tree-root:hover {
+  box-shadow: 0 6px 32px oklch(58% 0.14 50 / 0.5);
+  transform: translateY(-2px);
+}
+.tree-root:active {
+  transform: scale(0.97);
+}
+.tree-root.neon-glow {
+  animation-duration: 3s;
+}
+.tree-arrow {
+  font-size: 12px;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-left: 6px;
+  display: inline-block;
+}
+.tree-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* SVG branch area */
+.tree-svg-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+.tree-svg-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Branch paths start invisible, animate in */
+.branch-path {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke: var(--accent);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.branch-path.open {
+  stroke-dashoffset: 0;
+}
+/* Branch joint dots */
+.branch-dot {
+  fill: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.branch-dot.open { opacity: 1; }
+/* Neon glow on branches */
+.branch-glow {
+  stroke: oklch(58% 0.14 50 / 0.25);
+  stroke-width: 8;
+  fill: none;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.15s;
+}
+.branch-glow.open { opacity: 1; }
+
+/* Children container */
+.tree-children-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: relative;
+}
+.tree-child-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translateX(-20px) scale(0.9);
+}
+.tree-child-row.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0) scale(1);
+}
+.tree-child-row:nth-child(1).open { transition-delay: 0.4s; }
+.tree-child-row:nth-child(2).open { transition-delay: 0.55s; }
+
+.tree-child-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: var(--surface);
+  border: 2px solid var(--accent-light);
+  border-radius: 12px;
+  font-family: var(--font-heading);
+  font-size: clamp(14px, 1.5vw, 18px);
+  font-weight: 600;
+  color: var(--fg);
+  white-space: nowrap;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px oklch(0% 0 0 / 0.04);
+}
+.tree-child-node:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px oklch(58% 0.14 50 / 0.2), 0 0 30px oklch(58% 0.14 50 / 0.1);
+  transform: translateY(-2px);
+}
+.tree-child-node .icon {
+  font-size: 22px;
+}
+
+/* Glow underline on child nodes */
+.tree-child-node::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.tree-child-node:hover::after {
+  opacity: 0.6;
+}
+
+/* Mobile — stack vertical */
+@media (max-width: 640px) {
+  .flowtree {
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 12px;
+    min-height: 160px;
+  }
+  .tree-svg-wrap {
+    width: 80px;
+    height: 60px;
+  }
+  .tree-children-col { gap: 12px; align-items: center; }
+  .tree-child-row { justify-content: center; }
+  .tree-root { padding: 14px 24px; font-size: 16px; }
+  .tree-child-node { padding: 10px 20px; font-size: 14px; }
+}
+
+/* ---- Entrance animations ---- */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Hero enhancements ---- */
+.hero-badge.neon-text {
+  animation-duration: 3s;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <img src="logo.jpg" alt="SSPK" class="nav-logo-img">
+      SSPK
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="about.html">About</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="events.html">Events</a>
+      <a href="dashboard.html" class="donate-btn">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-badge neon-text">&#x1F64F; Serving with Love</span>
+    <h1>Sathya Sai Prema Kuterram</h1>
+    <p>A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba — inspiring hearts through seva, devotion, and community.</p>
+    <div class="hero-actions">
+      <a href="about.html" class="btn btn-primary neon-glow">Learn More</a>
+      <a href="dashboard.html" class="btn btn-outline">Support Our Mission</a>
+    </div>
+  </div>
+</section>
+
+<!-- Flow Tree — SVG Branch Animation -->
+<section class="section flowtree-section" style="padding-top:20px;padding-bottom:20px;">
+  <div class="container">
+    <div class="flowtree" id="flowtreeRoot">
+      <!-- Root node -->
+      <div class="tree-root neon-glow" id="treeRootNode">
+        <span style="font-size:24px;">&#x1F64F;</span>
+        <span>Sri Sai Prema Kuteeram <span style="font-size: 14px; font-weight: 500; opacity: 0.75; margin-left: 4px;">(click here)</span></span>
+        <span class="tree-arrow" id="treeArrow">&#x25BC;</span>
+      </div>
+
+      <!-- SVG branch connector — draws 2 diagonal branches from root -->
+      <div class="tree-svg-wrap">
+        <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Glow underneath branches (opacity fade only) -->
+          <path class="branch-glow" id="branchGlow1" d="M 0 80 Q 60 80, 155 35" stroke-linecap="round" />
+          <path class="branch-glow" id="branchGlow2" d="M 0 80 Q 60 80, 155 125" stroke-linecap="round" />
+          <!-- Main branches — curved Y-split, pathLength=1 for perfect draw -->
+          <path class="branch-path" id="branchPath1" pathLength="1"
+                d="M 0 80 Q 60 80, 155 35"
+                stroke="var(--accent)" stroke-width="3" stroke-linecap="round" />
+          <path class="branch-path" id="branchPath2" pathLength="1"
+                d="M 0 80 Q 60 80, 155 125"
+                stroke="var(--accent)" stroke-width="3" stroke-linecap="round" />
+          <!-- Joint dots — solid + glow ring -->
+          <circle class="branch-dot" id="dot0" cx="0" cy="80" r="5" />
+          <circle class="branch-dot" id="dot0glow" cx="0" cy="80" r="8" fill="none"
+                  stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+          <circle class="branch-dot" id="dot1" cx="155" cy="35" r="4" />
+          <circle class="branch-dot" id="dot1glow" cx="155" cy="35" r="7" fill="none"
+                  stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+          <circle class="branch-dot" id="dot2" cx="155" cy="125" r="4" />
+          <circle class="branch-dot" id="dot2glow" cx="155" cy="125" r="7" fill="none"
+                  stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+        </svg>
+      </div>
+
+      <!-- Children column -->
+      <div class="tree-children-col" id="treeChildren">
+        <div class="tree-child-row" id="childRow1">
+          <div class="tree-child-node">
+            <span class="icon">&#x1F33F;</span>
+            <span>Sri Sai Brindhavan</span>
+          </div>
+        </div>
+        <div class="tree-child-row" id="childRow2">
+          <div class="tree-child-node">
+            <span class="icon">&#x1F3E1;</span>
+            <span>Sri Kanchi Prema Illam</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission highlights -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title animate-on-scroll">Our Mission</h2>
+    <div class="section-divider"></div>
+    <p class="section-subtitle animate-on-scroll">Guided by the principle "Love All, Serve All" — building a community of compassion.</p>
+    <div class="feature-grid">
+      <div class="card feature-card animate-on-scroll">
+        <div class="feature-icon">&#x2764;&#xFE0F;</div>
+        <h3 class="card-title">Seva</h3>
+        <p class="card-text">Selfless service through food drives, health camps, and educational support.</p>
+      </div>
+      <div class="card feature-card animate-on-scroll">
+        <div class="feature-icon">&#x1F64F;</div>
+        <h3 class="card-title">Spiritual Growth</h3>
+        <p class="card-text">Weekly bhajans, study circles, and spiritual retreats following Sai teachings.</p>
+      </div>
+      <div class="card feature-card animate-on-scroll">
+        <div class="feature-icon">&#x1F30D;</div>
+        <h3 class="card-title">Community</h3>
+        <p class="card-text">A warm, inclusive space for devotees and seekers to connect and grow together.</p>
+      </div>
+      <div class="card feature-card animate-on-scroll">
+        <div class="feature-icon">&#x1F4DA;</div>
+        <h3 class="card-title">Education</h3>
+        <p class="card-text">Value-based education for children and youth, nurturing character and compassion.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured previews -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title animate-on-scroll">Explore</h2>
+    <div class="section-divider"></div>
+    <p class="section-subtitle animate-on-scroll">Discover more about our activities and how you can be part of the mission.</p>
+    <div class="grid-3">
+      <a href="gallery.html" class="card" style="text-decoration:none;color:inherit;" class="animate-on-scroll">
+        <div style="height:200px;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px;color:white;">&#x1F5BC;&#xFE0F;</div>
+        <div class="card-body">
+          <h3 class="card-title">Gallery</h3>
+          <p class="card-text">Moments from our events, seva activities, and community gatherings.</p>
+        </div>
+      </a>
+      <a href="events.html" class="card" style="text-decoration:none;color:inherit;" class="animate-on-scroll">
+        <div style="height:200px;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px;color:white;">&#x1F4C5;</div>
+        <div class="card-body">
+          <h3 class="card-title">Events</h3>
+          <p class="card-text">Upcoming bhajans, celebrations, and community programs.</p>
+        </div>
+      </a>
+      <a href="dashboard.html" class="card" style="text-decoration:none;color:inherit;" class="animate-on-scroll">
+        <div style="height:200px;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px;color:white;">&#x1F4B8;</div>
+        <div class="card-body">
+          <h3 class="card-title">Support Us</h3>
+          <p class="card-text">Your contributions help us sustain and grow our service initiatives.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div>
+      <p class="footer-brand">Sathya Sai Prema Kuterram</p>
+      <p>A spiritual trust dedicated to the teachings of Sri Sathya Sai Baba. Love All, Serve All.</p>
+    </div>
+    <div>
+      <h4>Pages</h4>
+      <a href="index.html">Home</a><br>
+      <a href="about.html">About</a><br>
+      <a href="gallery.html">Gallery</a><br>
+      <a href="events.html">Events</a><br>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div>
+      <h4>Activities</h4>
+      <a href="events.html">Bhajans</a><br>
+      <a href="events.html">Seva</a><br>
+      <a href="events.html">Study Circle</a><br>
+      <a href="gallery.html">Gallery</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Email: info@sathyasaipremakuterrram.org</p>
+      <p>Phone: +91-XXXXXXXXXX</p>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Sathya Sai Prema Kuterram. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js?v=1.0.4"></script>
+<script>
+// Flow tree toggle — SVG branch draw animation with pathLength=1
+(function() {
+  var rootNode = document.getElementById('treeRootNode');
+  var paths = [
+    document.getElementById('branchPath1'),
+    document.getElementById('branchPath2')
+  ];
+  var glows = [
+    document.getElementById('branchGlow1'),
+    document.getElementById('branchGlow2')
+  ];
+  var dots = [
+    document.getElementById('dot0'),
+    document.getElementById('dot0glow'),
+    document.getElementById('dot1'),
+    document.getElementById('dot1glow'),
+    document.getElementById('dot2'),
+    document.getElementById('dot2glow')
+  ];
+  var children = [
+    document.getElementById('childRow1'),
+    document.getElementById('childRow2')
+  ];
+  var arrow = document.getElementById('treeArrow');
+  var isOpen = false;
+
+  if (rootNode) {
+    rootNode.addEventListener('click', function(e) {
+      e.stopPropagation();
+      isOpen = !isOpen;
+
+      paths.forEach(function(p) { if (p) p.classList.toggle('open', isOpen); });
+      glows.forEach(function(g) { if (g) g.classList.toggle('open', isOpen); });
+      dots.forEach(function(d) { if (d) d.classList.toggle('open', isOpen); });
+      children.forEach(function(c, i) {
+        if (c) {
+          c.style.transitionDelay = isOpen ? (0.35 + i * 0.18) + 's' : '0s';
+          c.classList.toggle('open', isOpen);
+        }
+      });
+      if (arrow) arrow.classList.toggle('open', isOpen);
+    });
+  }
+})();
+
+// Scroll-triggered entrance animations
+(function() {
+  var els = document.querySelectorAll('.animate-on-scroll');
+  if (!els.length) return;
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  els.forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>

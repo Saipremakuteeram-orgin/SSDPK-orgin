@@ -1,0 +1,35 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.spec
+
+# === Environment / Secrets ===
+.env
+*.env.local
+*.env.production
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Node / npm (if ever used) ===
+node_modules/
+npm-debug.log*
+
+# === IDE ===
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# === Logs ===
+*.log
+logs/
