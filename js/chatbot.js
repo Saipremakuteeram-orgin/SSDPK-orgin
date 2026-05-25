@@ -70,8 +70,32 @@ document.addEventListener('DOMContentLoaded', () => {
       form.classList.add('hidden');
     }
   }
+
+  // Try to load Gemini API key dynamically from local .env if available
+  async function loadLocalApiKey() {
+    if (apiKey) return;
+    try {
+      const response = await fetch('/.env');
+      if (response.ok) {
+        const text = await response.text();
+        const lines = text.split('\n');
+        for (const line of lines) {
+          const match = line.match(/^\s*GEMINI_API_KEY\s*=\s*["']?([^"'\r\n#]+)["']?/i);
+          if (match && match[1]) {
+            apiKey = match[1].trim();
+            console.log('Successfully loaded Gemini API key from local .env');
+            initUI();
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load local .env file:', e);
+    }
+  }
   
   initUI();
+  loadLocalApiKey();
 
   // Toggle Window
   fab.addEventListener('click', () => win.classList.add('active'));
