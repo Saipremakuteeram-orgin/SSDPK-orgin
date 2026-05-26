@@ -73,8 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Try to load Gemini API key dynamically from local config endpoint or local .env if available
   async function loadLocalApiKey() {
-    if (apiKey) return;
-    
     // 1. Try safe local config endpoint first
     try {
       const response = await fetch('/api/config');
@@ -90,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       console.log('No /api/config endpoint available, trying raw .env fallback...');
     }
+
+    if (apiKey) return;
 
     // 2. Fall back to raw .env file parsing (for simple python -m http.server setups)
     try {
