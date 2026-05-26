@@ -482,6 +482,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(msg, parse_mode="Markdown")
 
 
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Show help menu with all available commands."""
+    msg = (
+        "❓ *Sathya Sai Prema Kuteeram Bot Help*\n"
+        "━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        "Here are the commands you can use to interact with me:\n\n"
+        "📱 /menu — Open the interactive dashboard main menu\n"
+        "🖼 /gallery — View and browse photos by category\n"
+        "📅 /events — Get details of upcoming scheduled events\n"
+        "💬 /info — Get spiritual guidance powered by Gemini AI\n"
+        "📸 /addgallery — (Admin only) Add new photos directly to the gallery\n"
+        "❓ /help — Show this help message\n\n"
+        "_Tip: Send any text message to ask our Spiritual AI Assistant questions directly!_"
+    )
+    await update.message.reply_text(msg, parse_mode="Markdown")
+
+
 async def gallery_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Browse gallery categories."""
     keyboard = [
@@ -785,6 +802,25 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 # MAIN
 # ══════════════════════════════════════════════════════════════════════════════
 
+async def post_init(application: Application) -> None:
+    """Register commands dynamically with Telegram on startup."""
+    from telegram import BotCommand
+    commands = [
+        BotCommand("start", "Welcome message & description"),
+        BotCommand("menu", "SSPK interactive dashboard menu"),
+        BotCommand("gallery", "Browse SSPK photo gallery"),
+        BotCommand("events", "View upcoming scheduled events"),
+        BotCommand("info", "Ask spiritual questions to AI"),
+        BotCommand("help", "Show all available commands"),
+        BotCommand("addgallery", "(Admin) Upload photo to website gallery"),
+    ]
+    try:
+        await application.bot.set_my_commands(commands)
+        logger.info("✅ Bot commands registered dynamically with Telegram.")
+    except Exception as e:
+        logger.error(f"Failed to register commands with Telegram: {e}")
+
+
 def main() -> None:
     """Starts the bot."""
     # Ensure active event loop is registered on modern Python versions (e.g. 3.12, 3.13, 3.14)
@@ -796,7 +832,7 @@ def main() -> None:
 
     logger.info(f"🚀 Starting {TRUST_NAME} Telegram Bot...")
 
-    app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    app = Application.builder().token(TELEGRAM_BOT_TOKEN).post_init(post_init).build()
 
     # /addgallery conversation
     addgallery_conv = ConversationHandler(
@@ -820,6 +856,7 @@ def main() -> None:
     app.add_handler(CommandHandler("gallery", gallery_command))
     app.add_handler(CommandHandler("events",  events_command))
     app.add_handler(CommandHandler("info",    info_command))
+    app.add_handler(CommandHandler("help",    help_command))
     app.add_handler(addgallery_conv)
 
     # Callback queries for interactive menu (prefix 'menu_') and category selections (prefix 'gal_')
