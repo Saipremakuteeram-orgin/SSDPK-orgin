@@ -81,7 +81,7 @@ logger = logging.getLogger(__name__)
 # ── Gemini AI setup ───────────────────────────────────────────────────────────
 genai.configure(api_key=GEMINI_API_KEY)
 gemini_model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.0-flash",
     system_instruction=(
         "You are a compassionate and knowledgeable spiritual assistant for "
         "Sathya Sai Prema Kuteeram (SSPK), a spiritual Trust dedicated to the "
