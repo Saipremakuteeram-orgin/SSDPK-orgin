@@ -17,24 +17,83 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginWrapper = document.getElementById('loginWrapper');
   const signupWrapper = document.getElementById('signupWrapper');
 
-  // OTP Modal
-  const otpModal = document.getElementById('otpModal');
-  const otpForm = document.getElementById('otpForm');
-  const cancelOtpBtn = document.getElementById('cancelOtpBtn');
-  const otpDisplayPhone = document.getElementById('otpDisplayPhone');
-
   // Dashboard Card Elements
   const logoutBtn = document.getElementById('logoutBtn');
   const cardName = document.getElementById('cardName');
   const cardId = document.getElementById('cardId');
-  
-  let currentIdentifier = '';
-  let isSignupFlow = false;
-  let useMockOtp = false;
-  let tempSignupData = {};
+  const cardJoinedDate = document.getElementById('cardJoinedDate');
+
+  // Google OAuth Elements
+  const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const googleSignupBtn = document.getElementById('googleSignupBtn');
 
   // Initialize state
   checkAuthState();
+
+  // Handle Google Sign-In Click
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/dashboard.html'
+        }
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.error('Google Sign-In error:', err.message);
+      alert('Failed to initiate Google Sign-In: ' + err.message);
+    }
+  };
+
+  googleLoginBtn?.addEventListener('click', handleGoogleSignIn);
+  googleSignupBtn?.addEventListener('click', handleGoogleSignIn);
+
+  // Sync state on OAuth redirect / auth state changes
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('onAuthStateChange event:', event, session);
+    if (session && session.user) {
+      const email = session.user.email;
+      if (!email) return;
+
+      const { data: member, error } = await supabase
+        .from('members')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error verifying member on Google Sign-In:', error.message);
+        return;
+      }
+
+      if (!member) {
+        const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
+        const fullName = session.user.user_metadata?.full_name || 'Google User';
+        const fname = fullName.split(' ')[0] || 'Google';
+        const lname = fullName.split(' ').slice(1).join(' ') || 'User';
+
+        const insertPayload = {
+          fname,
+          lname,
+          email,
+          member_id: uniqueId
+        };
+
+        const { error: insertError } = await supabase.from('members').insert([insertPayload]);
+        if (insertError) {
+          console.error('Auto-registration insert failed on Google Sign-In:', insertError.message);
+          return;
+        }
+      }
+
+      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: email }));
+      checkAuthState();
+    } else if (event === 'SIGNED_OUT') {
+      localStorage.removeItem('sspk_session');
+      checkAuthState();
+    }
+  });
 
   function checkAuthState() {
     const session = JSON.parse(localStorage.getItem('sspk_session'));
@@ -123,30 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Try sending real OTP from Supabase Auth
-    useMockOtp = false;
-    let otpPayload = {};
-    if (isEmail) {
-      otpPayload = { email: identifier };
-    } else {
-      let formattedPhone = identifier;
-      if (!formattedPhone.startsWith('+')) {
-        formattedPhone = '+91' + formattedPhone;
-      }
-      otpPayload = { phone: formattedPhone };
-    }
-
-    const { error: otpError } = await supabase.auth.signInWithOtp(otpPayload);
-    if (otpError) {
-      console.warn('Supabase Auth OTP send error:', otpError.message);
-      // Fallback for missing/unconfigured SMS/Email providers
-      alert(`Supabase OTP: Provider not configured or limit reached (${otpError.message}). Falling back to Mock Simulation Mode (Use OTP Code: 1234).`);
-      useMockOtp = true;
-    }
-
-    currentIdentifier = identifier;
-    isSignupFlow = false;
-    openOtpModal(identifier);
+    localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
+    checkAuthState();
   });
 
   // ============================================================
@@ -161,186 +198,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const place = document.getElementById('regPlace').value.trim();
     const district = document.getElementById('regDistrict').value.trim();
     const address = document.getElementById('regAddress').value.trim();
-    const otpMethod = document.getElementById('regOtpMethod').value;
+    const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
+    let insertPayload = {
+      fname,
+      lname,
+      phone: phone || null,
+      email: email || null,
+      place: place || null,
+      district: district || null,
+      address: address || null,
+      member_id: uniqueId
+    };
 
-    if (!fname || !lname) {
-      return alert('First Name and Last Name are mandatory.');
-    }
+    let { error } = await supabase.from('members').insert([insertPayload]);
 
-    if (!phone && !email) {
-      return alert('Please provide either Phone Number or Email Address to register.');
-    }
-
-    // Check if phone already registered
-    if (phone) {
-      const { data: existingPhone } = await supabase
-        .from('members')
-        .select('id')
-        .eq('phone', phone)
-        .maybeSingle();
-
-      if (existingPhone) {
-        alert('Phone number already registered. Please log in.');
-        showLoginForm();
-        return;
-      }
-    }
-
-    // Check if email already registered
-    if (email) {
-      const { data: existingEmail } = await supabase
-        .from('members')
-        .select('id')
-        .eq('email', email)
-        .maybeSingle();
-
-      if (existingEmail) {
-        alert('Email address already registered. Please log in.');
-        showLoginForm();
-        return;
-      }
-    }
-
-    // Decide delivery method
-    let deliveryMethod = 'email';
-    let targetDest = email;
-
-    if (otpMethod === 'email' && email) {
-      deliveryMethod = 'email';
-      targetDest = email;
-    } else if (otpMethod === 'phone' && phone) {
-      deliveryMethod = 'phone';
-      targetDest = phone;
-    } else {
-      // Auto-detect or fallback
-      if (email) {
-        deliveryMethod = 'email';
-        targetDest = email;
-      } else {
-        deliveryMethod = 'phone';
-        targetDest = phone;
-      }
-    }
-
-    // Send OTP from Supabase Auth
-    useMockOtp = false;
-    let otpPayload = {};
-    if (deliveryMethod === 'email') {
-      otpPayload = { email: targetDest };
-    } else {
-      let formattedPhone = targetDest;
-      if (!formattedPhone.startsWith('+')) {
-        formattedPhone = '+91' + formattedPhone;
-      }
-      otpPayload = { phone: formattedPhone };
-    }
-
-    const { error: otpError } = await supabase.auth.signInWithOtp(otpPayload);
-    if (otpError) {
-      console.warn('Supabase Auth OTP send error:', otpError.message);
-      alert(`Supabase OTP: Provider not configured or limit reached (${otpError.message}). Falling back to Mock Simulation Mode (Use OTP Code: 1234).`);
-      useMockOtp = true;
-    }
-
-    tempSignupData = { fname, lname, phone, email, place, district, address };
-    currentIdentifier = targetDest;
-    isSignupFlow = true;
-    openOtpModal(targetDest);
-  });
-
-  function openOtpModal(phoneOrEmail) {
-    otpDisplayPhone.textContent = phoneOrEmail;
-    otpModal.classList.add('active');
-    console.log(`[OTP Status] OTP requested for ${phoneOrEmail}. Mock Fallback: 1234`);
-  }
-
-  cancelOtpBtn?.addEventListener('click', () => {
-    otpModal.classList.remove('active');
-  });
-
-  otpForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const otp = document.getElementById('otpCode').value.trim();
-    
-    let isVerified = false;
-
-    if (useMockOtp || otp === '1234') {
-      isVerified = true;
-      console.log('OTP verified successfully (Mock Mode)');
-    } else {
-      const isEmail = currentIdentifier.includes('@');
-      let verifyPayload = {
-        token: otp,
-        type: isEmail ? 'email' : 'sms'
-      };
-      if (isEmail) {
-        verifyPayload.email = currentIdentifier;
-      } else {
-        let formattedPhone = currentIdentifier;
-        if (!formattedPhone.startsWith('+')) {
-          formattedPhone = '+91' + formattedPhone;
-        }
-        verifyPayload.phone = formattedPhone;
-      }
-
-      const { data, error } = await supabase.auth.verifyOtp(verifyPayload);
-      if (error) {
-        console.error('Supabase OTP verification error:', error);
-        alert('Verification failed: ' + error.message);
-        return;
-      }
-      isVerified = true;
-      console.log('OTP verified successfully via Supabase Auth');
-    }
-
-    if (!isVerified) return;
-
-    otpModal.classList.remove('active');
-    document.getElementById('otpCode').value = '';
-
-    if (isSignupFlow) {
-      const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
-      let insertPayload = {
-        fname: tempSignupData.fname,
-        lname: tempSignupData.lname,
-        phone: tempSignupData.phone || null,
-        email: tempSignupData.email || null,
-        place: tempSignupData.place || null,
-        district: tempSignupData.district || null,
-        address: tempSignupData.address || null,
-        member_id: uniqueId
-      };
-
-      let { error } = await supabase.from('members').insert([insertPayload]);
-
-      if (error) {
-        console.warn('Initial registration insert failed:', error.message);
-        // Fallback: If 'email' column does not exist or has cache mismatch, delete email and retry
-        if (error.message && (error.message.includes('email') || error.message.includes('schema cache'))) {
-          console.warn('Retrying database insert without email key...');
-          delete insertPayload.email;
-          const { error: retryError } = await supabase.from('members').insert([insertPayload]);
-          if (retryError) {
-            console.error('Retry insert failed:', retryError);
-            alert('Registration failed in database: ' + retryError.message);
-            return;
-          }
-        } else {
-          alert('Registration failed in database: ' + error.message);
+    if (error) {
+      console.warn('Initial registration insert failed:', error.message);
+      // Fallback: If 'email' column does not exist or has cache mismatch, delete email and retry
+      if (error.message && (error.message.includes('email') || error.message.includes('schema cache'))) {
+        console.warn('Retrying database insert without email key...');
+        delete insertPayload.email;
+        const { error: retryError } = await supabase.from('members').insert([insertPayload]);
+        if (retryError) {
+          console.error('Retry insert failed:', retryError);
+          alert('Registration failed in database: ' + retryError.message);
           return;
         }
+      } else {
+        alert('Registration failed in database: ' + error.message);
+        return;
       }
-
-      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: currentIdentifier }));
-      checkAuthState();
-    } else {
-      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: currentIdentifier }));
-      checkAuthState();
     }
+
+    const identifier = email || phone;
+    localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
+    checkAuthState();
   });
 
-  logoutBtn?.addEventListener('click', () => {
+
+  logoutBtn?.addEventListener('click', async () => {
     localStorage.removeItem('sspk_session');
+    await supabase.auth.signOut();
     checkAuthState();
   });
 
@@ -352,11 +250,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================================================
   // RENDER MEMBERSHIP CARD — loads from Supabase
   // ============================================================
+  function formatJoinedDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   async function renderMembershipCard(session) {
     if (!session || !session.identifier) return;
 
     const isEmail = session.identifier.includes('@');
-    let query = supabase.from('members').select('fname, lname, member_id');
+    let query = supabase.from('members').select('fname, lname, member_id, registered_at');
     if (isEmail) {
       query = query.eq('email', session.identifier);
     } else {
@@ -369,6 +276,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data) {
       cardName.textContent = data.fname + ' ' + data.lname;
       cardId.textContent = data.member_id;
+      if (cardJoinedDate) {
+        cardJoinedDate.textContent = formatJoinedDate(data.registered_at);
+      }
     }
   }
 

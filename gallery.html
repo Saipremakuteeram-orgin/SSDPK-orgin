@@ -50,6 +50,22 @@
     color: var(--muted);
   }
   .gallery-empty .icon { font-size: 48px; margin-bottom: 16px; }
+
+  /* Event category badges */
+  .drawer-category-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .badge-bhajan { background: oklch(95% 0.03 140); color: oklch(45% 0.1 140); border: 1px solid oklch(85% 0.06 140); }
+  .badge-seva { background: var(--accent-light); color: var(--accent-dark); border: 1px solid var(--border); }
+  .badge-study { background: oklch(95% 0.02 240); color: oklch(40% 0.1 240); border: 1px solid oklch(85% 0.06 240); }
+  .badge-celebration { background: oklch(94% 0.03 330); color: oklch(40% 0.12 330); border: 1px solid oklch(85% 0.06 330); }
 </style>
 </head>
 <body>
@@ -86,8 +102,8 @@
       <button class="active" data-filter="all">All</button>
       <button data-filter="bhajan">Bhajans</button>
       <button data-filter="seva">Seva</button>
-      <button data-filter="event">Events</button>
-      <button data-filter="community">Community</button>
+      <button data-filter="study">Study Circles</button>
+      <button data-filter="celebration">Celebrations</button>
     </div>
 
     <!-- Grid -->
@@ -169,13 +185,22 @@
       div.className = 'gallery-item';
       div.setAttribute('data-category', item.category);
       div.setAttribute('data-caption', item.caption);
+
+      var badgeText = item.category;
+      if (badgeText === 'study') badgeText = 'Study Circle';
+      else if (badgeText === 'bhajan') badgeText = 'Bhajan';
+      else if (badgeText === 'seva') badgeText = 'Seva';
+      else if (badgeText === 'celebration') badgeText = 'Celebration';
+
+      var badgeHtml = '<span class="drawer-category-badge badge-' + item.category + '" style="position: absolute; top: 12px; left: 12px; z-index: 10; margin-bottom: 0; font-size: 10px; padding: 4px 10px;">' + badgeText + '</span>';
+
       if (item.src_url) {
         div.style.backgroundImage = 'url(' + item.src_url + ')';
         div.style.backgroundSize = 'cover';
         div.style.backgroundPosition = 'center';
-        div.innerHTML = '<div class="gallery-caption">' + item.caption + '</div>';
+        div.innerHTML = badgeHtml + '<div class="gallery-caption">' + item.caption + '</div>';
       } else {
-        div.innerHTML = '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + item.caption + '</div>';
+        div.innerHTML = badgeHtml + '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + item.caption + '</div>';
       }
       if (grid) grid.appendChild(div);
     });
