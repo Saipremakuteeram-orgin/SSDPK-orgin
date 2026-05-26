@@ -13,12 +13,23 @@ CREATE TABLE IF NOT EXISTS public.members (
   fname         TEXT NOT NULL,
   lname         TEXT NOT NULL,
   phone         TEXT NOT NULL UNIQUE,
+  email         TEXT NOT NULL UNIQUE,
   place         TEXT,
   district      TEXT,
   address       TEXT,
   member_id     TEXT NOT NULL UNIQUE,
   registered_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- In case members table already exists, run this to add email:
+ALTER TABLE public.members ADD COLUMN IF NOT EXISTS email TEXT;
+-- Add a unique constraint to email if not already present
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'members_email_key') THEN
+        ALTER TABLE public.members ADD CONSTRAINT members_email_key UNIQUE (email);
+    END IF;
+END $$;
 
 -- RLS: Anyone can read members (for admin list), only anon key can insert
 ALTER TABLE public.members ENABLE ROW LEVEL SECURITY;

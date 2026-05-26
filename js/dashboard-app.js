@@ -80,14 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ============================================================
-  // LOGIN — checks Supabase `members` table by phone
+  // LOGIN — checks Supabase `members` table by phone or email
   // ============================================================
   loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const phone = document.getElementById('loginPhone').value.trim();
+    const identifier = document.getElementById('loginIdentifier').value.trim();
     
     // Admin bypass
-    if (phone === 'saiadmin') {
+    if (identifier === 'saiadmin') {
       const pwd = prompt('Enter Admin Password:');
       if (pwd === 'Sai@1926@@') {
         localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin' }));
@@ -98,14 +98,18 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (!phone) return alert('Enter phone number.');
+    if (!identifier) return alert('Enter phone number or email.');
 
-    // Check if user exists in Supabase
-    const { data, error } = await supabase
-      .from('members')
-      .select('id, fname, lname, member_id, phone')
-      .eq('phone', phone)
-      .maybeSingle();
+    const isEmail = identifier.includes('@');
+    let query = supabase.from('members').select('id, fname, lname, member_id, phone, email');
+    
+    if (isEmail) {
+      query = query.eq('email', identifier);
+    } else {
+      query = query.eq('phone', identifier);
+    }
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) {
       console.error('Supabase login check error:', error);
@@ -114,13 +118,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!data) {
-      alert('Phone number not registered. Please sign up.');
+      alert('Account not registered. Please sign up first.');
       return;
     }
 
-    currentPhone = phone;
+    currentPhone = data.phone;
     isSignupFlow = false;
-    openOtpModal(phone);
+    openOtpModal(identifier);
   });
 
   // ============================================================
@@ -131,37 +135,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const fname = document.getElementById('regFname').value.trim();
     const lname = document.getElementById('regLname').value.trim();
     const phone = document.getElementById('regPhone').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
     const place = document.getElementById('regPlace').value.trim();
     const district = document.getElementById('regDistrict').value.trim();
     const address = document.getElementById('regAddress').value.trim();
 
-    if (!fname || !lname || !phone) {
-      return alert('First Name, Last Name, and Phone are mandatory.');
+    if (!fname || !lname || !phone || !email) {
+      return alert('First Name, Last Name, Phone, and Email are mandatory.');
     }
 
-    // Check if phone already registered
-    const { data: existing } = await supabase
+    // Check if phone or email already registered
+    const { data: existingPhone } = await supabase
       .from('members')
       .select('id')
       .eq('phone', phone)
       .maybeSingle();
 
-    if (existing) {
+    if (existingPhone) {
       alert('Phone number already registered. Please log in.');
       showLoginForm();
       return;
     }
 
-    tempSignupData = { fname, lname, phone, place, district, address };
+    const { data: existingEmail } = await supabase
+      .from('members')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingEmail) {
+      alert('Email address already registered. Please log in.');
+      showLoginForm();
+      return;
+    }
+
+    tempSignupData = { fname, lname, phone, email, place, district, address };
     currentPhone = phone;
     isSignupFlow = true;
     openOtpModal(phone);
   });
 
-  function openOtpModal(phone) {
-    otpDisplayPhone.textContent = phone;
+  function openOtpModal(phoneOrEmail) {
+    otpDisplayPhone.textContent = phoneOrEmail;
     otpModal.classList.add('active');
-    console.log(`[MOCK] OTP for ${phone} is 1234`);
+    console.log(`[MOCK] OTP for ${phoneOrEmail} is 1234`);
   }
 
   cancelOtpBtn?.addEventListener('click', () => {
@@ -186,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fname: tempSignupData.fname,
         lname: tempSignupData.lname,
         phone: tempSignupData.phone,
+        email: tempSignupData.email,
         place: tempSignupData.place || null,
         district: tempSignupData.district || null,
         address: tempSignupData.address || null,
@@ -194,8 +212,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) {
         console.error('Supabase insert error:', error);
-        alert('Registration failed. Please try again.');
-        return;
+        // Fallback check if user's Supabase table does not yet have email column configured
+        if (error.message && error.message.includes('column "email" of relation "members" does not exist')) {
+          console.warn('Database schema needs an update to support email. Retrying insertion without email...');
+          const { error: retryError } = await supabase.from('members').insert([{
+            fname: tempSignupData.fname,
+            lname: tempSignupData.lname,
+            phone: tempSignupData.phone,
+            place: tempSignupData.place || null,
+            district: tempSignupData.district || null,
+            address: tempSignupData.address || null,
+            member_id: uniqueId
+          }]);
+          if (retryError) {
+            console.error('Retry insert error:', retryError);
+            alert('Registration failed. Please run SQL migration in Supabase.');
+            return;
+          }
+        } else {
+          alert('Registration failed. Please try again.');
+          return;
+        }
       }
 
       localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', phone: currentPhone }));
@@ -249,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const { data, error } = await supabase
       .from('members')
-      .select('fname, lname, phone, member_id, place, district')
+      .select('fname, lname, phone, email, member_id, place, district')
       .order('registered_at', { ascending: false });
 
     if (error) { adminList.innerHTML = '<p style="color:red;">Error loading members.</p>'; return; }
@@ -266,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
       div.innerHTML = `
         <div class="user-info">
           <strong>${u.fname} ${u.lname}</strong> (ID: ${u.member_id})<br>
-          <small>${u.phone} &middot; ${u.place || 'No Place'} &middot; ${u.district || 'No District'}</small>
+          <small>${u.phone} &middot; ${u.email || 'No Email'} &middot; ${u.place || 'No Place'} &middot; ${u.district || 'No District'}</small>
         </div>
       `;
       adminList.appendChild(div);

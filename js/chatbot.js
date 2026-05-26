@@ -71,9 +71,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Try to load Gemini API key dynamically from local .env if available
+  // Try to load Gemini API key dynamically from local config endpoint or local .env if available
   async function loadLocalApiKey() {
     if (apiKey) return;
+    
+    // 1. Try safe local config endpoint first
+    try {
+      const response = await fetch('/api/config');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.GEMINI_API_KEY) {
+          apiKey = data.GEMINI_API_KEY.trim();
+          console.log('Successfully loaded Gemini API key from /api/config');
+          initUI();
+          return;
+        }
+      }
+    } catch (e) {
+      console.log('No /api/config endpoint available, trying raw .env fallback...');
+    }
+
+    // 2. Fall back to raw .env file parsing (for simple python -m http.server setups)
     try {
       const response = await fetch('/.env');
       if (response.ok) {
@@ -83,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const match = line.match(/^\s*GEMINI_API_KEY\s*=\s*["']?([^"'\r\n#]+)["']?/i);
           if (match && match[1]) {
             apiKey = match[1].trim();
-            console.log('Successfully loaded Gemini API key from local .env');
+            console.log('Successfully loaded Gemini API key from local fallback .env');
             initUI();
             return;
           }
