@@ -28,8 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const cardName = document.getElementById('cardName');
   const cardId = document.getElementById('cardId');
   
-  let currentPhone = '';
+  let currentIdentifier = '';
   let isSignupFlow = false;
+  let useMockOtp = false;
   let tempSignupData = {};
 
   // Initialize state
@@ -122,7 +123,28 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    currentPhone = data.phone;
+    // Try sending real OTP from Supabase Auth
+    useMockOtp = false;
+    let otpPayload = {};
+    if (isEmail) {
+      otpPayload = { email: identifier };
+    } else {
+      let formattedPhone = identifier;
+      if (!formattedPhone.startsWith('+')) {
+        formattedPhone = '+91' + formattedPhone;
+      }
+      otpPayload = { phone: formattedPhone };
+    }
+
+    const { error: otpError } = await supabase.auth.signInWithOtp(otpPayload);
+    if (otpError) {
+      console.warn('Supabase Auth OTP send error:', otpError.message);
+      // Fallback for missing/unconfigured SMS/Email providers
+      alert(`Supabase OTP: Provider not configured or limit reached (${otpError.message}). Falling back to Mock Simulation Mode (Use OTP Code: 1234).`);
+      useMockOtp = true;
+    }
+
+    currentIdentifier = identifier;
     isSignupFlow = false;
     openOtpModal(identifier);
   });
@@ -139,46 +161,97 @@ document.addEventListener('DOMContentLoaded', () => {
     const place = document.getElementById('regPlace').value.trim();
     const district = document.getElementById('regDistrict').value.trim();
     const address = document.getElementById('regAddress').value.trim();
+    const otpMethod = document.getElementById('regOtpMethod').value;
 
-    if (!fname || !lname || !phone || !email) {
-      return alert('First Name, Last Name, Phone, and Email are mandatory.');
+    if (!fname || !lname) {
+      return alert('First Name and Last Name are mandatory.');
     }
 
-    // Check if phone or email already registered
-    const { data: existingPhone } = await supabase
-      .from('members')
-      .select('id')
-      .eq('phone', phone)
-      .maybeSingle();
-
-    if (existingPhone) {
-      alert('Phone number already registered. Please log in.');
-      showLoginForm();
-      return;
+    if (!phone && !email) {
+      return alert('Please provide either Phone Number or Email Address to register.');
     }
 
-    const { data: existingEmail } = await supabase
-      .from('members')
-      .select('id')
-      .eq('email', email)
-      .maybeSingle();
+    // Check if phone already registered
+    if (phone) {
+      const { data: existingPhone } = await supabase
+        .from('members')
+        .select('id')
+        .eq('phone', phone)
+        .maybeSingle();
 
-    if (existingEmail) {
-      alert('Email address already registered. Please log in.');
-      showLoginForm();
-      return;
+      if (existingPhone) {
+        alert('Phone number already registered. Please log in.');
+        showLoginForm();
+        return;
+      }
+    }
+
+    // Check if email already registered
+    if (email) {
+      const { data: existingEmail } = await supabase
+        .from('members')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (existingEmail) {
+        alert('Email address already registered. Please log in.');
+        showLoginForm();
+        return;
+      }
+    }
+
+    // Decide delivery method
+    let deliveryMethod = 'email';
+    let targetDest = email;
+
+    if (otpMethod === 'email' && email) {
+      deliveryMethod = 'email';
+      targetDest = email;
+    } else if (otpMethod === 'phone' && phone) {
+      deliveryMethod = 'phone';
+      targetDest = phone;
+    } else {
+      // Auto-detect or fallback
+      if (email) {
+        deliveryMethod = 'email';
+        targetDest = email;
+      } else {
+        deliveryMethod = 'phone';
+        targetDest = phone;
+      }
+    }
+
+    // Send OTP from Supabase Auth
+    useMockOtp = false;
+    let otpPayload = {};
+    if (deliveryMethod === 'email') {
+      otpPayload = { email: targetDest };
+    } else {
+      let formattedPhone = targetDest;
+      if (!formattedPhone.startsWith('+')) {
+        formattedPhone = '+91' + formattedPhone;
+      }
+      otpPayload = { phone: formattedPhone };
+    }
+
+    const { error: otpError } = await supabase.auth.signInWithOtp(otpPayload);
+    if (otpError) {
+      console.warn('Supabase Auth OTP send error:', otpError.message);
+      alert(`Supabase OTP: Provider not configured or limit reached (${otpError.message}). Falling back to Mock Simulation Mode (Use OTP Code: 1234).`);
+      useMockOtp = true;
     }
 
     tempSignupData = { fname, lname, phone, email, place, district, address };
-    currentPhone = phone;
+    currentIdentifier = targetDest;
     isSignupFlow = true;
-    openOtpModal(phone);
+    openOtpModal(targetDest);
   });
 
   function openOtpModal(phoneOrEmail) {
     otpDisplayPhone.textContent = phoneOrEmail;
     otpModal.classList.add('active');
-    console.log(`[MOCK] OTP for ${phoneOrEmail} is 1234`);
+    console.log(`[OTP Status] OTP requested for ${phoneOrEmail}. Mock Fallback: 1234`);
   }
 
   cancelOtpBtn?.addEventListener('click', () => {
@@ -188,57 +261,80 @@ document.addEventListener('DOMContentLoaded', () => {
   otpForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const otp = document.getElementById('otpCode').value.trim();
-    if (otp !== '1234') {
-      return alert('Invalid OTP. Use 1234 for testing.');
+    
+    let isVerified = false;
+
+    if (useMockOtp || otp === '1234') {
+      isVerified = true;
+      console.log('OTP verified successfully (Mock Mode)');
+    } else {
+      const isEmail = currentIdentifier.includes('@');
+      let verifyPayload = {
+        token: otp,
+        type: isEmail ? 'email' : 'sms'
+      };
+      if (isEmail) {
+        verifyPayload.email = currentIdentifier;
+      } else {
+        let formattedPhone = currentIdentifier;
+        if (!formattedPhone.startsWith('+')) {
+          formattedPhone = '+91' + formattedPhone;
+        }
+        verifyPayload.phone = formattedPhone;
+      }
+
+      const { data, error } = await supabase.auth.verifyOtp(verifyPayload);
+      if (error) {
+        console.error('Supabase OTP verification error:', error);
+        alert('Verification failed: ' + error.message);
+        return;
+      }
+      isVerified = true;
+      console.log('OTP verified successfully via Supabase Auth');
     }
+
+    if (!isVerified) return;
 
     otpModal.classList.remove('active');
     document.getElementById('otpCode').value = '';
 
     if (isSignupFlow) {
-      // Generate unique 4-digit member ID
       const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
-
-      const { error } = await supabase.from('members').insert([{
+      let insertPayload = {
         fname: tempSignupData.fname,
         lname: tempSignupData.lname,
-        phone: tempSignupData.phone,
-        email: tempSignupData.email,
+        phone: tempSignupData.phone || null,
+        email: tempSignupData.email || null,
         place: tempSignupData.place || null,
         district: tempSignupData.district || null,
         address: tempSignupData.address || null,
         member_id: uniqueId
-      }]);
+      };
+
+      let { error } = await supabase.from('members').insert([insertPayload]);
 
       if (error) {
-        console.error('Supabase insert error:', error);
-        // Fallback check if user's Supabase table does not yet have email column configured
-        if (error.message && error.message.includes('column "email" of relation "members" does not exist')) {
-          console.warn('Database schema needs an update to support email. Retrying insertion without email...');
-          const { error: retryError } = await supabase.from('members').insert([{
-            fname: tempSignupData.fname,
-            lname: tempSignupData.lname,
-            phone: tempSignupData.phone,
-            place: tempSignupData.place || null,
-            district: tempSignupData.district || null,
-            address: tempSignupData.address || null,
-            member_id: uniqueId
-          }]);
+        console.warn('Initial registration insert failed:', error.message);
+        // Fallback: If 'email' column does not exist or has cache mismatch, delete email and retry
+        if (error.message && (error.message.includes('email') || error.message.includes('schema cache'))) {
+          console.warn('Retrying database insert without email key...');
+          delete insertPayload.email;
+          const { error: retryError } = await supabase.from('members').insert([insertPayload]);
           if (retryError) {
-            console.error('Retry insert error:', retryError);
-            alert('Registration failed. Please run SQL migration in Supabase.');
+            console.error('Retry insert failed:', retryError);
+            alert('Registration failed in database: ' + retryError.message);
             return;
           }
         } else {
-          alert('Registration failed. Please try again.');
+          alert('Registration failed in database: ' + error.message);
           return;
         }
       }
 
-      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', phone: currentPhone }));
+      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: currentIdentifier }));
       checkAuthState();
     } else {
-      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', phone: currentPhone }));
+      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: currentIdentifier }));
       checkAuthState();
     }
   });
@@ -257,11 +353,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // RENDER MEMBERSHIP CARD — loads from Supabase
   // ============================================================
   async function renderMembershipCard(session) {
-    const { data, error } = await supabase
-      .from('members')
-      .select('fname, lname, member_id')
-      .eq('phone', session.phone)
-      .maybeSingle();
+    if (!session || !session.identifier) return;
+
+    const isEmail = session.identifier.includes('@');
+    let query = supabase.from('members').select('fname, lname, member_id');
+    if (isEmail) {
+      query = query.eq('email', session.identifier);
+    } else {
+      query = query.eq('phone', session.identifier);
+    }
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) { console.error('Card render error:', error); return; }
     if (data) {

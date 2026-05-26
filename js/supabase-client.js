@@ -8,9 +8,25 @@
 //
 // Get your credentials from: https://supabase.com/dashboard/project/_/settings/api
 
-const SUPABASE_URL = 'https://fnmbiapynzfdxgybxtyd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZubWJpYXB5bnpmZHhneWJ4dHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY4MjQsImV4cCI6MjA5NTI3MjgyNH0.ax8tV7UhJ5XcfQDZ4Gbyga8kuqVro5zoPwo9d-5hVNg';
+const DEFAULT_SUPABASE_URL = 'https://fnmbiapynzfdxgybxtyd.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZubWJpYXB5bnpmZHhneWJ4dHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY4MjQsImV4cCI6MjA5NTI3MjgyNH0.ax8tV7UhJ5XcfQDZ4Gbyga8kuqVro5zoPwo9d-5hVNg';
 
-// Initialise the Supabase client using the globally imported CDN library.
-// We use 'var' to prevent syntax conflicts with the Supabase CDN's global variable declaration.
-var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialise with defaults
+var supabase = window.supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+
+// Dynamically check if we can load credentials from the config endpoint (e.g. Vercel or local DevServer)
+async function loadDynamicSupabaseConfig() {
+  try {
+    const response = await fetch('/api/config');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.SUPABASE_URL && data.SUPABASE_ANON_KEY) {
+        supabase = window.supabase.createClient(data.SUPABASE_URL.trim(), data.SUPABASE_ANON_KEY.trim());
+        console.log('Successfully re-configured Supabase Client from /api/config');
+      }
+    }
+  } catch (e) {
+    console.log('Using default client credentials (config endpoint not available)');
+  }
+}
+loadDynamicSupabaseConfig();

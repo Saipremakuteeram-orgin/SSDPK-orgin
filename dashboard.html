@@ -330,13 +330,21 @@
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div class="input-group">
-              <label for="regPhone">Phone Number <span class="required-asterisk">*</span></label>
-              <input type="tel" id="regPhone" required>
+              <label for="regPhone">Phone Number</label>
+              <input type="tel" id="regPhone" placeholder="e.g. +919876543210">
             </div>
             <div class="input-group">
-              <label for="regEmail">Email Address <span class="required-asterisk">*</span></label>
-              <input type="email" id="regEmail" required>
+              <label for="regEmail">Email Address</label>
+              <input type="email" id="regEmail" placeholder="e.g. devotee@sspk.org">
             </div>
+          </div>
+          <div class="input-group">
+            <label for="regOtpMethod">Preferred OTP Delivery Method</label>
+            <select id="regOtpMethod" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); color:var(--fg); height: 42px;">
+              <option value="auto">Auto-Detect (Email preferred if both provided)</option>
+              <option value="email">Email Address</option>
+              <option value="phone">Phone Number (SMS)</option>
+            </select>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
             <div class="input-group">
