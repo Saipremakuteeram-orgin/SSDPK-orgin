@@ -289,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAdminUsers();
     renderAdminEvents();
     renderAdminGallery();
+    populateGalleryEventDropdown();
   }
 
   async function renderAdminUsers() {
@@ -439,6 +440,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const addGalleryForm = document.getElementById('addGalleryForm');
   const adminGalleryList = document.getElementById('adminGalleryList');
 
+  // Populate Gallery Event Dropdown
+  async function populateGalleryEventDropdown() {
+    const eventSelect = document.getElementById('galleryEventSelect');
+    if (!eventSelect) return;
+    
+    // Clear dynamic options (keep first one)
+    eventSelect.innerHTML = '<option value="">-- Link to Event (Optional) --</option>';
+
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('id, title, category, date')
+        .order('date', { ascending: false });
+
+      if (!error && data) {
+        data.forEach(evt => {
+          const opt = document.createElement('option');
+          opt.value = evt.id;
+          opt.textContent = `${evt.title} (${evt.date})`;
+          opt.setAttribute('data-category', evt.category);
+          eventSelect.appendChild(opt);
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to load events for gallery linking:', err);
+    }
+  }
+
+  // Auto-sync category dropdown when event is selected
+  document.getElementById('galleryEventSelect')?.addEventListener('change', (e) => {
+    const selectedOption = e.target.options[e.target.selectedIndex];
+    const category = selectedOption.getAttribute('data-category');
+    if (category) {
+      document.getElementById('galleryCategory').value = category;
+    }
+  });
+
   async function renderAdminGallery() {
     if (!adminGalleryList) return;
     adminGalleryList.innerHTML = '<p style="color:var(--muted); font-size:13px; grid-column:1/-1;">Loading gallery...</p>';
@@ -516,15 +554,37 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Storage upload failed, saving without image URL:', storageError.message);
       }
 
-      // Insert metadata into gallery table
-      const { error: dbError } = await supabase.from('gallery').insert([{
+      // Insert metadata into gallery table (with event_id if set)
+      const insertData = {
         caption,
         category,
         src_url,
         storage_path: storagePath
-      }]);
+      };
 
-      if (dbError) { alert('Database save failed: ' + dbError.message); return; }
+      const eventSelect = document.getElementById('galleryEventSelect');
+      if (eventSelect && eventSelect.value) {
+        insertData.event_id = parseInt(eventSelect.value);
+      }
+
+      let { error: dbError } = await supabase.from('gallery').insert([insertData]);
+
+      if (dbError) {
+        console.warn('First insert attempt with event_id failed:', dbError.message);
+        if (dbError.message && (dbError.message.includes('event_id') || dbError.message.includes('column'))) {
+          // Retry without event_id
+          console.warn('Retrying database insert without event_id...');
+          delete insertData.event_id;
+          const { error: retryError } = await supabase.from('gallery').insert([insertData]);
+          if (retryError) {
+            alert('Database save failed: ' + retryError.message);
+            return;
+          }
+        } else {
+          alert('Database save failed: ' + dbError.message);
+          return;
+        }
+      }
 
       addGalleryForm.reset();
       renderAdminGallery();

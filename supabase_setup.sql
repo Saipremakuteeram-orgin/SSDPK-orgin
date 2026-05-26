@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS public.gallery (
   category     TEXT NOT NULL DEFAULT 'event',
   src_url      TEXT,
   placeholder  TEXT,
+  event_id     BIGINT REFERENCES public.events(id) ON DELETE SET NULL,
   created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -138,6 +139,7 @@ CREATE POLICY "Anyone can delete gallery" ON storage.objects
 -- ============================================================
 ALTER TABLE public.gallery
   ADD COLUMN IF NOT EXISTS storage_path TEXT,
-  ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'default';
+  ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'default',
+  ADD COLUMN IF NOT EXISTS event_id BIGINT REFERENCES public.events(id) ON DELETE SET NULL;
 -- source values: 'telegram' | 'dashboard' | 'default'
 

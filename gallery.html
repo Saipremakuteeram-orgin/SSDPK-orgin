@@ -173,7 +173,12 @@
       if (grid) grid.innerHTML = '<p style="color:var(--muted); text-align:center; padding:40px;">Gallery not configured yet. Add your Supabase credentials to js/supabase-client.js</p>';
       return;
     }
-    const { data, error } = await sb.from('gallery').select('*').order('created_at', { ascending: false });
+    let result = await sb.from('gallery').select('*, events(title, category)').order('created_at', { ascending: false });
+    if (result.error) {
+      console.warn('Selecting nested events failed, falling back to basic gallery select:', result.error.message);
+      result = await sb.from('gallery').select('*').order('created_at', { ascending: false });
+    }
+    const { data, error } = result;
     if (error || !data) {
       if (grid) grid.innerHTML = '<p style="color:red; text-align:center;">Failed to load gallery.</p>';
       return;
@@ -194,13 +199,18 @@
 
       var badgeHtml = '<span class="drawer-category-badge badge-' + item.category + '" style="position: absolute; top: 12px; left: 12px; z-index: 10; margin-bottom: 0; font-size: 10px; padding: 4px 10px;">' + badgeText + '</span>';
 
+      var captionText = item.caption;
+      if (item.events && item.events.title) {
+        captionText = item.events.title + ' - ' + item.caption;
+      }
+
       if (item.src_url) {
         div.style.backgroundImage = 'url(' + item.src_url + ')';
         div.style.backgroundSize = 'cover';
         div.style.backgroundPosition = 'center';
-        div.innerHTML = badgeHtml + '<div class="gallery-caption">' + item.caption + '</div>';
+        div.innerHTML = badgeHtml + '<div class="gallery-caption">' + captionText + '</div>';
       } else {
-        div.innerHTML = badgeHtml + '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + item.caption + '</div>';
+        div.innerHTML = badgeHtml + '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + captionText + '</div>';
       }
       if (grid) grid.appendChild(div);
     });
