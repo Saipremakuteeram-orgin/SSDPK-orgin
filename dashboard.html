@@ -400,15 +400,34 @@
     <div id="adminView" class="hidden">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
         <h2 style="font-family:var(--font-heading); color:var(--accent-dark);">Admin Console</h2>
-        <button id="adminLogoutBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Logout Admin</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button id="toggleChangePwdBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">🔑 Change Password</button>
+          <button id="adminLogoutBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Logout Admin</button>
+        </div>
       </div>
-      
+
+      <!-- Change Password Panel (collapsible) -->
+      <div id="changePwdPanel" class="hidden" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; margin-bottom:24px; max-width:420px;">
+        <h4 style="font-family:var(--font-heading); color:var(--accent-dark); margin-bottom:16px;">Change Admin Password</h4>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px; font-weight:600; display:block; margin-bottom:6px;">New Password</label>
+          <input type="password" id="adminNewPwd" placeholder="Min 8 characters" style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--fg); font-size:14px; font-family:var(--font-body);">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:13px; font-weight:600; display:block; margin-bottom:6px;">Confirm New Password</label>
+          <input type="password" id="adminConfirmPwd" placeholder="Re-enter new password" style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--fg); font-size:14px; font-family:var(--font-body);">
+        </div>
+        <button id="adminUpdatePwdBtn" class="btn btn-primary" style="padding:8px 20px; font-size:13px;">Update Password</button>
+        <span id="adminPwdStatus" style="margin-left:12px; font-size:13px;"></span>
+      </div>
+
       <div class="admin-panel">
         <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Registered Members</h3>
         <div id="adminUserList">
           <!-- Dynamic user list -->
         </div>
       </div>
+
       
       <!-- Event Management Panel -->
       <div class="admin-panel">

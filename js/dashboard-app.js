@@ -100,9 +100,62 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthState();
   });
 
-  document.getElementById('adminLogoutBtn')?.addEventListener('click', () => {
+  document.getElementById('adminLogoutBtn')?.addEventListener('click', async () => {
     localStorage.removeItem('sspk_session');
+    await supabase.auth.signOut();
     checkAuthState();
+  });
+
+  // ── Change Admin Password ─────────────────────────────────────────────────
+  const toggleChangePwdBtn = document.getElementById('toggleChangePwdBtn');
+  const changePwdPanel     = document.getElementById('changePwdPanel');
+  const adminUpdatePwdBtn  = document.getElementById('adminUpdatePwdBtn');
+  const adminPwdStatus     = document.getElementById('adminPwdStatus');
+
+  toggleChangePwdBtn?.addEventListener('click', () => {
+    changePwdPanel.classList.toggle('hidden');
+    toggleChangePwdBtn.textContent = changePwdPanel.classList.contains('hidden')
+      ? '🔑 Change Password'
+      : '✕ Cancel';
+  });
+
+  adminUpdatePwdBtn?.addEventListener('click', async () => {
+    const newPwd  = document.getElementById('adminNewPwd').value;
+    const confPwd = document.getElementById('adminConfirmPwd').value;
+
+    adminPwdStatus.style.color = 'var(--danger)';
+
+    if (!newPwd || newPwd.length < 8) {
+      adminPwdStatus.textContent = '⚠️ Password must be at least 8 characters.';
+      return;
+    }
+    if (newPwd !== confPwd) {
+      adminPwdStatus.textContent = '⚠️ Passwords do not match.';
+      return;
+    }
+
+    adminUpdatePwdBtn.textContent = 'Updating...';
+    adminUpdatePwdBtn.disabled = true;
+
+    const { error } = await supabase.auth.updateUser({ password: newPwd });
+
+    adminUpdatePwdBtn.textContent = 'Update Password';
+    adminUpdatePwdBtn.disabled = false;
+
+    if (error) {
+      adminPwdStatus.style.color = 'var(--danger)';
+      adminPwdStatus.textContent = '❌ ' + error.message;
+    } else {
+      adminPwdStatus.style.color = 'green';
+      adminPwdStatus.textContent = '✅ Password updated successfully!';
+      document.getElementById('adminNewPwd').value = '';
+      document.getElementById('adminConfirmPwd').value = '';
+      setTimeout(() => {
+        changePwdPanel.classList.add('hidden');
+        toggleChangePwdBtn.textContent = '🔑 Change Password';
+        adminPwdStatus.textContent = '';
+      }, 2500);
+    }
   });
 
   // ============================================================
