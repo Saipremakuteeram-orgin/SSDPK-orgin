@@ -619,4 +619,113 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
+  // ============================================================
+  // DAILY BLESSINGS (QUOTES OF GURUS)
+  // ============================================================
+  const getSaiQuoteBtn = document.getElementById('getSaiQuoteBtn');
+  const getPeriyavaQuoteBtn = document.getElementById('getPeriyavaQuoteBtn');
+  const quoteDisplayBox = document.getElementById('quoteDisplayBox');
+  const quoteEnglish = document.getElementById('quoteEnglish');
+  const quoteTamil = document.getElementById('quoteTamil');
+  const quoteSource = document.getElementById('quoteSource');
+
+  let cachedQuotes = {
+    sai: [],
+    periyava: []
+  };
+
+  const fallbackQuotes = {
+    sai: [
+      {
+        quote_english: "Love all. Serve all. Help ever. Hurt never.",
+        quote_tamil: "அனைவரையும் நேசி. அனைவருக்கும் சேவை செய். எப்போதும் உதவு. ஒருபோதும் வலிக்கவிடாதே."
+      },
+      {
+        quote_english: "Where there is Faith, there is Love; where there is Love, there is Peace; where there is Peace, there is God.",
+        quote_tamil: "நம்பிக்கை இருக்கும் இடத்தில் அன்பு உண்டு; அன்பு இருக்கும் இடத்தில் அமைதி உண்டு; அமைதி இருக்கும் இடத்தில் இறைவன் உண்டு."
+      },
+      {
+        quote_english: "Money comes and goes; morality comes and grows.",
+        quote_tamil: "பணம் வரும், போகும்; ஒழுக்கம் வரும், வளரும்."
+      },
+      {
+        quote_english: "The end of knowledge is Love. The end of education is character.",
+        quote_tamil: "அறிவின் முடிவு அன்பு; கல்வியின் முடிவு நற்குணம்."
+      },
+      {
+        quote_english: "Do good, be good and see good. Do everything with love.",
+        quote_tamil: "நன்மை செய், நல்லவனாக இரு, நன்மையை பார். எல்லாவற்றையும் அன்புடன் செய்."
+      }
+    ],
+    periyava: [
+      {
+        quote_english: "One must not keep a long face, wear a scowl or keep lamenting one's hardships.",
+        quote_tamil: "முகத்தை தொங்கவிட்டுக்கொண்டோ, கோபமான முகத்துடனோ, கஷ்டங்களை புலம்பியபடியோ இருக்கக்கூடாது."
+      },
+      {
+        quote_english: "If you lose your cool you will be a burden to yourself as well as to others.",
+        quote_tamil: "மனநிலையை இழந்தால், நீங்கள் உங்களுக்கும் மற்றவர்களுக்கும் சுமையாக மாறுவீர்கள்."
+      },
+      {
+        quote_english: "Develop the attitude that everything happens according to the will of the Lord.",
+        quote_tamil: "எல்லாம் இறைவனின் திருவுளப்படியே நடக்கிறது என்ற மனோபாவத்தை வளர்த்துக்கொள்ளுங்கள்."
+      },
+      {
+        quote_english: "Service to man is service to God.",
+        quote_tamil: "மனிதனுக்கு செய்யும் சேவையே இறைவனுக்கு செய்யும் சேவை."
+      },
+      {
+        quote_english: "A contented man is truly wealthy.",
+        quote_tamil: "திருப்தியுள்ளவனே உண்மையான செல்வந்தன்."
+      }
+    ]
+  };
+
+  async function fetchQuotes() {
+    try {
+      const { data, error } = await supabase
+        .from('quotes')
+        .select('guru, quote_english, quote_tamil');
+      
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        cachedQuotes.sai = data.filter(q => q.guru === 'sai');
+        cachedQuotes.periyava = data.filter(q => q.guru === 'periyava');
+        console.log(`Loaded ${cachedQuotes.sai.length} Sai and ${cachedQuotes.periyava.length} Periyava quotes from DB.`);
+      }
+    } catch (err) {
+      console.warn('Failed to load quotes from Supabase quotes table, using fallback:', err.message);
+    }
+  }
+
+  function displayRandomQuote(guru) {
+    const list = (cachedQuotes[guru] && cachedQuotes[guru].length > 0) 
+      ? cachedQuotes[guru] 
+      : fallbackQuotes[guru];
+      
+    const randomIdx = Math.floor(Math.random() * list.length);
+    const item = list[randomIdx];
+
+    if (quoteDisplayBox && quoteEnglish && quoteTamil && quoteSource) {
+      quoteDisplayBox.classList.add('hidden');
+      setTimeout(() => {
+        quoteEnglish.textContent = `"${item.quote_english}"`;
+        quoteTamil.textContent = `தமிழ் அர்த்தம்: ${item.quote_tamil}`;
+        quoteSource.textContent = guru === 'sai' ? '— Sathya Sai Baba' : '— Maha Periyava';
+        
+        quoteDisplayBox.classList.remove('hidden');
+        quoteDisplayBox.style.animation = 'none';
+        void quoteDisplayBox.offsetWidth; // Trigger reflow
+        quoteDisplayBox.style.animation = 'fadeIn 0.4s ease';
+      }, 100);
+    }
+  }
+
+  getSaiQuoteBtn?.addEventListener('click', () => displayRandomQuote('sai'));
+  getPeriyavaQuoteBtn?.addEventListener('click', () => displayRandomQuote('periyava'));
+
+  // Run quotes setup
+  fetchQuotes();
+
 });
