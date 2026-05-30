@@ -259,45 +259,80 @@ document.addEventListener('DOMContentLoaded', () => {
   loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const identifier = document.getElementById('loginIdentifier').value.trim();
-    
-    // Admin check
-    if (identifier === 'saiadmin') {
-      const pwd = prompt('Enter Admin Password:');
-      if (pwd === 'Sai@1926@@') {
-        localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin' }));
-        window.location.href = 'dashboard.html';
-      } else {
-        alert('Invalid admin credentials.');
-      }
-      return;
-    }
 
     if (!identifier) return alert('Enter phone number or email.');
 
-    const isEmail = identifier.includes('@');
-    let query = supabase.from('members').select('id, fname, lname, member_id, phone, email');
-    
-    if (isEmail) {
-      query = query.eq('email', identifier);
-    } else {
-      query = query.eq('phone', identifier);
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Signing in...';
+    submitBtn.disabled = true;
+
+    try {
+      const isEmail = identifier.includes('@');
+
+      if (isEmail) {
+        // ── Email path: try Supabase Auth sign-in with password ──────────────
+        const pwd = prompt('Enter your password:');
+        if (!pwd) {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          return;
+        }
+
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email: identifier,
+          password: pwd
+        });
+
+        if (authError) {
+          alert('Invalid email or password. Please try again.');
+          return;
+        }
+
+        // Check if this user is an admin
+        const { data: adminRecord } = await supabase
+          .from('site_admins')
+          .select('email')
+          .eq('email', identifier)
+          .maybeSingle();
+
+        if (adminRecord) {
+          // ✅ Admin verified via Supabase Auth + site_admins table
+          localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin', identifier }));
+        } else {
+          // ✅ Regular member via Supabase Auth
+          localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
+        }
+
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      // ── Phone path: look up member by phone ──────────────────────────────
+      const { data, error } = await supabase
+        .from('members')
+        .select('id, fname, lname, member_id, phone, email')
+        .eq('phone', identifier)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Supabase login check error:', error);
+        alert('Error checking account. Please try again.');
+        return;
+      }
+
+      if (!data) {
+        alert('Account not registered. Please sign up first.');
+        return;
+      }
+
+      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
+      window.location.href = 'dashboard.html';
+
+    } finally {
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
     }
-
-    const { data, error } = await query.maybeSingle();
-
-    if (error) {
-      console.error('Supabase login check error:', error);
-      alert('Error checking account. Please try again.');
-      return;
-    }
-
-    if (!data) {
-      alert('Account not registered. Please sign up first.');
-      return;
-    }
-
-    localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
-    window.location.href = 'dashboard.html';
   });
 });
 </script>
