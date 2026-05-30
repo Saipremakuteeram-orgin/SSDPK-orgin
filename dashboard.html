@@ -454,6 +454,20 @@
             <input type="text" id="eventVenue" placeholder="Venue" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
           </div>
           <textarea id="eventDesc" placeholder="Event Description" required rows="2" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; margin-bottom:12px; background:var(--surface); color:var(--fg);"></textarea>
+          
+          <!-- Event Brochure Flyer Image Upload -->
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px; color:var(--fg);">Event Brochure Flyer (Image, Optional)</label>
+            <input type="file" id="eventBrochureInput" accept="image/*" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="hidden" id="eventBrochureUrl">
+            <input type="hidden" id="eventBrochurePath">
+            <div id="eventBrochurePreviewContainer" class="hidden" style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:12px; color:var(--muted);">Current brochure:</span>
+              <a id="eventBrochureLink" href="#" target="_blank" style="font-size:12px; color:var(--accent); font-weight:600; text-decoration:underline;">View flyer</a>
+              <button type="button" id="removeEventBrochureBtn" class="btn" style="padding:2px 8px; font-size:11px; background:#d9534f; border-color:#d9534f; color:#fff; cursor:pointer;">Remove</button>
+            </div>
+          </div>
+
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
             <input type="text" id="eventCoord" placeholder="Coordinator Name" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
             <input type="tel" id="eventContact" placeholder="Contact Number" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">

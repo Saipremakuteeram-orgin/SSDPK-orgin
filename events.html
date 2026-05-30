@@ -872,6 +872,27 @@
     var d = parseInt(dateParts[2]);
     var formattedDate = MONTH_NAMES[m] + " " + d + ", " + y;
 
+    var descText = evt.description || '';
+    var brochureUrl = '';
+    var brochurePath = '';
+    if (descText.includes('|||')) {
+      var parts = descText.split('|||');
+      descText = parts[0].trim();
+      brochureUrl = parts[1] ? parts[1].trim() : '';
+      brochurePath = parts[2] ? parts[2].trim() : '';
+    }
+
+    var brochureHtml = '';
+    if (brochureUrl) {
+      brochureHtml = 
+        '<div style="margin: 20px 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">' +
+          '<div style="background: var(--accent-light); padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-dark); border-bottom: 1px solid var(--border);">Event Brochure / Flyer</div>' +
+          '<a href="' + brochureUrl + '" target="_blank" title="Click to view full size">' +
+            '<img src="' + brochureUrl + '" style="width: 100%; height: auto; display: block;" alt="Event Brochure">' +
+          '</a>' +
+        '</div>';
+    }
+
     drawerBody.innerHTML = 
       '<span class="drawer-category-badge ' + badgeClass + '">' + badgeText + '</span>' +
       '<h3 class="drawer-event-title">' + evt.title + '</h3>' +
@@ -898,7 +919,8 @@
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="drawer-description">' + evt.description + '</div>' +
+      '<div class="drawer-description">' + descText + '</div>' +
+      brochureHtml +
       '<div id="eventPhotos_' + evt.id + '"></div>' +
       '<div class="drawer-coordinator-card">' +
         '<h4>Event Coordinator</h4>' +
@@ -961,6 +983,27 @@
     var d = parseInt(dateParts[2]);
     var formattedDate = MONTH_NAMES[m] + " " + d + ", " + y;
 
+    var descText = evt.description || '';
+    var brochureUrl = '';
+    var brochurePath = '';
+    if (descText.includes('|||')) {
+      var parts = descText.split('|||');
+      descText = parts[0].trim();
+      brochureUrl = parts[1] ? parts[1].trim() : '';
+      brochurePath = parts[2] ? parts[2].trim() : '';
+    }
+
+    var brochureHtml = '';
+    if (brochureUrl) {
+      brochureHtml = 
+        '<div style="margin: 20px 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">' +
+          '<div style="background: var(--accent-light); padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-dark); border-bottom: 1px solid var(--border);">Event Brochure / Flyer</div>' +
+          '<a href="' + brochureUrl + '" target="_blank" title="Click to view full size">' +
+            '<img src="' + brochureUrl + '" style="width: 100%; height: auto; display: block;" alt="Event Brochure">' +
+          '</a>' +
+        '</div>';
+    }
+
     modalBody.innerHTML = 
       '<span class="drawer-category-badge ' + badgeClass + '">' + badgeText + '</span>' +
       '<h3 class="drawer-event-title" style="font-size:28px;">' + evt.title + '</h3>' +
@@ -987,7 +1030,8 @@
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="drawer-description" style="font-size:16px;">' + evt.description + '</div>' +
+      '<div class="drawer-description" style="font-size:16px;">' + descText + '</div>' +
+      brochureHtml +
       '<div id="modalPhotos_' + evt.id + '"></div>' +
       '<div class="drawer-coordinator-card">' +
         '<h4>Event Coordinator</h4>' +

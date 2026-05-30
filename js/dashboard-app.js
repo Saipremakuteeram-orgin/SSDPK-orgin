@@ -270,6 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
   showAddEventBtn?.addEventListener('click', () => {
     addEventForm.reset();
     document.getElementById('eventIdInput').value = '';
+    document.getElementById('eventBrochureUrl').value = '';
+    document.getElementById('eventBrochurePath').value = '';
+    document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
     addEventForm.classList.remove('hidden');
     showAddEventBtn.classList.add('hidden');
   });
@@ -277,6 +280,13 @@ document.addEventListener('DOMContentLoaded', () => {
   cancelEventBtn?.addEventListener('click', () => {
     addEventForm.classList.add('hidden');
     showAddEventBtn.classList.remove('hidden');
+  });
+
+  document.getElementById('removeEventBrochureBtn')?.addEventListener('click', () => {
+    document.getElementById('eventBrochureUrl').value = '';
+    document.getElementById('eventBrochurePath').value = '';
+    document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
+    document.getElementById('eventBrochureInput').value = '';
   });
 
   async function renderAdminEvents() {
@@ -320,7 +330,32 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('eventDate').value = evt.date;
         document.getElementById('eventTime').value = evt.time || '';
         document.getElementById('eventVenue').value = evt.venue || '';
-        document.getElementById('eventDesc').value = evt.description || '';
+        
+        let descText = evt.description || '';
+        let brochureUrl = '';
+        let brochurePath = '';
+        if (descText.includes('|||')) {
+          const parts = descText.split('|||');
+          descText = parts[0].trim();
+          brochureUrl = parts[1] ? parts[1].trim() : '';
+          brochurePath = parts[2] ? parts[2].trim() : '';
+        }
+        document.getElementById('eventDesc').value = descText;
+        document.getElementById('eventBrochureUrl').value = brochureUrl;
+        document.getElementById('eventBrochurePath').value = brochurePath;
+        document.getElementById('eventBrochureInput').value = '';
+
+        const previewContainer = document.getElementById('eventBrochurePreviewContainer');
+        const brochureLink = document.getElementById('eventBrochureLink');
+        if (previewContainer && brochureLink) {
+          if (brochureUrl) {
+            brochureLink.href = brochureUrl;
+            previewContainer.classList.remove('hidden');
+          } else {
+            previewContainer.classList.add('hidden');
+          }
+        }
+
         document.getElementById('eventCoord').value = evt.coordinator || '';
         document.getElementById('eventContact').value = evt.contact || '';
         addEventForm.classList.remove('hidden');
@@ -332,6 +367,15 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', async (e) => {
         if (confirm('Are you sure you want to delete this event?')) {
           const id = e.target.getAttribute('data-id');
+          // Fetch event details to see if it has a brochure path
+          const { data: eventData } = await supabase.from('events').select('description').eq('id', id).single();
+          if (eventData && eventData.description && eventData.description.includes('|||')) {
+            const parts = eventData.description.split('|||');
+            const brochurePath = parts[2] ? parts[2].trim() : '';
+            if (brochurePath) {
+              await supabase.storage.from('gallery-images').remove([brochurePath]);
+            }
+          }
           const { error } = await supabase.from('events').delete().eq('id', id);
           if (error) { alert('Delete failed: ' + error.message); return; }
           renderAdminEvents();
@@ -343,52 +387,110 @@ document.addEventListener('DOMContentLoaded', () => {
   addEventForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const idInput = document.getElementById('eventIdInput').value;
+    const saveBtn = addEventForm.querySelector('button[type="submit"]');
+    const originalBtnText = saveBtn.textContent;
+    saveBtn.textContent = 'Saving...';
+    saveBtn.disabled = true;
 
-    const evtData = {
-      title: document.getElementById('eventTitle').value,
-      category: document.getElementById('eventCategory').value,
-      date: document.getElementById('eventDate').value,
-      time: document.getElementById('eventTime').value,
-      venue: document.getElementById('eventVenue').value,
-      description: document.getElementById('eventDesc').value,
-      coordinator: document.getElementById('eventCoord').value,
-      contact: document.getElementById('eventContact').value
-    };
+    try {
+      let brochureUrl = document.getElementById('eventBrochureUrl').value || '';
+      let brochurePath = document.getElementById('eventBrochurePath').value || '';
+      const brochureFile = document.getElementById('eventBrochureInput').files[0];
 
-    let error;
-    if (idInput) {
-      ({ error } = await supabase.from('events').update(evtData).eq('id', idInput));
-    } else {
-      const { data: insertedData, error: insertError } = await supabase.from('events').insert([evtData]).select();
-      error = insertError;
-      if (!error && insertedData && insertedData.length > 0) {
-        const newEvent = insertedData[0];
-        // Fetch all registered user emails
-        const { data: users, error: usersError } = await supabase
-          .from('members')
-          .select('email')
-          .not('email', 'is', null);
-
-        if (!usersError && users && users.length > 0) {
-          const emails = users.map(u => u.email).filter(Boolean);
-          if (emails.length > 0) {
-            // Trigger Vercel function to notify users
-            fetch('/api/notify-event', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ event: newEvent, emails })
-            }).catch(err => console.error('Failed to send event notifications:', err));
+      // If editing, check if we need to clean up old brochure from storage
+      if (idInput) {
+        const { data: oldEvt } = await supabase.from('events').select('description').eq('id', idInput).single();
+        if (oldEvt && oldEvt.description && oldEvt.description.includes('|||')) {
+          const parts = oldEvt.description.split('|||');
+          const oldPath = parts[2] ? parts[2].trim() : '';
+          // Delete if a new flyer is uploaded OR if current brochure was removed
+          if (oldPath && (brochureFile || !brochureUrl)) {
+            await supabase.storage.from('gallery-images').remove([oldPath]);
+            if (!brochureFile) {
+              brochureUrl = '';
+              brochurePath = '';
+            }
           }
         }
       }
+
+      if (brochureFile) {
+        const compressedBlob = await compressImage(brochureFile, 1200, 0.75);
+        const fileName = `${Date.now()}_brochure_${brochureFile.name.replace(/\s+/g, '_')}`;
+        brochurePath = `event-brochures/${fileName}`;
+
+        const { error: storageError } = await supabase.storage
+          .from('gallery-images')
+          .upload(brochurePath, compressedBlob, { contentType: 'image/jpeg', upsert: false });
+
+        if (!storageError) {
+          const { data: urlData } = supabase.storage.from('gallery-images').getPublicUrl(brochurePath);
+          brochureUrl = urlData?.publicUrl || '';
+        } else {
+          console.error('Storage upload failed:', storageError.message);
+        }
+      }
+
+      const descInput = document.getElementById('eventDesc').value.trim();
+      const finalDesc = brochureUrl ? `${descInput} ||| ${brochureUrl} ||| ${brochurePath}` : descInput;
+
+      const evtData = {
+        title: document.getElementById('eventTitle').value,
+        category: document.getElementById('eventCategory').value,
+        date: document.getElementById('eventDate').value,
+        time: document.getElementById('eventTime').value,
+        venue: document.getElementById('eventVenue').value,
+        description: finalDesc,
+        coordinator: document.getElementById('eventCoord').value,
+        contact: document.getElementById('eventContact').value
+      };
+
+      let error;
+      if (idInput) {
+        ({ error } = await supabase.from('events').update(evtData).eq('id', idInput));
+      } else {
+        const { data: insertedData, error: insertError } = await supabase.from('events').insert([evtData]).select();
+        error = insertError;
+        if (!error && insertedData && insertedData.length > 0) {
+          const newEvent = insertedData[0];
+          // Fetch all registered user emails
+          const { data: users, error: usersError } = await supabase
+            .from('members')
+            .select('email')
+            .not('email', 'is', null);
+
+          if (!usersError && users && users.length > 0) {
+            const emails = users.map(u => u.email).filter(Boolean);
+            if (emails.length > 0) {
+              // Trigger Vercel function to notify users
+              fetch('/api/notify-event', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ event: newEvent, emails })
+              }).catch(err => console.error('Failed to send event notifications:', err));
+            }
+          }
+        }
+      }
+
+      if (error) { 
+        alert('Save failed: ' + error.message); 
+      } else {
+        addEventForm.reset();
+        document.getElementById('eventBrochureUrl').value = '';
+        document.getElementById('eventBrochurePath').value = '';
+        document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
+        addEventForm.classList.add('hidden');
+        showAddEventBtn.classList.remove('hidden');
+        renderAdminEvents();
+      }
+    } catch (err) {
+      console.error('Error saving event:', err);
+      alert('An error occurred during save.');
+    } finally {
+      saveBtn.textContent = originalBtnText;
+      saveBtn.disabled = false;
     }
-
-    if (error) { alert('Save failed: ' + error.message); return; }
-
-    addEventForm.reset();
-    addEventForm.classList.add('hidden');
-    showAddEventBtn.classList.remove('hidden');
-    renderAdminEvents();
   });
 
   // ============================================================
