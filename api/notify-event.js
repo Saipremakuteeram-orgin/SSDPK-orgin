@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
   }
 
   const fromEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev';
-  const siteUrl = req.headers.origin || 'https://sspk.org';
+  const siteUrl = req.headers.origin || 'https://saidharmasamrakshanapremakuteeram.qzz.io';
   const eventLink = `${siteUrl}/events?id=${event.id}`;
 
   const categoryLabels = {

@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
               <p>With your new digital account, you can access your digital membership card, keep track of upcoming bhajans, study circles, and volunteer for community seva activities.</p>
               <p>To view your digital membership card, simply log in to your dashboard:</p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${req.headers.origin || 'https://sspk.org'}/login.html" style="background-color: #e8954a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Go to Dashboard</a>
+                <a href="${req.headers.origin || 'https://saidharmasamrakshanapremakuteeram.qzz.io'}/login.html" style="background-color: #e8954a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Go to Dashboard</a>
               </div>
               <p>If you have any questions or would like to volunteer for our active projects, feel free to reply directly to this email.</p>
             </div>

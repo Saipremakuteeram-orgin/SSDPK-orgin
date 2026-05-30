@@ -348,7 +348,7 @@ async def menu_callback_handler(update: Update, context: ContextTypes.DEFAULT_TY
             "📍 *Address:*\nSri Sathya Sai Prema Kuteeram,\nKancheepuram, Tamil Nadu, India\n\n"
             "📞 *Phone Support:* +91-9876543210\n"
             "✉ *Email:* support@sspk.org\n\n"
-            "🌐 *Website:* [Sathya Sai Portal](https://sspk.org)\n\n"
+            "🌐 *Website:* [Sathya Sai Portal](https://saidharmasamrakshanapremakuteeram.qzz.io)\n\n"
             "_Feel free to visit us during bhajans or community seva drives!_"
         )
         keyboard = [[InlineKeyboardButton("⬅ Back to Menu", callback_data="menu_main")]]
@@ -429,7 +429,7 @@ async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYP
                         caption=(
                             f"🙏 *{caption}*\n"
                             f"📂 SSPK Gallery: {emoji} {category.title()}\n"
-                            f"🌐 Visit: [Sathya Sai Portal](https://sspk.org)"
+                            f"🌐 Visit: [Sathya Sai Portal](https://saidharmasamrakshanapremakuteeram.qzz.io)"
                         ),
                         parse_mode="Markdown"
                     )
