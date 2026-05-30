@@ -112,15 +112,6 @@
       </a>
     </div>
 
-    <!-- Filter -->
-    <div class="gallery-filter">
-      <button class="active" data-filter="all">All</button>
-      <button data-filter="bhajan">Bhajans</button>
-      <button data-filter="seva">Seva</button>
-      <button data-filter="study">Study Circles</button>
-      <button data-filter="celebration">Celebrations</button>
-    </div>
-
     <!-- Grid -->
     <div class="gallery-grid" id="galleryGrid">
       <!-- Rendered dynamically from localStorage via JavaScript -->
@@ -203,16 +194,7 @@
     data.forEach(function(item) {
       var div = document.createElement('div');
       div.className = 'gallery-item';
-      div.setAttribute('data-category', item.category);
       div.setAttribute('data-caption', item.caption);
-
-      var badgeText = item.category;
-      if (badgeText === 'study') badgeText = 'Study Circle';
-      else if (badgeText === 'bhajan') badgeText = 'Bhajan';
-      else if (badgeText === 'seva') badgeText = 'Seva';
-      else if (badgeText === 'celebration') badgeText = 'Celebration';
-
-      var badgeHtml = '<span class="drawer-category-badge badge-' + item.category + '" style="position: absolute; top: 12px; left: 12px; z-index: 10; margin-bottom: 0; font-size: 10px; padding: 4px 10px;">' + badgeText + '</span>';
 
       var captionText = item.caption;
       if (item.events && item.events.title) {
@@ -223,9 +205,9 @@
         div.style.backgroundImage = 'url(' + item.src_url + ')';
         div.style.backgroundSize = 'cover';
         div.style.backgroundPosition = 'center';
-        div.innerHTML = badgeHtml + '<div class="gallery-caption">' + captionText + '</div>';
+        div.innerHTML = '<div class="gallery-caption">' + captionText + '</div>';
       } else {
-        div.innerHTML = badgeHtml + '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + captionText + '</div>';
+        div.innerHTML = '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + captionText + '</div>';
       }
       if (grid) grid.appendChild(div);
     });
@@ -237,27 +219,6 @@
       countEl.textContent = data.length + ' photo(s) in gallery';
       indicator.style.display = '';
     }
-    // Re-attach filter after items are rendered
-    attachFilter();
-  }
-
-  function attachFilter() {
-    var filters = document.querySelectorAll('.gallery-filter button');
-    var items = document.querySelectorAll('.gallery-item');
-    filters.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        filters.forEach(function(b) { b.classList.remove('active'); });
-        this.classList.add('active');
-        var cat = this.getAttribute('data-filter');
-        items.forEach(function(item) {
-          if (cat === 'all' || item.getAttribute('data-category') === cat) {
-            item.style.display = '';
-          } else {
-            item.style.display = 'none';
-          }
-        });
-      });
-    });
   }
 
   loadGallery();

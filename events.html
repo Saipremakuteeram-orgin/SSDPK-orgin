@@ -208,6 +208,9 @@
     letter-spacing: 0.08em;
     border-radius: 20px;
     margin-bottom: 18px;
+    background: var(--surface);
+    color: var(--fg);
+    border: 1px solid var(--border);
   }
   .badge-bhajan { background: oklch(95% 0.03 140); color: oklch(45% 0.1 140); border: 1px solid oklch(85% 0.06 140); }
   .badge-seva { background: var(--accent-light); color: var(--accent-dark); border: 1px solid var(--border); }
@@ -814,8 +817,11 @@
         else if (badgeText === 'bhajan') badgeText = 'Bhajan';
         else if (badgeText === 'seva') badgeText = 'Seva';
         else if (badgeText === 'celebration') badgeText = 'Celebration';
+        else if (badgeText) {
+          badgeText = badgeText.charAt(0).toUpperCase() + badgeText.slice(1);
+        }
 
-        var badgeClass = 'badge-' + evt.category;
+        var badgeClass = 'badge-' + (evt.category ? evt.category.toLowerCase().replace(/\s+/g, '-') : 'general');
         catTd.innerHTML = '<span class="drawer-category-badge ' + badgeClass + '" style="margin-bottom:0;">' + badgeText + '</span>';
 
         var infoTd = document.createElement('td');
@@ -854,6 +860,11 @@
     else if (badgeText === 'bhajan') badgeText = 'Bhajan';
     else if (badgeText === 'seva') badgeText = 'Seva';
     else if (badgeText === 'celebration') badgeText = 'Celebration';
+    else if (badgeText) {
+      badgeText = badgeText.charAt(0).toUpperCase() + badgeText.slice(1);
+    }
+
+    var badgeClass = 'badge-' + (evt.category ? evt.category.toLowerCase().replace(/\s+/g, '-') : 'general');
 
     var dateParts = evt.date.split('-');
     var y = parseInt(dateParts[0]);
@@ -862,7 +873,7 @@
     var formattedDate = MONTH_NAMES[m] + " " + d + ", " + y;
 
     drawerBody.innerHTML = 
-      '<span class="drawer-category-badge badge-' + evt.category + '">' + badgeText + '</span>' +
+      '<span class="drawer-category-badge ' + badgeClass + '">' + badgeText + '</span>' +
       '<h3 class="drawer-event-title">' + evt.title + '</h3>' +
       '<div class="drawer-meta-section">' +
         '<div class="drawer-meta-item">' +
@@ -938,6 +949,11 @@
     else if (badgeText === 'bhajan') badgeText = 'Bhajan';
     else if (badgeText === 'seva') badgeText = 'Seva';
     else if (badgeText === 'celebration') badgeText = 'Celebration';
+    else if (badgeText) {
+      badgeText = badgeText.charAt(0).toUpperCase() + badgeText.slice(1);
+    }
+
+    var badgeClass = 'badge-' + (evt.category ? evt.category.toLowerCase().replace(/\s+/g, '-') : 'general');
 
     var dateParts = evt.date.split('-');
     var y = parseInt(dateParts[0]);
@@ -946,7 +962,7 @@
     var formattedDate = MONTH_NAMES[m] + " " + d + ", " + y;
 
     modalBody.innerHTML = 
-      '<span class="drawer-category-badge badge-' + evt.category + '">' + badgeText + '</span>' +
+      '<span class="drawer-category-badge ' + badgeClass + '">' + badgeText + '</span>' +
       '<h3 class="drawer-event-title" style="font-size:28px;">' + evt.title + '</h3>' +
       '<div class="drawer-meta-section">' +
         '<div class="drawer-meta-item">' +

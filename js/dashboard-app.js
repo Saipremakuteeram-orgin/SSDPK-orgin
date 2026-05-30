@@ -140,9 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================================================
   // ADMIN DASHBOARD
   // ============================================================
-  function renderAdminDashboard() {
+  async function renderAdminDashboard() {
+    await loadCategories();
     renderAdminUsers();
     renderAdminEvents();
+    renderAdminCategories();
     renderAdminGallery();
     populateGalleryEventDropdown();
   }
@@ -311,6 +313,98 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ============================================================
+  // CATEGORIES CACHE & CRUD
+  // ============================================================
+  let CATEGORIES_DB = [];
+
+  async function loadCategories() {
+    try {
+      const { data, error } = await supabase
+        .from('event_categories')
+        .select('*')
+        .order('name', { ascending: true });
+      if (!error && data && data.length > 0) {
+        CATEGORIES_DB = data;
+      } else {
+        console.warn('Empty or failed event_categories select, using fallbacks:', error?.message);
+        CATEGORIES_DB = [{ name: 'Bhajans' }, { name: 'Seva' }, { name: 'Study Circle' }];
+      }
+    } catch (err) {
+      console.warn('Failed to load categories, using fallbacks:', err);
+      CATEGORIES_DB = [{ name: 'Bhajans' }, { name: 'Seva' }, { name: 'Study Circle' }];
+    }
+  }
+
+  function populateEventCategoryDropdown() {
+    const categorySelect = document.getElementById('eventCategory');
+    if (!categorySelect) return;
+    categorySelect.innerHTML = '';
+    CATEGORIES_DB.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat.name.toLowerCase();
+      opt.textContent = cat.name;
+      categorySelect.appendChild(opt);
+    });
+  }
+
+  async function renderAdminCategories() {
+    const categoryListEl = document.getElementById('adminCategoryList');
+    if (!categoryListEl) return;
+    
+    // Populate event category choices
+    populateEventCategoryDropdown();
+
+    if (CATEGORIES_DB.length === 0) {
+      categoryListEl.innerHTML = '<p class="text-muted" style="font-size:13px; width:100%;">No categories found.</p>';
+      return;
+    }
+
+    categoryListEl.innerHTML = '';
+    CATEGORIES_DB.forEach(cat => {
+      const span = document.createElement('span');
+      span.style = 'display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:20px; background:var(--accent-light); color:var(--accent-dark); border:1px solid var(--accent); font-size:12px; font-weight:600;';
+      span.innerHTML = `
+        ${cat.name}
+        <button class="del-cat-btn" data-id="${cat.id}" data-name="${cat.name}" style="background:none; border:none; color:var(--accent-dark); font-weight:bold; font-size:14px; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; line-height:1;">&times;</button>
+      `;
+      categoryListEl.appendChild(span);
+    });
+
+    document.querySelectorAll('.del-cat-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const id = e.target.getAttribute('data-id');
+        const name = e.target.getAttribute('data-name');
+        if (confirm(`Are you sure you want to delete the category "${name}"? Events matching this category will remain, but the category option will be removed.`)) {
+          const { error } = await supabase.from('event_categories').delete().eq('id', id);
+          if (error) { alert('Delete failed: ' + error.message); return; }
+          await loadCategories();
+          renderAdminCategories();
+        }
+      });
+    });
+  }
+
+  // Handle category creation
+  const addCategoryForm = document.getElementById('addCategoryForm');
+  addCategoryForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('newCategoryName');
+    const name = nameInput.value.trim();
+    if (!name) return;
+
+    const { error } = await supabase.from('event_categories').insert([{ name }]);
+    if (error) {
+      alert('Failed to create category: ' + error.message);
+      return;
+    }
+
+    nameInput.value = '';
+    await loadCategories();
+    renderAdminCategories();
+  });
+
+  // ============================================================
   // GALLERY MANAGEMENT (Supabase Storage + table)
   // ============================================================
   const addGalleryForm = document.getElementById('addGalleryForm');
@@ -344,14 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Auto-sync category dropdown when event is selected
-  document.getElementById('galleryEventSelect')?.addEventListener('change', (e) => {
-    const selectedOption = e.target.options[e.target.selectedIndex];
-    const category = selectedOption.getAttribute('data-category');
-    if (category) {
-      document.getElementById('galleryCategory').value = category;
-    }
-  });
+  // Selected event auto-sync details if any (currently category auto-sync removed)
 
   async function renderAdminGallery() {
     if (!adminGalleryList) return;
@@ -403,7 +490,15 @@ document.addEventListener('DOMContentLoaded', () => {
   addGalleryForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const file = document.getElementById('galleryImageInput').files[0];
-    const category = document.getElementById('galleryCategory').value;
+    
+    // Compute category from selected event, or default to general
+    const eventSelect = document.getElementById('galleryEventSelect');
+    let category = 'general';
+    if (eventSelect && eventSelect.value) {
+      const selectedOption = eventSelect.options[eventSelect.selectedIndex];
+      category = selectedOption.getAttribute('data-category') || 'general';
+    }
+
     const caption = document.getElementById('galleryCaption').value;
     if (!file) return;
 

@@ -402,19 +402,29 @@
         </div>
       </div>
 
+      <!-- Category Management Panel -->
+      <div class="admin-panel">
+        <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Category Management</h3>
+        <form id="addCategoryForm" style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom: 20px;">
+          <h4 style="margin-bottom:12px; font-weight:600;">Create Event Category</h4>
+          <div style="display:flex; gap:12px; margin-bottom:12px;">
+            <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Celebrations)" required class="input-group input" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <button type="submit" class="btn btn-primary" style="padding:6px 14px; font-size:13px;">Create Category</button>
+          </div>
+        </form>
+        
+        <div id="adminCategoryList" style="display:flex; flex-wrap:wrap; gap:8px;">
+          <!-- Dynamic category list -->
+        </div>
+      </div>
+
       <!-- Gallery Management Panel -->
       <div class="admin-panel">
         <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Gallery Management</h3>
         <form id="addGalleryForm" style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom: 20px;">
           <h4 style="margin-bottom:12px; font-weight:600;">Upload New Image</h4>
-          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
             <input type="file" id="galleryImageInput" accept="image/*" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
-            <select id="galleryCategory" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
-              <option value="bhajan">Bhajan</option>
-              <option value="seva">Seva</option>
-              <option value="study">Study Circle</option>
-              <option value="celebration">Celebration</option>
-            </select>
             <select id="galleryEventSelect" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
               <option value="">-- Link to Event (Optional) --</option>
             </select>
