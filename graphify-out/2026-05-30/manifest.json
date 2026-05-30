@@ -1,0 +1,67 @@
+{
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\bot.py": {
+    "mtime": 1780148491.6048436,
+    "ast_hash": "e4ba469c2ee4e3034a9b746e5399c541",
+    "semantic_hash": "e4ba469c2ee4e3034a9b746e5399c541"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\dev_server.py": {
+    "mtime": 1780140980.651475,
+    "ast_hash": "7bbf3653b73f80c04e2e5919857dd561",
+    "semantic_hash": "7bbf3653b73f80c04e2e5919857dd561"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\supabase_setup.sql": {
+    "mtime": 1779794281.2483382,
+    "ast_hash": "977ca2de4d89ea61ed8255d1c6998e18",
+    "semantic_hash": "977ca2de4d89ea61ed8255d1c6998e18"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\vercel.json": {
+    "mtime": 1780148110.2692187,
+    "ast_hash": "0b0e5ffbf59553645b5b5ffb70a925e2",
+    "semantic_hash": "0b0e5ffbf59553645b5b5ffb70a925e2"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\api\\config.js": {
+    "mtime": 1779773986.1545072,
+    "ast_hash": "d7fca32ac87dfb94d4de84e2c6665d05",
+    "semantic_hash": "d7fca32ac87dfb94d4de84e2c6665d05"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\api\\notify-event.js": {
+    "mtime": 1780148512.5896595,
+    "ast_hash": "7491bede94eaaf6793bb2d12811fb3cf",
+    "semantic_hash": "7491bede94eaaf6793bb2d12811fb3cf"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\api\\send-welcome.js": {
+    "mtime": 1780148503.7484899,
+    "ast_hash": "155517b840ad6b5ebcc58a7a9dbe985c",
+    "semantic_hash": "155517b840ad6b5ebcc58a7a9dbe985c"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\js\\chatbot.js": {
+    "mtime": 1780134246.63562,
+    "ast_hash": "550c1a1d4a7d43c64a0ce68debf80236",
+    "semantic_hash": "550c1a1d4a7d43c64a0ce68debf80236"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\js\\dashboard-app.js": {
+    "mtime": 1780151736.9535463,
+    "ast_hash": "22ca141021e21b72ac812d3b15422127",
+    "semantic_hash": "22ca141021e21b72ac812d3b15422127"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\js\\main.js": {
+    "mtime": 1780148561.1265645,
+    "ast_hash": "b11cd2bd3eec08783eb6e1066ae7e94b",
+    "semantic_hash": "b11cd2bd3eec08783eb6e1066ae7e94b"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\js\\supabase-client.js": {
+    "mtime": 1780133390.8193448,
+    "ast_hash": "66197827bd4bf54cbcadfea308ab0e41",
+    "semantic_hash": "66197827bd4bf54cbcadfea308ab0e41"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\quote\\admin_setup.sql": {
+    "mtime": 1780149545.4087143,
+    "ast_hash": "f40bde95e9bb0199a2ae593843361b7e",
+    "semantic_hash": "f40bde95e9bb0199a2ae593843361b7e"
+  },
+  "C:\\Users\\sk143\\Downloads\\sathya-sai-webiste_new\\quote\\quotes_setup.sql": {
+    "mtime": 1780146617.699424,
+    "ast_hash": "d22937ea45b05b9224b3e5872c32bc9b",
+    "semantic_hash": "d22937ea45b05b9224b3e5872c32bc9b"
+  }
+}

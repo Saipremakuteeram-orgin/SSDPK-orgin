@@ -1,0 +1,304 @@
+{
+  "communities": {
+    "0": [
+      "js_dashboard_app_checkauthstate",
+      "js_dashboard_app_compressimage",
+      "js_dashboard_app_displayrandomquote",
+      "js_dashboard_app_fetchquotes",
+      "js_dashboard_app_formatjoineddate",
+      "js_dashboard_app_getlimitdata",
+      "js_dashboard_app_js",
+      "js_dashboard_app_loadcategories",
+      "js_dashboard_app_populateeventcategorydropdown",
+      "js_dashboard_app_populategalleryeventdropdown",
+      "js_dashboard_app_renderadmincategories",
+      "js_dashboard_app_renderadmindashboard",
+      "js_dashboard_app_renderadminevents",
+      "js_dashboard_app_renderadmingallery",
+      "js_dashboard_app_renderadminusers",
+      "js_dashboard_app_renderlimitui",
+      "js_dashboard_app_rendermembershipcard",
+      "js_dashboard_app_showview",
+      "js_dashboard_app_updatelimitdata"
+    ],
+    "1": [
+      "bool",
+      "bytes",
+      "sathya_sai_webiste_new_bot_addgallery_receive_caption",
+      "sathya_sai_webiste_new_bot_ask_gemini",
+      "sathya_sai_webiste_new_bot_get_sai_quote",
+      "sathya_sai_webiste_new_bot_rationale_133",
+      "sathya_sai_webiste_new_bot_rationale_148",
+      "sathya_sai_webiste_new_bot_rationale_157",
+      "sathya_sai_webiste_new_bot_rationale_174",
+      "sathya_sai_webiste_new_bot_rationale_718",
+      "sathya_sai_webiste_new_bot_save_gallery_record",
+      "sathya_sai_webiste_new_bot_upload_to_supabase_storage",
+      "str"
+    ],
+    "2": [
+      "about_html",
+      "dashboard_html",
+      "events_html",
+      "gallery_html",
+      "index_html",
+      "js_supabase_client_loaddynamicsupabaseconfig",
+      "login_html",
+      "maha_periyava",
+      "sathya_sai_baba",
+      "signup_html",
+      "sspk_trust",
+      "supabase_client_js"
+    ],
+    "3": [
+      "concept_ahimsa",
+      "concept_dharma",
+      "concept_love_and_service",
+      "google_generative_ai",
+      "kanchi_kamakoti_peetham",
+      "kanchi_maha_periyava_100_quotes_txt",
+      "sathya_sai_baba_100_quotes_txt",
+      "sathya_sai_baba_png"
+    ],
+    "4": [
+      "sathya_sai_webiste_new_bot_events_command",
+      "sathya_sai_webiste_new_bot_gallery_callback",
+      "sathya_sai_webiste_new_bot_handle_media",
+      "sathya_sai_webiste_new_bot_rationale_524",
+      "sathya_sai_webiste_new_bot_rationale_587",
+      "sathya_sai_webiste_new_bot_rationale_781",
+      "update"
+    ],
+    "5": [
+      "application",
+      "bot_py",
+      "sathya_sai_webiste_new_bot_help_command",
+      "sathya_sai_webiste_new_bot_main",
+      "sathya_sai_webiste_new_bot_post_init",
+      "sathya_sai_webiste_new_bot_rationale_486",
+      "sathya_sai_webiste_new_bot_rationale_806"
+    ],
+    "6": [
+      "inlinekeyboardmarkup",
+      "sathya_sai_webiste_new_bot_gallery_command",
+      "sathya_sai_webiste_new_bot_get_main_menu_keyboard",
+      "sathya_sai_webiste_new_bot_menu_callback_handler",
+      "sathya_sai_webiste_new_bot_rationale_194",
+      "sathya_sai_webiste_new_bot_rationale_226",
+      "sathya_sai_webiste_new_bot_rationale_503"
+    ],
+    "7": [
+      "js_chatbot_appendmessage",
+      "js_chatbot_initui",
+      "js_chatbot_js",
+      "js_chatbot_loadlocalapikey",
+      "js_chatbot_removetyping",
+      "js_chatbot_showtyping"
+    ],
+    "8": [
+      "default_type",
+      "sathya_sai_webiste_new_bot_info_command",
+      "sathya_sai_webiste_new_bot_menu_command",
+      "sathya_sai_webiste_new_bot_rationale_212",
+      "sathya_sai_webiste_new_bot_rationale_633",
+      "sathya_sai_webiste_new_bot_start"
+    ],
+    "9": [
+      "int",
+      "sathya_sai_webiste_new_bot_addgallery_cancel",
+      "sathya_sai_webiste_new_bot_addgallery_receive_photo",
+      "sathya_sai_webiste_new_bot_addgallery_start",
+      "sathya_sai_webiste_new_bot_rationale_653",
+      "sathya_sai_webiste_new_bot_rationale_701"
+    ],
+    "10": [
+      "js_main_closelightbox",
+      "js_main_js",
+      "js_main_renderdynamicnav",
+      "js_main_upgraderedesign"
+    ],
+    "11": [
+      "google_c2pa_metadata",
+      "maha_periyava_concept",
+      "maha_periyava_jpg_image",
+      "maha_periyava_png_image"
+    ],
+    "12": [
+      "dev_server_py",
+      "sathya_sai_webiste_new_dev_server_devserverhandler",
+      "sathya_sai_webiste_new_dev_server_devserverhandler_do_get",
+      "sathya_sai_webiste_new_dev_server_devserverhandler_do_post"
+    ],
+    "13": [
+      "sathya_sai_webiste_new_vercel_cleanurls",
+      "sathya_sai_webiste_new_vercel_framework",
+      "sathya_sai_webiste_new_vercel_rewrites",
+      "vercel_json"
+    ],
+    "14": [
+      "sathya_sai_baba_concept",
+      "sathya_sai_baba_jpg_image"
+    ],
+    "15": [
+      "sathya_sai_webiste_new_bot_inline_query_handler",
+      "sathya_sai_webiste_new_bot_rationale_368"
+    ],
+    "16": [
+      "sathya_sai_webiste_new_bot_addgallery_category_selected",
+      "sathya_sai_webiste_new_bot_rationale_679"
+    ],
+    "17": [
+      "sathya_sai_webiste_new_bot_handle_text",
+      "sathya_sai_webiste_new_bot_rationale_794"
+    ],
+    "18": [
+      "api_config_js"
+    ],
+    "19": [
+      "api_notify_event_js"
+    ],
+    "20": [
+      "api_send_welcome_js"
+    ],
+    "21": [
+      "main_js"
+    ]
+  },
+  "cohesion": {
+    "0": 0.19298245614035087,
+    "1": 0.1794871794871795,
+    "2": 0.16666666666666666,
+    "3": 0.25,
+    "4": 0.2857142857142857,
+    "5": 0.3333333333333333,
+    "6": 0.3333333333333333,
+    "7": 0.4,
+    "8": 0.3333333333333333,
+    "9": 0.3333333333333333,
+    "10": 0.5,
+    "11": 0.6666666666666666,
+    "12": 0.5,
+    "13": 0.5,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0
+  },
+  "gods": [
+    {
+      "id": "update",
+      "label": "Update",
+      "degree": 16
+    },
+    {
+      "id": "default_type",
+      "label": "DEFAULT_TYPE",
+      "degree": 16
+    },
+    {
+      "id": "sathya_sai_webiste_new_bot_menu_callback_handler",
+      "label": "menu_callback_handler()",
+      "degree": 8
+    },
+    {
+      "id": "js_dashboard_app_renderadmindashboard",
+      "label": "renderAdminDashboard()",
+      "degree": 8
+    },
+    {
+      "id": "sathya_sai_webiste_new_bot_addgallery_receive_caption",
+      "label": "addgallery_receive_caption()",
+      "degree": 7
+    },
+    {
+      "id": "sathya_sai_webiste_new_bot_ask_gemini",
+      "label": "ask_gemini()",
+      "degree": 6
+    },
+    {
+      "id": "sathya_sai_webiste_new_bot_get_sai_quote",
+      "label": "get_sai_quote()",
+      "degree": 6
+    },
+    {
+      "id": "sathya_sai_webiste_new_bot_addgallery_start",
+      "label": "addgallery_start()",
+      "degree": 6
+    },
+    {
+      "id": "sathya_sai_webiste_new_bot_upload_to_supabase_storage",
+      "label": "upload_to_supabase_storage()",
+      "degree": 5
+    },
+    {
+      "id": "sathya_sai_webiste_new_bot_save_gallery_record",
+      "label": "save_gallery_record()",
+      "degree": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Sathya Sai Baba Image",
+      "target": "Sathya Sai Baba - 100 Quotes",
+      "source_files": [
+        "images/sathya_sai_baba.png",
+        "quote/sathya_sai_baba_100_quotes.txt"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; crosses file types (image \u2194 doc); connects across different repos/directories"
+    },
+    {
+      "source": "Maha Periyava Portrait",
+      "target": "Maha Periyava AI Generated Image",
+      "source_files": [
+        "image_for_quote/Maha Periyava.jpg",
+        "images/maha_periyava.png"
+      ],
+      "confidence": "INFERRED",
+      "relation": "semantically_similar_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; semantically similar concepts with no structural link"
+    },
+    {
+      "source": "Events Page",
+      "target": "Supabase Client",
+      "source_files": [
+        "events.html",
+        "js/supabase-client.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (doc \u2194 code); connects across different repos/directories; peripheral node `Events Page` unexpectedly reaches hub `Supabase Client`"
+    },
+    {
+      "source": "Gallery Page",
+      "target": "Supabase Client",
+      "source_files": [
+        "gallery.html",
+        "js/supabase-client.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (doc \u2194 code); connects across different repos/directories; peripheral node `Gallery Page` unexpectedly reaches hub `Supabase Client`"
+    },
+    {
+      "source": "Member Dashboard",
+      "target": "Supabase Client",
+      "source_files": [
+        "dashboard.html",
+        "js/supabase-client.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (doc \u2194 code); connects across different repos/directories"
+    }
+  ],
+  "tokens": {
+    "input": 126025,
+    "output": 4955
+  }
+}

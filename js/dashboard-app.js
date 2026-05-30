@@ -23,6 +23,30 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = session.user.email;
       if (!email) return;
 
+      // Check if this user is an admin
+      let isAdmin = false;
+      try {
+        const { data: adminRecord } = await supabase
+          .from('site_admins')
+          .select('email')
+          .eq('email', email)
+          .maybeSingle();
+        if (adminRecord) isAdmin = true;
+      } catch (e) {
+        console.warn("site_admins check failed, using fallback:", e);
+      }
+
+      const ADMIN_EMAILS = ['sk143sathya@gmail.com'];
+      if (ADMIN_EMAILS.includes(email.toLowerCase())) {
+        isAdmin = true;
+      }
+
+      if (isAdmin) {
+        localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin', identifier: email }));
+        checkAuthState();
+        return;
+      }
+
       const { data: member, error } = await supabase
         .from('members')
         .select('id')
