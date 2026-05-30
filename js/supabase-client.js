@@ -14,19 +14,23 @@ const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3Mi
 // Initialise with defaults
 var supabase = window.supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
 
-// Dynamically check if we can load credentials from the config endpoint (e.g. Vercel or local DevServer)
-async function loadDynamicSupabaseConfig() {
-  try {
-    const response = await fetch('/api/config');
-    if (response.ok) {
-      const data = await response.json();
-      if (data.SUPABASE_URL && data.SUPABASE_ANON_KEY) {
-        supabase = window.supabase.createClient(data.SUPABASE_URL.trim(), data.SUPABASE_ANON_KEY.trim());
-        console.log('Successfully re-configured Supabase Client from /api/config');
+// Synchronously check if we can load credentials from the config endpoint (e.g. Vercel or local DevServer)
+// to ensure other scripts register their listeners on the correct client instance.
+try {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', '/api/config', false); // Synchronous request
+  xhr.send(null);
+  if (xhr.status === 200) {
+    const data = JSON.parse(xhr.responseText);
+    if (data.SUPABASE_URL && data.SUPABASE_ANON_KEY) {
+      const newUrl = data.SUPABASE_URL.trim();
+      const newKey = data.SUPABASE_ANON_KEY.trim();
+      if (newUrl && newKey && (newUrl !== DEFAULT_SUPABASE_URL || newKey !== DEFAULT_SUPABASE_ANON_KEY)) {
+        supabase = window.supabase.createClient(newUrl, newKey);
+        console.log('Successfully re-configured Supabase Client synchronously from /api/config');
       }
     }
-  } catch (e) {
-    console.log('Using default client credentials (config endpoint not available)');
   }
+} catch (e) {
+  console.log('Using default client credentials (config endpoint not available or failed)');
 }
-loadDynamicSupabaseConfig();
