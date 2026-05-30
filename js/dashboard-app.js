@@ -7,47 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const dashboardView = document.getElementById('dashboardView');
   const adminView = document.getElementById('adminView');
 
-  // Forms
-  const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
-  
-  // Toggles
-  const showSignupBtn = document.getElementById('showSignupBtn');
-  const showLoginBtn = document.getElementById('showLoginBtn');
-  const loginWrapper = document.getElementById('loginWrapper');
-  const signupWrapper = document.getElementById('signupWrapper');
-
   // Dashboard Card Elements
   const logoutBtn = document.getElementById('logoutBtn');
   const cardName = document.getElementById('cardName');
   const cardId = document.getElementById('cardId');
   const cardJoinedDate = document.getElementById('cardJoinedDate');
 
-  // Google OAuth Elements
-  const googleLoginBtn = document.getElementById('googleLoginBtn');
-  const googleSignupBtn = document.getElementById('googleSignupBtn');
-
   // Initialize state
   checkAuthState();
-
-  // Handle Google Sign-In Click
-  const handleGoogleSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin + '/dashboard.html'
-        }
-      });
-      if (error) throw error;
-    } catch (err) {
-      console.error('Google Sign-In error:', err.message);
-      alert('Failed to initiate Google Sign-In: ' + err.message);
-    }
-  };
-
-  googleLoginBtn?.addEventListener('click', handleGoogleSignIn);
-  googleSignupBtn?.addEventListener('click', handleGoogleSignIn);
 
   // Sync state on OAuth redirect / auth state changes
   supabase.auth.onAuthStateChange(async (event, session) => {
@@ -85,6 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Auto-registration insert failed on Google Sign-In:', insertError.message);
           return;
         }
+
+        // Send welcome email on Google registration
+        fetch('/api/send-welcome', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name: fullName })
+        }).catch(err => console.error('Failed to send welcome email:', err));
       }
 
       localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: email }));
@@ -106,135 +80,16 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMembershipCard(session);
       }
     } else {
-      showView(authView);
-      showLoginForm();
+      window.location.href = 'login.html';
     }
   }
 
   function showView(view) {
-    authView.classList.add('hidden');
+    if (authView) authView.classList.add('hidden');
     dashboardView.classList.add('hidden');
     adminView.classList.add('hidden');
     view.classList.remove('hidden');
   }
-
-  function showLoginForm() {
-    loginWrapper.classList.remove('hidden');
-    signupWrapper.classList.add('hidden');
-  }
-
-  function showSignupForm() {
-    loginWrapper.classList.add('hidden');
-    signupWrapper.classList.remove('hidden');
-  }
-
-  // Event Listeners
-  showSignupBtn?.addEventListener('click', (e) => {
-    e.preventDefault();
-    showSignupForm();
-  });
-
-  showLoginBtn?.addEventListener('click', (e) => {
-    e.preventDefault();
-    showLoginForm();
-  });
-
-  // ============================================================
-  // LOGIN — checks Supabase `members` table by phone or email
-  // ============================================================
-  loginForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const identifier = document.getElementById('loginIdentifier').value.trim();
-    
-    // Admin bypass
-    if (identifier === 'saiadmin') {
-      const pwd = prompt('Enter Admin Password:');
-      if (pwd === 'Sai@1926@@') {
-        localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin' }));
-        checkAuthState();
-      } else {
-        alert('Invalid admin credentials.');
-      }
-      return;
-    }
-
-    if (!identifier) return alert('Enter phone number or email.');
-
-    const isEmail = identifier.includes('@');
-    let query = supabase.from('members').select('id, fname, lname, member_id, phone, email');
-    
-    if (isEmail) {
-      query = query.eq('email', identifier);
-    } else {
-      query = query.eq('phone', identifier);
-    }
-
-    const { data, error } = await query.maybeSingle();
-
-    if (error) {
-      console.error('Supabase login check error:', error);
-      alert('Error checking account. Please try again.');
-      return;
-    }
-
-    if (!data) {
-      alert('Account not registered. Please sign up first.');
-      return;
-    }
-
-    localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
-    checkAuthState();
-  });
-
-  // ============================================================
-  // SIGNUP — inserts new member into Supabase `members` table
-  // ============================================================
-  signupForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fname = document.getElementById('regFname').value.trim();
-    const lname = document.getElementById('regLname').value.trim();
-    const phone = document.getElementById('regPhone').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const place = document.getElementById('regPlace').value.trim();
-    const district = document.getElementById('regDistrict').value.trim();
-    const address = document.getElementById('regAddress').value.trim();
-    const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
-    let insertPayload = {
-      fname,
-      lname,
-      phone: phone || null,
-      email: email || null,
-      place: place || null,
-      district: district || null,
-      address: address || null,
-      member_id: uniqueId
-    };
-
-    let { error } = await supabase.from('members').insert([insertPayload]);
-
-    if (error) {
-      console.warn('Initial registration insert failed:', error.message);
-      // Fallback: If 'email' column does not exist or has cache mismatch, delete email and retry
-      if (error.message && (error.message.includes('email') || error.message.includes('schema cache'))) {
-        console.warn('Retrying database insert without email key...');
-        delete insertPayload.email;
-        const { error: retryError } = await supabase.from('members').insert([insertPayload]);
-        if (retryError) {
-          console.error('Retry insert failed:', retryError);
-          alert('Registration failed in database: ' + retryError.message);
-          return;
-        }
-      } else {
-        alert('Registration failed in database: ' + error.message);
-        return;
-      }
-    }
-
-    const identifier = email || phone;
-    localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
-    checkAuthState();
-  });
-
 
   logoutBtn?.addEventListener('click', async () => {
     localStorage.removeItem('sspk_session');
@@ -423,7 +278,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (idInput) {
       ({ error } = await supabase.from('events').update(evtData).eq('id', idInput));
     } else {
-      ({ error } = await supabase.from('events').insert([evtData]));
+      const { data: insertedData, error: insertError } = await supabase.from('events').insert([evtData]).select();
+      error = insertError;
+      if (!error && insertedData && insertedData.length > 0) {
+        const newEvent = insertedData[0];
+        // Fetch all registered user emails
+        const { data: users, error: usersError } = await supabase
+          .from('members')
+          .select('email')
+          .not('email', 'is', null);
+
+        if (!usersError && users && users.length > 0) {
+          const emails = users.map(u => u.email).filter(Boolean);
+          if (emails.length > 0) {
+            // Trigger Vercel function to notify users
+            fetch('/api/notify-event', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ event: newEvent, emails })
+            }).catch(err => console.error('Failed to send event notifications:', err));
+          }
+        }
+      }
     }
 
     if (error) { alert('Save failed: ' + error.message); return; }

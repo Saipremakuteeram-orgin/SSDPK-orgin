@@ -28,6 +28,33 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             # Serve standard static files
             super().do_GET()
 
+    def do_POST(self):
+        print(f"POST Request received: {self.path}")
+        if self.path in ['/api/send-welcome', '/api/notify-event']:
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length > 0:
+                post_data = self.rfile.read(content_length)
+                try:
+                    data = json.loads(post_data.decode('utf-8'))
+                    print(f"\n[LOCAL EMAIL MOCK] Route: {self.path}")
+                    print(f"Payload: {json.dumps(data, indent=2)}\n")
+                except Exception as e:
+                    print("Error parsing POST json:", e)
+            
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            response = {"success": True, "message": f"Mock email logged to console for {self.path}"}
+            self.wfile.write(json.dumps(response).encode('utf-8'))
+        else:
+            self.send_response(404)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            response = {"error": "Not Found"}
+            self.wfile.write(json.dumps(response).encode('utf-8'))
+
 if __name__ == '__main__':
     # Allow prompt socket reuse to prevent port-in-use errors on restarts
     socketserver.TCPServer.allow_reuse_address = True

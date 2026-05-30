@@ -635,6 +635,20 @@
 
     renderCalendar(currentYear, currentMonth);
     renderTabularList();
+
+    // Check for event ID in URL to auto-open details
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('id');
+    if (eventId) {
+      const targetEvent = EVENTS_DB.find(e => e.id.toString() === eventId);
+      if (targetEvent) {
+        if (window.innerWidth >= 992) {
+          openModal(targetEvent);
+        } else {
+          openDrawer(targetEvent);
+        }
+      }
+    }
     
     if (prevMonthBtn) prevMonthBtn.addEventListener('click', navigatePrev);
     if (nextMonthBtn) nextMonthBtn.addEventListener('click', navigateNext);
@@ -874,6 +888,7 @@
         '</div>' +
       '</div>' +
       '<div class="drawer-description">' + evt.description + '</div>' +
+      '<div id="eventPhotos_' + evt.id + '"></div>' +
       '<div class="drawer-coordinator-card">' +
         '<h4>Event Coordinator</h4>' +
         '<div class="drawer-coordinator-name">' + evt.coordinator + '</div>' +
@@ -884,6 +899,28 @@
     eventDrawer.classList.add('open');
     drawerBackdrop.classList.add('open');
     document.body.style.overflow = 'hidden';
+
+    // Fetch and render matching photos
+    supabase.from('gallery').select('*').eq('event_id', evt.id)
+      .then(function(res) {
+        var photos = res.data;
+        var photoSection = document.getElementById('eventPhotos_' + evt.id);
+        if (photoSection && photos && photos.length > 0) {
+          var photosHtml = '<h4 style="margin: 20px 0 10px; font-family: var(--font-heading); color: var(--fg); font-size: 15px; font-weight: 700;">Event Gallery</h4>' +
+            '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 20px;">';
+          photos.forEach(function(p) {
+            photosHtml += '<div style="position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="window.open(\'' + p.src_url + '\', \'_blank\')">';
+            if (p.src_url) {
+              photosHtml += '<img src="' + p.src_url + '" style="width: 100%; height: 100%; object-fit: cover;" alt="' + p.caption + '">';
+            } else {
+              photosHtml += '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 18px;">' + (p.placeholder || '🖼️') + '</div>';
+            }
+            photosHtml += '</div>';
+          });
+          photosHtml += '</div>';
+          photoSection.innerHTML = photosHtml;
+        }
+      });
   }
 
   function closeDrawer() {
@@ -935,6 +972,7 @@
         '</div>' +
       '</div>' +
       '<div class="drawer-description" style="font-size:16px;">' + evt.description + '</div>' +
+      '<div id="modalPhotos_' + evt.id + '"></div>' +
       '<div class="drawer-coordinator-card">' +
         '<h4>Event Coordinator</h4>' +
         '<div class="drawer-coordinator-name">' + evt.coordinator + '</div>' +
@@ -945,6 +983,28 @@
     eventModal.classList.add('open');
     eventModalBackdrop.classList.add('open');
     document.body.style.overflow = 'hidden';
+
+    // Fetch and render matching photos
+    supabase.from('gallery').select('*').eq('event_id', evt.id)
+      .then(function(res) {
+        var photos = res.data;
+        var photoSection = document.getElementById('modalPhotos_' + evt.id);
+        if (photoSection && photos && photos.length > 0) {
+          var photosHtml = '<h4 style="margin: 20px 0 10px; font-family: var(--font-heading); color: var(--fg); font-size: 16px; font-weight: 700;">Event Gallery</h4>' +
+            '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">';
+          photos.forEach(function(p) {
+            photosHtml += '<div style="position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="window.open(\'' + p.src_url + '\', \'_blank\')">';
+            if (p.src_url) {
+              photosHtml += '<img src="' + p.src_url + '" style="width: 100%; height: 100%; object-fit: cover;" alt="' + p.caption + '">';
+            } else {
+              photosHtml += '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 20px;">' + (p.placeholder || '🖼️') + '</div>';
+            }
+            photosHtml += '</div>';
+          });
+          photosHtml += '</div>';
+          photoSection.innerHTML = photosHtml;
+        }
+      });
   }
 
   function closeModal() {
