@@ -82,15 +82,16 @@
   var lightboxClose = document.getElementById('lightboxClose');
 
   if (lightbox && lightboxImg) {
-    document.querySelectorAll('[data-lightbox]').forEach(function(el) {
-      el.addEventListener('click', function() {
-        var src = this.getAttribute('data-lightbox');
-        var caption = this.getAttribute('data-caption') || '';
+    document.addEventListener('click', function(e) {
+      var el = e.target.closest('[data-lightbox]');
+      if (el) {
+        var src = el.getAttribute('data-lightbox');
+        var caption = el.getAttribute('data-caption') || '';
         lightboxImg.src = src;
         lightboxImg.alt = caption;
         lightbox.classList.add('open');
         document.body.style.overflow = 'hidden';
-      });
+      }
     });
 
     function closeLightbox() {

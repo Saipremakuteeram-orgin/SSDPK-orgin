@@ -194,17 +194,19 @@
     data.forEach(function(item) {
       var div = document.createElement('div');
       div.className = 'gallery-item';
-      div.setAttribute('data-caption', item.caption);
 
       var captionText = item.caption;
       if (item.events && item.events.title) {
         captionText = item.events.title + ' - ' + item.caption;
       }
+      div.setAttribute('data-caption', captionText);
 
       if (item.src_url) {
+        div.setAttribute('data-lightbox', item.src_url);
         div.style.backgroundImage = 'url(' + item.src_url + ')';
         div.style.backgroundSize = 'cover';
         div.style.backgroundPosition = 'center';
+        div.style.cursor = 'zoom-in';
         div.innerHTML = '<div class="gallery-caption">' + captionText + '</div>';
       } else {
         div.innerHTML = '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + captionText + '</div>';
