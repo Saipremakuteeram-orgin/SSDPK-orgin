@@ -8,8 +8,8 @@
 //
 // Get your credentials from: https://supabase.com/dashboard/project/_/settings/api
 
-const DEFAULT_SUPABASE_URL = 'https://fnmbiapynzfdxgybxtyd.supabase.co';
-const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZubWJpYXB5bnpmZHhneWJ4dHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTY4MjQsImV4cCI6MjA5NTI3MjgyNH0.ax8tV7UhJ5XcfQDZ4Gbyga8kuqVro5zoPwo9d-5hVNg';
+const DEFAULT_SUPABASE_URL = 'https://zkzotagctwqthxypczej.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inprem90YWdjdHdxdGh4eXBjemVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMjc3NzMsImV4cCI6MjA5NTcwMzc3M30.8xL23N-3MfbrXOA-ljsOnFy_LIDKCSxbYfHRzvMqCak';
 
 // Initialise with defaults
 var supabase = window.supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
