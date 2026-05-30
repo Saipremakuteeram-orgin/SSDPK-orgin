@@ -478,6 +478,18 @@
           </div>
         </form>
         
+        <!-- Bulk Action Bar -->
+        <div id="eventBulkActionBar" class="hidden" style="background:var(--accent-light); border:1.5px solid var(--border); border-radius:6px; padding:12px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--shadow-sm);">
+          <div style="font-weight:600; color:var(--accent-dark); font-size:13.5px;">
+            Selected: <span id="selectedEventsCount">0</span> events
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button type="button" id="bulkDuplicateBtn" class="btn btn-primary" style="padding:6px 14px; font-size:12px;">Duplicate Selected</button>
+            <button type="button" id="bulkDeleteBtn" class="btn" style="padding:6px 14px; font-size:12px; background:#d9534f; border-color:#d9534f; color:#fff; cursor:pointer;">Delete Selected</button>
+            <button type="button" id="bulkClearBtn" class="btn btn-outline" style="padding:6px 14px; font-size:12px;">Clear Selection</button>
+          </div>
+        </div>
+
         <div id="adminEventList" style="display:flex; flex-direction:column; gap:12px;">
           <!-- Dynamic event list -->
         </div>
@@ -556,6 +568,24 @@
     </div>
   </div>
 </footer>
+
+<!-- Bulk Duplication Modal -->
+<div id="bulkDuplicateModalBackdrop" class="hidden" style="position: fixed; inset: 0; background: rgba(18, 14, 12, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 210; transition: opacity 0.3s ease;"></div>
+<div id="bulkDuplicateModal" class="hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(1000px, 95vw); max-height: 85vh; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); z-index: 220; box-shadow: 0 20px 50px rgba(142, 90, 48, 0.15); padding: 28px; display: flex; flex-direction: column; overflow: hidden;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+    <h3 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--accent-dark);">Bulk Duplicate Events</h3>
+    <button type="button" id="closeBulkDuplicateModalBtn" style="font-size: 28px; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.2s ease;">&times;</button>
+  </div>
+  
+  <div style="flex: 1; overflow-y: auto; padding-right: 4px; margin-bottom: 20px;" id="bulkDuplicateRowsContainer">
+    <!-- Dynamic rows of forms will go here -->
+  </div>
+
+  <div style="display:flex; justify-content:flex-end; gap:12px; border-top: 1px solid var(--border); padding-top: 16px;">
+    <button type="button" id="cancelBulkDuplicateBtn" class="btn btn-outline" style="padding:8px 20px;">Cancel</button>
+    <button type="button" id="saveBulkDuplicateBtn" class="btn btn-primary" style="padding:8px 24px;">Create Events</button>
+  </div>
+</div>
 
 <script src="js/main.js?v=1.0.8"></script>
 <script src="js/supabase-client.js?v=1.0.7"></script>

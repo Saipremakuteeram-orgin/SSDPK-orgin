@@ -267,6 +267,226 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelEventBtn = document.getElementById('cancelEventBtn');
   const adminEventList = document.getElementById('adminEventList');
 
+  // Bulk operations state
+  let selectedEventIds = new Set();
+  let selectedEventsMap = new Map();
+
+  function updateBulkActionBar() {
+    const bar = document.getElementById('eventBulkActionBar');
+    const countSpan = document.getElementById('selectedEventsCount');
+    if (!bar || !countSpan) return;
+
+    if (selectedEventIds.size > 0) {
+      countSpan.textContent = selectedEventIds.size;
+      bar.classList.remove('hidden');
+    } else {
+      bar.classList.add('hidden');
+    }
+  }
+
+  // Bulk modal elements
+  const bulkDuplicateModal = document.getElementById('bulkDuplicateModal');
+  const bulkDuplicateModalBackdrop = document.getElementById('bulkDuplicateModalBackdrop');
+  const closeBulkDuplicateModalBtn = document.getElementById('closeBulkDuplicateModalBtn');
+  const cancelBulkDuplicateBtn = document.getElementById('cancelBulkDuplicateBtn');
+  const saveBulkDuplicateBtn = document.getElementById('saveBulkDuplicateBtn');
+
+  function closeBulkDuplicateModal() {
+    bulkDuplicateModal?.classList.add('hidden');
+    bulkDuplicateModalBackdrop?.classList.add('hidden');
+  }
+
+  closeBulkDuplicateModalBtn?.addEventListener('click', closeBulkDuplicateModal);
+  cancelBulkDuplicateBtn?.addEventListener('click', closeBulkDuplicateModal);
+  bulkDuplicateModalBackdrop?.addEventListener('click', closeBulkDuplicateModal);
+
+  // Bulk Clear Selection
+  document.getElementById('bulkClearBtn')?.addEventListener('click', () => {
+    selectedEventIds.clear();
+    selectedEventsMap.clear();
+    document.querySelectorAll('.event-select-cb').forEach(cb => cb.checked = false);
+    updateBulkActionBar();
+  });
+
+  // Bulk Delete
+  document.getElementById('bulkDeleteBtn')?.addEventListener('click', async () => {
+    if (selectedEventIds.size === 0) return;
+    if (confirm(`Are you sure you want to delete the selected ${selectedEventIds.size} events?`)) {
+      const ids = Array.from(selectedEventIds);
+      
+      try {
+        // Fetch all selected events to see if they have brochure images to delete
+        const { data: eventsToDelete } = await supabase
+          .from('events')
+          .select('description')
+          .in('id', ids);
+          
+        if (eventsToDelete) {
+          const brochurePathsToDelete = [];
+          eventsToDelete.forEach(evt => {
+            if (evt.description && evt.description.includes('|||')) {
+              const parts = evt.description.split('|||');
+              const brochurePath = parts[2] ? parts[2].trim() : '';
+              if (brochurePath) brochurePathsToDelete.push(brochurePath);
+            }
+          });
+          if (brochurePathsToDelete.length > 0) {
+            await supabase.storage.from('gallery-images').remove(brochurePathsToDelete);
+          }
+        }
+        
+        const { error } = await supabase.from('events').delete().in('id', ids);
+        if (error) {
+          alert('Bulk delete failed: ' + error.message);
+        } else {
+          selectedEventIds.clear();
+          selectedEventsMap.clear();
+          updateBulkActionBar();
+          renderAdminEvents();
+        }
+      } catch (err) {
+        console.error('Error during bulk delete:', err);
+        alert('An error occurred during deletion.');
+      }
+    }
+  });
+
+  // Bulk Duplicate Trigger
+  document.getElementById('bulkDuplicateBtn')?.addEventListener('click', () => {
+    if (selectedEventIds.size === 0) return;
+    const container = document.getElementById('bulkDuplicateRowsContainer');
+    if (!container) return;
+
+    container.innerHTML = '';
+    
+    selectedEventsMap.forEach((evt, id) => {
+      let descText = evt.description || '';
+      let brochureUrl = '';
+      let brochurePath = '';
+      if (descText.includes('|||')) {
+        const parts = descText.split('|||');
+        descText = parts[0].trim();
+        brochureUrl = parts[1] ? parts[1].trim() : '';
+        brochurePath = parts[2] ? parts[2].trim() : '';
+      }
+      
+      const row = document.createElement('div');
+      row.className = 'bulk-duplicate-row';
+      row.style = 'border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; background: var(--bg);';
+      row.setAttribute('data-brochure-url', brochureUrl);
+      row.setAttribute('data-brochure-path', brochurePath);
+      
+      row.innerHTML = `
+        <h4 style="font-weight: 700; margin-bottom: 12px; color: var(--accent-dark);">Duplicate: ${evt.title}</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Title</label>
+            <input type="text" class="dup-title input" value="${evt.title}" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Category</label>
+            <select class="dup-category input" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+              <option value="bhajan" ${evt.category === 'bhajan' ? 'selected' : ''}>Bhajan</option>
+              <option value="seva" ${evt.category === 'seva' ? 'selected' : ''}>Seva</option>
+              <option value="study" ${evt.category === 'study' ? 'selected' : ''}>Study Circle</option>
+              <option value="celebration" ${evt.category === 'celebration' ? 'selected' : ''}>Celebration</option>
+            </select>
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px; color: var(--accent-dark);">Date (Different)</label>
+            <input type="date" class="dup-date input" value="${evt.date}" required style="width:100%; padding:8px; border:1.5px solid var(--accent); border-radius:4px; background:var(--surface); color:var(--fg); font-weight: 600;">
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px; color: var(--accent-dark);">Time (Different)</label>
+            <input type="text" class="dup-time input" value="${evt.time || ''}" required style="width:100%; padding:8px; border:1.5px solid var(--accent); border-radius:4px; background:var(--surface); color:var(--fg); font-weight: 600;">
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Venue</label>
+            <input type="text" class="dup-venue input" value="${evt.venue || ''}" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px; color: var(--accent-dark);">Coordinator Name (Different)</label>
+            <input type="text" class="dup-coordinator input" value="${evt.coordinator || ''}" required style="width:100%; padding:8px; border:1.5px solid var(--accent); border-radius:4px; background:var(--surface); color:var(--fg); font-weight: 600;">
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Contact Number</label>
+            <input type="tel" class="dup-contact input" value="${evt.contact || ''}" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Description</label>
+          <textarea class="dup-desc input" rows="2" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg); font-family:inherit;">${descText}</textarea>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+
+    bulkDuplicateModal?.classList.remove('hidden');
+    bulkDuplicateModalBackdrop?.classList.remove('hidden');
+  });
+
+  // Bulk Duplicate Save
+  saveBulkDuplicateBtn?.addEventListener('click', async () => {
+    const rows = document.querySelectorAll('.bulk-duplicate-row');
+    if (rows.length === 0) return;
+
+    const newEvents = [];
+    for (const row of rows) {
+      const title = row.querySelector('.dup-title').value.trim();
+      const category = row.querySelector('.dup-category').value;
+      const date = row.querySelector('.dup-date').value;
+      const time = row.querySelector('.dup-time').value.trim();
+      const venue = row.querySelector('.dup-venue').value.trim();
+      const coordinator = row.querySelector('.dup-coordinator').value.trim();
+      const contact = row.querySelector('.dup-contact').value.trim();
+      const descText = row.querySelector('.dup-desc').value.trim();
+      
+      const brochureUrl = row.getAttribute('data-brochure-url');
+      const brochurePath = row.getAttribute('data-brochure-path');
+      const finalDesc = brochureUrl ? `${descText} ||| ${brochureUrl} ||| ${brochurePath}` : descText;
+
+      newEvents.push({
+        title,
+        category,
+        date,
+        time,
+        venue,
+        coordinator,
+        contact,
+        description: finalDesc
+      });
+    }
+
+    saveBulkDuplicateBtn.textContent = 'Creating...';
+    saveBulkDuplicateBtn.disabled = true;
+
+    try {
+      const { error } = await supabase.from('events').insert(newEvents);
+      if (error) {
+        alert('Bulk duplicate save failed: ' + error.message);
+      } else {
+        closeBulkDuplicateModal();
+        selectedEventIds.clear();
+        selectedEventsMap.clear();
+        updateBulkActionBar();
+        renderAdminEvents();
+      }
+    } catch (err) {
+      console.error('Error saving bulk duplicates:', err);
+      alert('An error occurred during save.');
+    } finally {
+      saveBulkDuplicateBtn.textContent = 'Create Events';
+      saveBulkDuplicateBtn.disabled = false;
+    }
+  });
+
   showAddEventBtn?.addEventListener('click', () => {
     addEventForm.reset();
     document.getElementById('eventIdInput').value = '';
@@ -309,16 +529,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const div = document.createElement('div');
       div.style = 'padding:12px; border:1px solid var(--border); border-radius:6px; display:flex; justify-content:space-between; align-items:center; background:var(--surface);';
       div.innerHTML = `
-        <div>
-          <strong style="color:var(--fg);">${evt.title}</strong><br>
-          <small style="color:var(--muted);">${evt.date} &middot; ${evt.time || ''} &middot; ${evt.venue || ''}</small>
+        <div style="display:flex; align-items:center;">
+          <input type="checkbox" class="event-select-cb" data-id="${evt.id}" data-evt='${JSON.stringify(evt).replace(/'/g, "&apos;")}' ${selectedEventIds.has(evt.id.toString()) ? 'checked' : ''} style="margin-right:12px; width:16px; height:16px; cursor:pointer;">
+          <div>
+            <strong style="color:var(--fg);">${evt.title}</strong><br>
+            <small style="color:var(--muted);">${evt.date} &middot; ${evt.time || ''} &middot; ${evt.venue || ''}</small>
+          </div>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn btn-outline edit-evt-btn" data-evt='${JSON.stringify(evt)}' style="padding:4px 8px; font-size:12px;">Edit</button>
+          <button class="btn btn-outline edit-evt-btn" data-evt='${JSON.stringify(evt).replace(/'/g, "&apos;")}' style="padding:4px 8px; font-size:12px;">Edit</button>
           <button class="btn btn-primary del-evt-btn" data-id="${evt.id}" style="padding:4px 8px; font-size:12px; background:#d9534f; border-color:#d9534f;">Del</button>
         </div>
       `;
       adminEventList.appendChild(div);
+    });
+
+    document.querySelectorAll('.event-select-cb').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const evt = JSON.parse(e.target.getAttribute('data-evt'));
+        
+        if (e.target.checked) {
+          selectedEventIds.add(id);
+          selectedEventsMap.set(id, evt);
+        } else {
+          selectedEventIds.delete(id);
+          selectedEventsMap.delete(id);
+        }
+        updateBulkActionBar();
+      });
     });
 
     document.querySelectorAll('.edit-evt-btn').forEach(btn => {
@@ -482,6 +721,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
         addEventForm.classList.add('hidden');
         showAddEventBtn.classList.remove('hidden');
+        selectedEventIds.clear();
+        selectedEventsMap.clear();
+        updateBulkActionBar();
         renderAdminEvents();
       }
     } catch (err) {
