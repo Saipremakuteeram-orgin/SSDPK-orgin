@@ -78,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         showView(dashboardView);
         renderMembershipCard(session);
+        if (window.initQuoteLimits && session.identifier) {
+          window.initQuoteLimits(session.identifier);
+        }
       }
     } else {
       window.location.href = 'login.html';
@@ -620,10 +623,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ============================================================
-  // DAILY BLESSINGS (QUOTES OF GURUS)
+  // DAILY BLESSINGS (QUOTES OF GURUS) WITH 3X RATE LIMIT PER GURU
   // ============================================================
   const getSaiQuoteBtn = document.getElementById('getSaiQuoteBtn');
   const getPeriyavaQuoteBtn = document.getElementById('getPeriyavaQuoteBtn');
+  const saiLimitText = document.getElementById('saiLimitText');
+  const periyavaLimitText = document.getElementById('periyavaLimitText');
   const quoteDisplayBox = document.getElementById('quoteDisplayBox');
   const quoteEnglish = document.getElementById('quoteEnglish');
   const quoteTamil = document.getElementById('quoteTamil');
@@ -681,6 +686,74 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
+  // Helper to load limits from localStorage scoped by member/user
+  function getLimitData(identifier) {
+    const key = `sspk_quote_limit_${identifier}`;
+    const today = new Date().toISOString().split('T')[0];
+    let data = null;
+    try {
+      data = JSON.parse(localStorage.getItem(key));
+    } catch (e) {
+      console.error('Failed to parse quote limit data', e);
+    }
+    if (!data || data.date !== today) {
+      data = { date: today, sai_count: 0, periyava_count: 0 };
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+    return data;
+  }
+
+  // Helper to update limits in localStorage and UI
+  function updateLimitData(identifier, data) {
+    const key = `sspk_quote_limit_${identifier}`;
+    localStorage.setItem(key, JSON.stringify(data));
+    renderLimitUI(identifier);
+  }
+
+  // Helper to update buttons and remaining text in UI
+  function renderLimitUI(identifier) {
+    const data = getLimitData(identifier);
+    
+    // Swami limit
+    const remainingSai = Math.max(0, 3 - data.sai_count);
+    if (saiLimitText) saiLimitText.textContent = `Remaining today: ${remainingSai}`;
+    if (getSaiQuoteBtn) {
+      if (remainingSai === 0) {
+        getSaiQuoteBtn.disabled = true;
+        getSaiQuoteBtn.textContent = "Limit reached for today";
+        getSaiQuoteBtn.style.opacity = "0.6";
+        getSaiQuoteBtn.style.cursor = "not-allowed";
+      } else {
+        getSaiQuoteBtn.disabled = false;
+        getSaiQuoteBtn.textContent = "Get your day message from Swami";
+        getSaiQuoteBtn.style.opacity = "1";
+        getSaiQuoteBtn.style.cursor = "pointer";
+      }
+    }
+
+    // Periyava limit
+    const remainingPeriyava = Math.max(0, 3 - data.periyava_count);
+    if (periyavaLimitText) periyavaLimitText.textContent = `Remaining today: ${remainingPeriyava}`;
+    if (getPeriyavaQuoteBtn) {
+      if (remainingPeriyava === 0) {
+        getPeriyavaQuoteBtn.disabled = true;
+        getPeriyavaQuoteBtn.textContent = "Limit reached for today";
+        getPeriyavaQuoteBtn.style.opacity = "0.6";
+        getPeriyavaQuoteBtn.style.cursor = "not-allowed";
+      } else {
+        getPeriyavaQuoteBtn.disabled = false;
+        getPeriyavaQuoteBtn.textContent = "Get your day message from Periyava";
+        getPeriyavaQuoteBtn.style.opacity = "1";
+        getPeriyavaQuoteBtn.style.cursor = "pointer";
+      }
+    }
+  }
+
+  // Expose function globally
+  window.initQuoteLimits = function(identifier) {
+    renderLimitUI(identifier);
+  };
+
   async function fetchQuotes() {
     try {
       const { data, error } = await supabase
@@ -700,6 +773,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function displayRandomQuote(guru) {
+    const session = JSON.parse(localStorage.getItem('sspk_session'));
+    if (!session || !session.identifier) return;
+
+    const data = getLimitData(session.identifier);
+    const countKey = guru === 'sai' ? 'sai_count' : 'periyava_count';
+
+    if (data[countKey] >= 3) {
+      renderLimitUI(session.identifier);
+      return;
+    }
+
     const list = (cachedQuotes[guru] && cachedQuotes[guru].length > 0) 
       ? cachedQuotes[guru] 
       : fallbackQuotes[guru];
@@ -718,6 +802,10 @@ document.addEventListener('DOMContentLoaded', () => {
         quoteDisplayBox.style.animation = 'none';
         void quoteDisplayBox.offsetWidth; // Trigger reflow
         quoteDisplayBox.style.animation = 'fadeIn 0.4s ease';
+
+        // Increment count and update
+        data[countKey] += 1;
+        updateLimitData(session.identifier, data);
       }, 100);
     }
   }

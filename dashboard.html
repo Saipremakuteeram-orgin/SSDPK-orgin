@@ -298,85 +298,101 @@
         <button id="logoutBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Sign Out</button>
       </div>
 
-      <div class="membership-card-wrap">
-        <div class="member-card" data-tilt>
-          <div class="atm-card-header">
-            <span class="atm-bank-name">Sathya Sai Prema Kuteeram</span>
-            <img src="logo.jpg" alt="Logo" class="atm-logo">
-          </div>
-          
-          <div class="atm-chip-row">
-            <div class="atm-chip"></div>
-            <svg class="atm-contactless" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2.5-1.5-2.5S8 10.62 8 12a2.5 2.5 0 0 0 .5 2.5z"/>
-              <path d="M12.5 17.5A6.5 6.5 0 0 0 16 12c0-3.59-1.5-6.5-3.5-6.5S9 8.41 9 12a6.5 6.5 0 0 0 3.5 5.5z"/>
-              <path d="M16.5 20.5A10.5 10.5 0 0 0 21 12c0-5.8-2-10.5-4.5-10.5S12 6.2 12 12a10.5 10.5 0 0 0 4.5 8.5z"/>
-            </svg>
-          </div>
-          
-          <div class="atm-card-number" id="cardId">####</div>
-          
-          <div style="font-size: 11px; font-style: italic; color: #241508; margin-top: 8px; line-height: 1.4; text-shadow: 0 1px 0 rgba(255,255,255,0.9); font-weight: 600;">
-            "With the love of Swami,<br>
-            You are the choosen perosn and ,<br>
-            you are a member of Sathya Sai Brindhavan & Sri Sai Kanchi Periyava Illam."
-          </div>
-          
-          <div class="atm-card-info" style="margin-top: auto;">
-            <div class="atm-cardholder">
-              <span class="atm-label">Member</span>
-              <div class="atm-name" id="cardName">Member Name</div>
-            </div>
-            <div class="atm-joined">
-              <span class="atm-label">Joined</span>
-              <div class="atm-date" id="cardJoinedDate">DD/MM/YYYY</div>
-            </div>
-            <div class="atm-valid">
-              <span class="atm-label">Valid Thru</span>
-              <div class="atm-date">LIFETIME</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div style="text-align:center; margin-bottom: 24px;">
-        <button id="downloadCardBtn" class="btn btn-primary" style="padding:10px 24px; font-size:14px; font-weight: 600;">Download Digital Card</button>
-      </div>
-
-      <p style="text-align:center; color:var(--muted); max-width:500px; margin: 0 auto 30px;">
-        Welcome to your digital portal. Please present this card during physical events or study circles.
-      </p>
-
-      <!-- Daily Blessings Section -->
-      <div class="quotes-section" style="max-width: 500px; margin: 40px auto; padding: 24px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); text-align: center;">
-        <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 600; color: var(--accent-dark); margin-bottom: 20px; text-shadow: 0 1px 0 rgba(255,255,255,0.8);">Daily Blessings</h3>
+      <!-- Dashboard Layout Grid: Two Columns (Card Left, Quotes Right) -->
+      <div class="flex flex-col lg:flex-row gap-8 justify-center items-stretch max-w-6xl mx-auto px-4 mb-10">
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-          <!-- Sathya Sai Baba Card -->
-          <div class="guru-card" style="display: flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(255,255,255,0.4); padding: 16px; border-radius: var(--radius-md); border: 1px solid rgba(232,149,74,0.15); transition: all 0.3s ease;">
-            <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 2.5px solid var(--accent); box-shadow: var(--shadow-sm);">
-              <img src="images/sathya_sai_baba.png" alt="Sathya Sai Baba" style="width: 100%; height: 100%; object-fit: cover;">
+        <!-- Left Column: Digital Membership Card Section -->
+        <div class="flex-1 flex flex-col items-center justify-between p-6" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+          <div class="w-full">
+            <h3 class="text-center font-semibold text-lg text-[var(--accent-dark)] mb-6" style="font-family: var(--font-heading); text-shadow: 0 1px 0 rgba(255,255,255,0.8);">Digital Membership Card</h3>
+            <div class="membership-card-wrap mb-6">
+              <div class="member-card" data-tilt>
+                <div class="atm-card-header">
+                  <span class="atm-bank-name">Sathya Sai Prema Kuteeram</span>
+                  <img src="logo.jpg" alt="Logo" class="atm-logo">
+                </div>
+                
+                <div class="atm-chip-row">
+                  <div class="atm-chip"></div>
+                  <svg class="atm-contactless" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2.5-1.5-2.5S8 10.62 8 12a2.5 2.5 0 0 0 .5 2.5z"/>
+                    <path d="M12.5 17.5A6.5 6.5 0 0 0 16 12c0-3.59-1.5-6.5-3.5-6.5S9 8.41 9 12a6.5 6.5 0 0 0 3.5 5.5z"/>
+                    <path d="M16.5 20.5A10.5 10.5 0 0 0 21 12c0-5.8-2-10.5-4.5-10.5S12 6.2 12 12a10.5 10.5 0 0 0 4.5 8.5z"/>
+                  </svg>
+                </div>
+                
+                <div class="atm-card-number" id="cardId">####</div>
+                
+                <div style="font-size: 11px; font-style: italic; color: #241508; margin-top: 8px; line-height: 1.4; text-shadow: 0 1px 0 rgba(255,255,255,0.9); font-weight: 600;">
+                  "With the love of Swami,<br>
+                  You are the choosen perosn and ,<br>
+                  you are a member of Sathya Sai Brindhavan & Sri Sai Kanchi Periyava Illam."
+                </div>
+                
+                <div class="atm-card-info" style="margin-top: auto;">
+                  <div class="atm-cardholder">
+                    <span class="atm-label">Member</span>
+                    <div class="atm-name" id="cardName">Member Name</div>
+                  </div>
+                  <div class="atm-joined">
+                    <span class="atm-label">Joined</span>
+                    <div class="atm-date" id="cardJoinedDate">DD/MM/YYYY</div>
+                  </div>
+                  <div class="atm-valid">
+                    <span class="atm-label">Valid Thru</span>
+                    <div class="atm-date">LIFETIME</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h4 style="font-weight: 600; font-size: 14px; color: var(--fg);">Sathya Sai Baba</h4>
-            <button id="getSaiQuoteBtn" class="btn btn-primary" style="padding: 8px 12px; font-size: 11px; font-weight: 600; width: 100%; white-space: normal; line-height: 1.3;">Get your day message from Swami</button>
           </div>
-
-          <!-- Maha Periyava Card -->
-          <div class="guru-card" style="display: flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(255,255,255,0.4); padding: 16px; border-radius: var(--radius-md); border: 1px solid rgba(232,149,74,0.15); transition: all 0.3s ease;">
-            <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 2.5px solid var(--accent); box-shadow: var(--shadow-sm);">
-              <img src="images/maha_periyava.png" alt="Maha Periyava" style="width: 100%; height: 100%; object-fit: cover;">
+          
+          <div class="w-full text-center">
+            <div style="text-align:center; margin-bottom: 20px;">
+              <button id="downloadCardBtn" class="btn btn-primary w-full max-w-xs" style="padding:10px 24px; font-size:14px; font-weight: 600;">Download Digital Card</button>
             </div>
-            <h4 style="font-weight: 600; font-size: 14px; color: var(--fg);">Maha Periyava</h4>
-            <button id="getPeriyavaQuoteBtn" class="btn btn-primary" style="padding: 8px 12px; font-size: 11px; font-weight: 600; width: 100%; white-space: normal; line-height: 1.3;">Get your day message from Periyava</button>
+            <p style="text-align:center; color:var(--muted); font-size:13px; max-width:360px; margin: 0 auto 10px;">
+              Welcome to your digital portal. Please present this card during physical events or study circles.
+            </p>
           </div>
         </div>
 
-        <!-- Display Quote -->
-        <div id="quoteDisplayBox" class="hidden" style="margin-top: 20px; padding: 20px; background: var(--bg); border: 1.5px solid var(--accent); border-radius: var(--radius-md); text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); transition: all 0.3s ease;">
-          <p id="quoteEnglish" style="font-size: 15px; font-weight: 500; font-style: italic; color: var(--fg); margin-bottom: 12px; line-height: 1.5;"></p>
-          <p id="quoteTamil" style="font-size: 13.5px; color: var(--muted); line-height: 1.5; font-family: var(--font-body);"></p>
-          <div style="font-size: 11px; font-weight: bold; color: var(--accent-dark); text-transform: uppercase; margin-top: 12px; letter-spacing: 0.05em;" id="quoteSource"></div>
+        <!-- Right Column: Daily Blessings (Quotes) Section -->
+        <div class="flex-1 quotes-section flex flex-col justify-between p-6" style="margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 600; color: var(--accent-dark); margin-bottom: 20px; text-shadow: 0 1px 0 rgba(255,255,255,0.8); text-align: center;">Daily Blessings</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+              <!-- Sathya Sai Baba Card -->
+              <div class="guru-card" style="display: flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(255,255,255,0.4); padding: 16px; border-radius: var(--radius-md); border: 1px solid rgba(232,149,74,0.15); transition: all 0.3s ease;">
+                <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 2.5px solid var(--accent); box-shadow: var(--shadow-sm);">
+                  <img src="image_for_quote/sathya_sai_baba.jpg" alt="Sathya Sai Baba" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h4 style="font-weight: 600; font-size: 14px; color: var(--fg);">Sathya Sai Baba</h4>
+                <button id="getSaiQuoteBtn" class="btn btn-primary" style="padding: 8px 12px; font-size: 11px; font-weight: 600; width: 100%; white-space: normal; line-height: 1.3;">Get your day message from Swami</button>
+                <div id="saiLimitText" style="font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px;">Remaining today: 3</div>
+              </div>
+
+              <!-- Maha Periyava Card -->
+              <div class="guru-card" style="display: flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(255,255,255,0.4); padding: 16px; border-radius: var(--radius-md); border: 1px solid rgba(232,149,74,0.15); transition: all 0.3s ease;">
+                <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 2.5px solid var(--accent); box-shadow: var(--shadow-sm);">
+                  <img src="image_for_quote/Maha Periyava.jpg" alt="Maha Periyava" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h4 style="font-weight: 600; font-size: 14px; color: var(--fg);">Maha Periyava</h4>
+                <button id="getPeriyavaQuoteBtn" class="btn btn-primary" style="padding: 8px 12px; font-size: 11px; font-weight: 600; width: 100%; white-space: normal; line-height: 1.3;">Get your day message from Periyava</button>
+                <div id="periyavaLimitText" style="font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px;">Remaining today: 3</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display Quote -->
+          <div id="quoteDisplayBox" class="hidden" style="margin-top: 20px; padding: 20px; background: var(--bg); border: 1.5px solid var(--accent); border-radius: var(--radius-md); text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); transition: all 0.3s ease;">
+            <p id="quoteEnglish" style="font-size: 15px; font-weight: 500; font-style: italic; color: var(--fg); margin-bottom: 12px; line-height: 1.5;"></p>
+            <p id="quoteTamil" style="font-size: 13.5px; color: var(--muted); line-height: 1.5; font-family: var(--font-body);"></p>
+            <div style="font-size: 11px; font-weight: bold; color: var(--accent-dark); text-transform: uppercase; margin-top: 12px; letter-spacing: 0.05em;" id="quoteSource"></div>
+          </div>
         </div>
+
       </div>
     </div>
 
