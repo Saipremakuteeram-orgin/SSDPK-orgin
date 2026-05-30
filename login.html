@@ -277,21 +277,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!email) return;
 
       // Check if this user is an admin
-      let isAdmin = false;
-      try {
-        const { data: adminRecord } = await supabase
-          .from('site_admins')
-          .select('email')
-          .eq('email', email)
-          .maybeSingle();
-        if (adminRecord) isAdmin = true;
-      } catch (e) {
-        console.warn("site_admins check failed, using fallback:", e);
-      }
-
       const ADMIN_EMAILS = ['sk143sathya@gmail.com'];
-      if (ADMIN_EMAILS.includes(email.toLowerCase())) {
-        isAdmin = true;
+      let isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
+
+      if (!isAdmin) {
+        try {
+          const { data: adminRecord } = await supabase
+            .from('site_admins')
+            .select('email')
+            .eq('email', email)
+            .maybeSingle();
+          if (adminRecord) isAdmin = true;
+        } catch (e) {
+          console.warn("site_admins check failed:", e);
+        }
       }
 
       if (isAdmin) {
@@ -376,21 +375,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Check if this user is an admin
-        let isAdmin = false;
-        try {
-          const { data: adminRecord } = await supabase
-            .from('site_admins')
-            .select('email')
-            .eq('email', identifier)
-            .maybeSingle();
-          if (adminRecord) isAdmin = true;
-        } catch (e) {
-          console.warn("site_admins check failed, using fallback:", e);
-        }
-
         const ADMIN_EMAILS = ['sk143sathya@gmail.com'];
-        if (ADMIN_EMAILS.includes(identifier.toLowerCase())) {
-          isAdmin = true;
+        let isAdmin = ADMIN_EMAILS.includes(identifier.toLowerCase());
+
+        if (!isAdmin) {
+          try {
+            const { data: adminRecord } = await supabase
+              .from('site_admins')
+              .select('email')
+              .eq('email', identifier)
+              .maybeSingle();
+            if (adminRecord) isAdmin = true;
+          } catch (e) {
+            console.warn("site_admins check failed:", e);
+          }
         }
 
         if (isAdmin) {
