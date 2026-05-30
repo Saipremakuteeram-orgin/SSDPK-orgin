@@ -862,3 +862,42 @@ footer a:hover { color: white; text-decoration: none; }
   opacity: 1;
 }
 
+/* Navigation Sign In / Sign Up / Sign Out styles */
+.nav-links a.nav-login-btn {
+  border: 1px solid var(--accent);
+  color: var(--accent-dark) !important;
+  font-weight: 600;
+  margin-left: 8px;
+}
+.nav-links a.nav-login-btn:hover {
+  background: var(--accent-light);
+}
+.nav-links a.nav-signup-btn {
+  background: var(--accent);
+  color: white !important;
+  font-weight: 600;
+  margin-left: 4px;
+}
+.nav-links a.nav-signup-btn:hover {
+  background: var(--accent-dark);
+}
+.nav-links a.nav-logout-btn {
+  border: 1px solid var(--danger);
+  color: var(--danger) !important;
+  font-weight: 600;
+  margin-left: 8px;
+}
+.nav-links a.nav-logout-btn:hover {
+  background: oklch(95% 0.05 30);
+}
+
+@media (max-width: 768px) {
+  .nav-links a.nav-login-btn,
+  .nav-links a.nav-signup-btn,
+  .nav-links a.nav-logout-btn {
+    margin-left: 0;
+    margin-top: 4px;
+    text-align: center;
+  }
+}
+

@@ -19,13 +19,62 @@
     });
   }
 
-  // Active nav link
-  var currentPath = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.nav-links a').forEach(function(link) {
-    if (link.getAttribute('href') === currentPath) {
-      link.classList.add('active');
+  function renderDynamicNav() {
+    var navLinks = document.getElementById('navLinks');
+    if (navLinks) {
+      console.log('Dynamic nav links checking... navLinks found.');
+      var session = null;
+      try {
+        session = JSON.parse(localStorage.getItem('sspk_session'));
+        console.log('Session retrieved in main.js:', session);
+      } catch (e) {
+        console.error(e);
+      }
+      
+      var linksHtml = '';
+      linksHtml += '<a href="index.html">Home</a>';
+      linksHtml += '<a href="about.html">About</a>';
+      linksHtml += '<a href="gallery.html">Gallery</a>';
+      linksHtml += '<a href="events.html">Events</a>';
+      
+      if (session) {
+        linksHtml += '<a href="dashboard.html" class="donate-btn">Dashboard</a>';
+        linksHtml += '<a href="#" id="navLogoutBtn" class="nav-logout-btn">Sign Out</a>';
+      } else {
+        linksHtml += '<a href="login.html" class="nav-login-btn">Sign In</a>';
+        linksHtml += '<a href="signup.html" class="nav-signup-btn">Sign Up</a>';
+      }
+      
+      navLinks.innerHTML = linksHtml;
+
+      // Handle sign out
+      var navLogoutBtn = document.getElementById('navLogoutBtn');
+      if (navLogoutBtn) {
+        navLogoutBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          localStorage.removeItem('sspk_session');
+          if (window.supabase) {
+            window.supabase.auth.signOut().catch(function(err) { console.warn(err); });
+          }
+          window.location.href = 'login.html';
+        });
+      }
+
+      // Active nav link highlight
+      var currentPath = window.location.pathname.split('/').pop() || 'index.html';
+      currentPath = currentPath.split('?')[0];
+      document.querySelectorAll('.nav-links a').forEach(function(link) {
+        var href = link.getAttribute('href');
+        if (href && href.split('?')[0] === currentPath) {
+          link.classList.add('active');
+        }
+      });
     }
-  });
+  }
+
+  // Run renderDynamicNav
+  renderDynamicNav();
+  window.addEventListener('DOMContentLoaded', renderDynamicNav);
 
   // Lightbox
   var lightbox = document.getElementById('lightbox');
