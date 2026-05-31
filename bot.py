@@ -30,6 +30,7 @@ Requirements:
 
 import os
 import io
+import time
 import zipfile
 import uuid
 import asyncio
@@ -761,30 +762,48 @@ async def addalbum_done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 # MEDIA & TEXT HANDLERS
 # ══════════════════════════════════════════════════════════════════════════════
 
-MEDIA_GROUP_CACHE = {}
+# Format: { chat_id: {"event_id": "123", "timestamp": 171000000} }
+ACTIVE_EVENTS_CACHE = {}
+UPLOAD_TIMEOUT_SECONDS = 120  # 2 minutes window for bulk uploads
 
 async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Listen to private channel and save photos automatically to events.
        To trigger, post a photo with caption 'Event: 123' (or 'Event_123').
-       If it's an album, all photos will be saved to that event.
+       If it's a large album, all photos sent within 2 minutes will be grouped.
     """
     message = update.channel_post
     if not message or not message.photo:
         return
         
+    chat_id = message.chat_id
     caption = message.caption or ""
     file_id = message.photo[-1].file_id
     
     event_id = None
+    current_time = time.time()
     
     import re
     match = re.search(r'event[_\s:]*([a-zA-Z0-9\-]+)', caption, re.IGNORECASE)
+    
     if match:
+        # We found a caption! Set this as the active event for this chat.
         event_id = match.group(1)
-        if message.media_group_id:
-            MEDIA_GROUP_CACHE[message.media_group_id] = event_id
-    elif message.media_group_id and message.media_group_id in MEDIA_GROUP_CACHE:
-        event_id = MEDIA_GROUP_CACHE[message.media_group_id]
+        ACTIVE_EVENTS_CACHE[chat_id] = {
+            "event_id": event_id,
+            "timestamp": current_time
+        }
+    else:
+        # No caption. Check if there's an active event in the last 2 minutes.
+        active_cache = ACTIVE_EVENTS_CACHE.get(chat_id)
+        if active_cache:
+            time_since_last = current_time - active_cache["timestamp"]
+            if time_since_last <= UPLOAD_TIMEOUT_SECONDS:
+                event_id = active_cache["event_id"]
+                # Optional: refresh the timestamp so continuous uploads don't timeout
+                active_cache["timestamp"] = current_time
+            else:
+                # Cache expired.
+                del ACTIVE_EVENTS_CACHE[chat_id]
         
     if event_id:
         try:
