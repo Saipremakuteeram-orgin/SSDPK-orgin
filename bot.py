@@ -441,7 +441,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "📱 /menu — Interactive inline dashboard menu\n"
         "🖼 /gallery — Browse Event photos\n"
         "📅 /events — View upcoming events\n"
-        "📸 /addalbum — (Admin) Bulk upload photos\n"
         "❓ /help — Show all commands\n\n"
         "<i>Use the menu to easily navigate!</i>"
     )
@@ -455,9 +454,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "━━━━━━━━━━━━━━━━━━━━━━\n\n"
         "Here are the commands you can use to interact with me:\n\n"
         "📱 /menu — Open the interactive dashboard main menu\n"
-        "🖼 /gallery — View and browse photos by category\n"
+        "🖼 /gallery — View and browse photos by event\n"
         "📅 /events — Get details of upcoming scheduled events\n"
-        "📸 /addgallery — (Admin only) Add new photos directly to the gallery\n"
         "❓ /help — Show this help message\n\n"
     )
     await update.message.reply_text(msg, parse_mode="Markdown")
@@ -808,7 +806,6 @@ async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     message = update.message
     if message.photo:
         photo = message.photo[-1]
-        await message.reply_text("📥 received. Use /addgallery to upload to website.")
         await context.bot.send_document(chat_id=message.chat_id, document=photo.file_id)
     elif message.document:
         await message.reply_document(document=message.document.file_id)
@@ -831,7 +828,6 @@ async def post_init(application: Application) -> None:
         BotCommand("menu", "SSPK interactive dashboard menu"),
         BotCommand("gallery", "Browse Event photos"),
         BotCommand("events", "View upcoming scheduled events"),
-        BotCommand("addalbum", "(Admin) Bulk upload photos to event"),
         BotCommand("help", "Show all available commands"),
     ]
     try:
