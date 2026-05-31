@@ -13,12 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const cardId = document.getElementById('cardId');
   const cardJoinedDate = document.getElementById('cardJoinedDate');
 
-  // Initialize state
-  checkAuthState();
+  // Initialize state — async so we can check live Supabase session first
+  // This prevents the race condition when Google OAuth redirects back here
+  // before onAuthStateChange has had a chance to fire
+  initAuthState();
 
   // Sync state on OAuth redirect / auth state changes
   supabase.auth.onAuthStateChange(async (event, session) => {
     console.log('onAuthStateChange event:', event, session);
+
+    // Skip INITIAL_SESSION — already handled by initAuthState()
+    if (event === 'INITIAL_SESSION') return;
+
     if (session && session.user) {
       const email = session.user.email;
       if (!email) return;
@@ -92,6 +98,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ── ASYNC init: checks live Supabase session FIRST before falling back to localStorage
+  // This handles the Google OAuth redirect case where tokens are in the URL
+  async function initAuthState() {
+    try {
+      // getSession() processes the OAuth hash/code from the URL if present
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.warn('getSession error:', error.message);
+      }
+
+      if (session && session.user) {
+        const email = session.user.email;
+        if (!email) { checkAuthState(); return; }
+
+        // Check if this user is an admin
+        const ADMIN_EMAILS = ['sk143sathya@gmail.com'];
+        let isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
+
+        if (!isAdmin) {
+          try {
+            const { data: adminRecord } = await supabase
+              .from('site_admins')
+              .select('email')
+              .eq('email', email)
+              .maybeSingle();
+            if (adminRecord) isAdmin = true;
+          } catch (e) {
+            console.warn("site_admins check failed in initAuthState:", e);
+          }
+        }
+
+        if (isAdmin) {
+          localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin', identifier: email }));
+          checkAuthState();
+          return;
+        }
+
+        // Ensure member profile exists (auto-create for Google OAuth new users)
+        const { data: member } = await supabase
+          .from('members')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+
+        if (!member) {
+          const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
+          const fullName = session.user.user_metadata?.full_name || 'Google User';
+          const fname = fullName.split(' ')[0] || 'Google';
+          const lname = fullName.split(' ').slice(1).join(' ') || 'User';
+
+          await supabase.from('members').insert([{ fname, lname, email, member_id: uniqueId }]);
+
+          fetch('/api/send-welcome', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, name: fullName })
+          }).catch(() => {});
+        }
+
+        localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: email }));
+        checkAuthState();
+        return;
+      }
+
+      // No live session — fall back to localStorage check
+      checkAuthState();
+    } catch (err) {
+      console.error('initAuthState error:', err);
+      checkAuthState();
+    }
+  }
+
   function checkAuthState() {
     const session = JSON.parse(localStorage.getItem('sspk_session'));
     if (session) {
@@ -109,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'login.html';
     }
   }
+
 
   function showView(view) {
     if (authView) authView.classList.add('hidden');
