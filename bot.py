@@ -467,8 +467,13 @@ async def gallery_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     try:
         res = supabase.table("events").select("id, title, date").order("date", desc=True).limit(10).execute()
         events = res.data
+        
         if not events:
-            await update.message.reply_text("📭 No events found yet.")
+            msg = "📭 No events found yet."
+            if update.callback_query:
+                await update.callback_query.edit_message_text(msg)
+            else:
+                await update.message.reply_text(msg)
             return
 
         keyboard = []
@@ -476,15 +481,24 @@ async def gallery_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             title = ev['title'][:30] + "..." if len(ev['title']) > 30 else ev['title']
             keyboard.append([InlineKeyboardButton(f"📅 [{ev['date']}] {title}", callback_data=f"gal_{ev['id']}")])
             
+        if update.callback_query:
+            keyboard.append([InlineKeyboardButton("⬅ Back to Menu", callback_data="menu_main")])
+            
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text(
-            "🖼 <b>Select an Event to view its Gallery:</b>",
-            reply_markup=reply_markup,
-            parse_mode="HTML",
-        )
+        msg_text = "🖼 <b>Select an Event to view its Gallery:</b>"
+        
+        if update.callback_query:
+            await update.callback_query.edit_message_text(msg_text, reply_markup=reply_markup, parse_mode="HTML")
+        else:
+            await update.message.reply_text(msg_text, reply_markup=reply_markup, parse_mode="HTML")
+            
     except Exception as e:
         logger.error(f"Gallery events fetch error: {e}")
-        await update.message.reply_text("❌ Failed to fetch events.")
+        error_msg = "❌ Failed to fetch events."
+        if update.callback_query:
+            await update.callback_query.edit_message_text(error_msg)
+        else:
+            await update.message.reply_text(error_msg)
 
 async def gallery_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle gallery event selection → fetch URLs from Supabase → send photos or request."""
