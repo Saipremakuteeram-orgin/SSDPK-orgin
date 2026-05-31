@@ -938,20 +938,33 @@
       .then(function(res) {
         var photos = res.data;
         var photoSection = document.getElementById('eventPhotos_' + evt.id);
-        if (photoSection && photos && photos.length > 0) {
-          var photosHtml = '<h4 style="margin: 20px 0 10px; font-family: var(--font-heading); color: var(--fg); font-size: 15px; font-weight: 700;">Event Gallery</h4>' +
-            '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 20px;">';
-          photos.forEach(function(p) {
-            photosHtml += '<div style="position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="window.open(\'' + p.src_url + '\', \'_blank\')">';
-            if (p.src_url) {
-              photosHtml += '<img src="' + p.src_url + '" style="width: 100%; height: 100%; object-fit: cover;" alt="' + p.caption + '">';
+        if (photoSection) {
+          var tgLink = 'https://t.me/ssdspk_bot?start=event_' + evt.id;
+          var tgButtonHtml = '<div style="margin-top: 15px; margin-bottom: 25px;"><a href="' + tgLink + '" target="_blank" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; background-color: #24A1DE; border: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> View Full Gallery on Telegram</a></div>';
+          
+          if (photos && photos.length > 0) {
+            var photosHtml = '<h4 style="margin: 20px 0 10px; font-family: var(--font-heading); color: var(--fg); font-size: 15px; font-weight: 700;">Event Highlights</h4>' +
+              '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 20px;">';
+            
+            // Only show photos that have actual URLs on the website (highlight photos)
+            var webPhotos = photos.filter(function(p) { return p.src_url; });
+            
+            if (webPhotos.length > 0) {
+              webPhotos.forEach(function(p) {
+                photosHtml += '<div style="position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="window.open(\'' + p.src_url + '\', \'_blank\')">';
+                photosHtml += '<img src="' + p.src_url + '" style="width: 100%; height: 100%; object-fit: cover;" alt="' + p.caption + '">';
+                photosHtml += '</div>';
+              });
+              photosHtml += '</div>';
             } else {
-              photosHtml += '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 18px;">' + (p.placeholder || '🖼️') + '</div>';
+              photosHtml = '';
             }
-            photosHtml += '</div>';
-          });
-          photosHtml += '</div>';
-          photoSection.innerHTML = photosHtml;
+            
+            photoSection.innerHTML = photosHtml + tgButtonHtml;
+          } else {
+            // Even if no highlights, show the button in case Telegram has photos
+            photoSection.innerHTML = tgButtonHtml;
+          }
         }
       });
   }
@@ -1049,20 +1062,31 @@
       .then(function(res) {
         var photos = res.data;
         var photoSection = document.getElementById('modalPhotos_' + evt.id);
-        if (photoSection && photos && photos.length > 0) {
-          var photosHtml = '<h4 style="margin: 20px 0 10px; font-family: var(--font-heading); color: var(--fg); font-size: 16px; font-weight: 700;">Event Gallery</h4>' +
-            '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">';
-          photos.forEach(function(p) {
-            photosHtml += '<div style="position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="window.open(\'' + p.src_url + '\', \'_blank\')">';
-            if (p.src_url) {
-              photosHtml += '<img src="' + p.src_url + '" style="width: 100%; height: 100%; object-fit: cover;" alt="' + p.caption + '">';
+        if (photoSection) {
+          var tgLink = 'https://t.me/ssdspk_bot?start=event_' + evt.id;
+          var tgButtonHtml = '<div style="margin-top: 15px; margin-bottom: 25px;"><a href="' + tgLink + '" target="_blank" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; background-color: #24A1DE; border: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> View Full Gallery on Telegram</a></div>';
+          
+          if (photos && photos.length > 0) {
+            var photosHtml = '<h4 style="margin: 20px 0 10px; font-family: var(--font-heading); color: var(--fg); font-size: 16px; font-weight: 700;">Event Highlights</h4>' +
+              '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">';
+            
+            var webPhotos = photos.filter(function(p) { return p.src_url; });
+            
+            if (webPhotos.length > 0) {
+              webPhotos.forEach(function(p) {
+                photosHtml += '<div style="position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); cursor: pointer;" onclick="window.open(\'' + p.src_url + '\', \'_blank\')">';
+                photosHtml += '<img src="' + p.src_url + '" style="width: 100%; height: 100%; object-fit: cover;" alt="' + p.caption + '">';
+                photosHtml += '</div>';
+              });
+              photosHtml += '</div>';
             } else {
-              photosHtml += '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 20px;">' + (p.placeholder || '🖼️') + '</div>';
+              photosHtml = '';
             }
-            photosHtml += '</div>';
-          });
-          photosHtml += '</div>';
-          photoSection.innerHTML = photosHtml;
+            
+            photoSection.innerHTML = photosHtml + tgButtonHtml;
+          } else {
+            photoSection.innerHTML = tgButtonHtml;
+          }
         }
       });
   }

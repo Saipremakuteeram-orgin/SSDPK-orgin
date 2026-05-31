@@ -170,16 +170,24 @@ async def upload_to_supabase_storage(file_bytes: bytes, filename: str) -> str | 
         return None, None
 
 
-async def save_gallery_record(src_url: str, storage_path: str, caption: str, category: str) -> bool:
+async def save_gallery_record(src_url: str | None, storage_path: str | None, caption: str, category: str, telegram_file_id: str | None = None, event_id: str | None = None) -> bool:
     """Insert a record into the Supabase gallery table."""
     try:
-        supabase.table("gallery").insert({
-            "src_url":      src_url,
-            "storage_path": storage_path,
+        data = {
             "caption":      caption,
             "category":     category,
             "source":       "telegram",
-        }).execute()
+        }
+        if src_url:
+            data["src_url"] = src_url
+        if storage_path:
+            data["storage_path"] = storage_path
+        if telegram_file_id:
+            data["telegram_file_id"] = telegram_file_id
+        if event_id:
+            data["event_id"] = event_id
+            
+        supabase.table("gallery").insert(data).execute()
         return True
     except Exception as e:
         logger.error(f"Gallery DB insert error: {e}")
@@ -462,24 +470,64 @@ async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 # ══════════════════════════════════════════════════════════════════════════════
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Welcome message."""
+    """Welcome message & Deep Link Handler."""
+    
+    # 1. Deep Link Handler (t.me/bot?start=event_123)
+    if context.args and context.args[0].startswith("event_"):
+        event_id = context.args[0].replace("event_", "")
+        await update.message.reply_text(f"🔍 Fetching photos for Event #{event_id} from Telegram's secure vault...", parse_mode="HTML")
+        try:
+            res = supabase.table("gallery").select("telegram_file_id, caption").eq("event_id", event_id).execute()
+            photos = [item for item in res.data if item.get("telegram_file_id")]
+            
+            if not photos:
+                await update.message.reply_text("❌ No photos found for this event yet.")
+                return
+                
+            from telegram import InputMediaPhoto
+            media_group = []
+            for photo in photos:
+                media_group.append(InputMediaPhoto(media=photo["telegram_file_id"], caption=photo.get("caption", "")))
+                
+            # Send in chunks of 10 (Telegram's MediaGroup limit)
+            for i in range(0, len(media_group), 10):
+                await update.message.reply_media_group(media=media_group[i:i+10])
+                
+            return
+        except Exception as e:
+            logger.error(f"Deep link error: {e}")
+            await update.message.reply_text("⚠️ Failed to load event photos.")
+            return
+
+    # 2. Normal Welcome & Event Summary
     user = update.effective_user
     name = user.first_name if user else "Devotee"
+    
+    # Fetch events summary
+    try:
+        events_res = supabase.table("events").select("title, event_date").order("event_date", desc=True).limit(5).execute()
+        events_text = "\n\n<b>📅 Recent & Upcoming Events:</b>\n"
+        for ev in events_res.data:
+            events_text += f"• {ev['title']} ({ev['event_date']})\n"
+    except Exception as e:
+        events_text = ""
+
     msg = (
-        f"🙏 *Sai Ram, {name}!*\n\n"
-        f"Welcome to the official bot of *{TRUST_NAME}*.\n\n"
+        f"🙏 <b>Sai Ram, {name}!</b>\n\n"
+        f"Welcome to the official bot of <b>{TRUST_NAME}</b>.\n\n"
         "A spiritual trust dedicated to the teachings of Sri Sathya Sai Baba — "
-        "*Love All, Serve All.*\n\n"
+        "<b>Love All, Serve All.</b>"
+        f"{events_text}\n\n"
         "━━━━━━━━━━━━━━━━━━\n"
-        "📋 *What I can do:*\n"
+        "📋 <b>What I can do:</b>\n"
         "📱 /menu — Interactive inline dashboard menu\n"
         "🖼 /gallery — Browse & download gallery images\n"
         "📅 /events — View upcoming events\n"
         "💬 /info — Spiritual guidance via AI\n"
         "❓ /help — Show all commands\n\n"
-        "_Try typing `@bot_username bhajan` in any chat to search events/photos!_"
+        "<i>Try typing <code>@ssdspk_bot bhajan</code> in any chat to search events/photos!</i>"
     )
-    await update.message.reply_text(msg, parse_mode="Markdown")
+    await update.message.reply_text(msg, parse_mode="HTML")
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -715,7 +763,7 @@ async def addgallery_receive_photo(update: Update, context: ContextTypes.DEFAULT
 
 
 async def addgallery_receive_caption(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Step 4: Caption received → Download photo → Upload to Supabase Storage → Save URL."""
+    """Step 4: Caption received → Save telegram_file_id to Supabase (Zero Storage Used!)."""
     caption   = update.message.text.strip()
     file_id   = context.user_data.get("gallery_file_id")
     category  = context.user_data.get("gallery_category", "event")
@@ -724,39 +772,24 @@ async def addgallery_receive_caption(update: Update, context: ContextTypes.DEFAU
         await update.message.reply_text("❌ No photo found. Start again with /addgallery.")
         return ConversationHandler.END
 
-    status_msg = await update.message.reply_text("⏳ Syncing image with Supabase Cloud...")
+    status_msg = await update.message.reply_text("⏳ Saving to database (Zero Server Storage)...")
 
     try:
-        # Download
-        tg_file = await context.bot.get_file(file_id)
-        file_bytes_io = io.BytesIO()
-        await tg_file.download_to_memory(file_bytes_io)
-        file_bytes = file_bytes_io.getvalue()
-
-        # Upload Storage
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename  = f"{category}_{timestamp}.jpg"
-        public_url, storage_path = await upload_to_supabase_storage(file_bytes, filename)
-
-        if not public_url:
-            await status_msg.edit_text("❌ Failed to upload to Supabase Storage.")
-            return ConversationHandler.END
-
-        # Save Table row
-        saved = await save_gallery_record(public_url, storage_path, caption, category)
+        # Save Table row with ONLY the telegram_file_id (no src_url or storage_path)
+        saved = await save_gallery_record(src_url=None, storage_path=None, caption=caption, category=category, telegram_file_id=file_id)
 
         if saved:
             emoji = CATEGORY_EMOJIS.get(category, "📌")
             await status_msg.edit_text(
-                f"✅ *Photo added to gallery successfully!*\n\n"
+                f"✅ <b>Photo added to gallery successfully!</b>\n\n"
                 f"📂 Category: {emoji} {category.title()}\n"
                 f"📝 Caption: {caption}\n"
-                f"🔗 Stored as URL in Supabase Storage\n\n"
-                f"_The photo will now appear on the website dynamically._",
-                parse_mode="Markdown",
+                f"🔗 <b>Storage:</b> Saved securely on Telegram (0 bytes on server)\n\n"
+                f"<i>The photo is now accessible via the bot and website deep links.</i>",
+                parse_mode="HTML",
             )
         else:
-            await status_msg.edit_text("⚠️ Upload succeeded, but DB insert failed.")
+            await status_msg.edit_text("⚠️ Database insert failed. Did you run the SQL script?")
 
     except Exception as e:
         logger.error(f"addgallery error: {e}")
@@ -776,6 +809,46 @@ async def addgallery_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 # ══════════════════════════════════════════════════════════════════════════════
 # MEDIA & TEXT HANDLERS
 # ══════════════════════════════════════════════════════════════════════════════
+
+MEDIA_GROUP_CACHE = {}
+
+async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Listen to private channel and save photos automatically to events.
+       To trigger, post a photo with caption 'Event: 123' (or 'Event_123').
+       If it's an album, all photos will be saved to that event.
+    """
+    message = update.channel_post
+    if not message or not message.photo:
+        return
+        
+    caption = message.caption or ""
+    file_id = message.photo[-1].file_id
+    
+    event_id = None
+    
+    import re
+    match = re.search(r'event[_\s:]*([a-zA-Z0-9\-]+)', caption, re.IGNORECASE)
+    if match:
+        event_id = match.group(1)
+        if message.media_group_id:
+            MEDIA_GROUP_CACHE[message.media_group_id] = event_id
+    elif message.media_group_id and message.media_group_id in MEDIA_GROUP_CACHE:
+        event_id = MEDIA_GROUP_CACHE[message.media_group_id]
+        
+    if event_id:
+        try:
+            # Save 0-byte file to database linked to the event
+            await save_gallery_record(
+                src_url=None, 
+                storage_path=None, 
+                caption=caption, 
+                category="event", 
+                telegram_file_id=file_id, 
+                event_id=event_id
+            )
+            logger.info(f"✅ Saved channel photo to Event {event_id}")
+        except Exception as e:
+            logger.error(f"Failed to save channel photo: {e}")
 
 async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send back media as a downloadable document."""
@@ -858,6 +931,9 @@ def main() -> None:
     app.add_handler(CommandHandler("info",    info_command))
     app.add_handler(CommandHandler("help",    help_command))
     app.add_handler(addgallery_conv)
+
+    # Private Channel Bulk Upload Listener
+    app.add_handler(MessageHandler(filters.ChatType.CHANNEL & filters.PHOTO, handle_channel_post))
 
     # Callback queries for interactive menu (prefix 'menu_') and category selections (prefix 'gal_')
     app.add_handler(CallbackQueryHandler(menu_callback_handler, pattern="^menu_"))

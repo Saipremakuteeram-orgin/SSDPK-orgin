@@ -764,7 +764,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="display:flex; align-items:center;">
           <input type="checkbox" class="event-select-cb" data-id="${evt.id}" data-evt='${JSON.stringify(evt).replace(/'/g, "&apos;")}' ${selectedEventIds.has(evt.id.toString()) ? 'checked' : ''} style="margin-right:12px; width:16px; height:16px; cursor:pointer;">
           <div>
-            <strong style="color:var(--fg);">${evt.title}</strong><br>
+            <strong style="color:var(--fg);">${evt.title}</strong>
+            <span style="display:inline-block; margin-left:8px; padding:2px 6px; background:#e0f2fe; color:#0369a1; border-radius:4px; font-size:11px; font-family:monospace; font-weight:bold;" title="Type 'Event_${evt.id}' in Telegram caption to upload photos to this event">Telegram ID: Event_${evt.id}</span><br>
             <small style="color:var(--muted);">${evt.date} &middot; ${evt.time || ''} &middot; ${evt.venue || ''}</small>
           </div>
         </div>
