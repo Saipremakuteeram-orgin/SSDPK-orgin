@@ -121,8 +121,8 @@ CATEGORY_EMOJIS = {
 }
 VALID_CATEGORIES = list(CATEGORY_EMOJIS.keys())
 
-# ConversationHandler states for /addgallery
-AWAIT_PHOTO, AWAIT_CAPTION = range(2)
+# ConversationHandler states for /addgallery and /addalbum
+AWAIT_PHOTO, AWAIT_CAPTION, AWAIT_ALBUM_EVENT, AWAIT_ALBUM_PHOTOS = range(4)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -807,6 +807,91 @@ async def addgallery_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# /addalbum CONVERSATION (INTERACTIVE BULK UPLOAD)
+# ══════════════════════════════════════════════════════════════════════════════
+
+async def addalbum_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Step 1: Ask admin to select an event."""
+    try:
+        # Fetch top 10 recent events
+        res = supabase.table("events").select("id, title, event_date").order("event_date", desc=True).limit(10).execute()
+        events = res.data
+        if not events:
+            await update.message.reply_text("❌ No events found in the database.")
+            return ConversationHandler.END
+            
+        keyboard = []
+        for ev in events:
+            keyboard.append([InlineKeyboardButton(f"📅 {ev['title']} ({ev['event_date']})", callback_data=f"alb_{ev['id']}")])
+        keyboard.append([InlineKeyboardButton("❌ Cancel", callback_data="alb_cancel")])
+        
+        await update.message.reply_text(
+            "📸 <b>Interactive Album Upload</b>\n\n"
+            "Please select the event you want to attach photos to:",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+        return AWAIT_ALBUM_EVENT
+    except Exception as e:
+        logger.error(f"addalbum error: {e}")
+        await update.message.reply_text("❌ Error fetching events.")
+        return ConversationHandler.END
+
+async def addalbum_event_selected(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Step 2: Event chosen — ask for photos."""
+    query = update.callback_query
+    await query.answer()
+    data = query.data
+    
+    if data == "alb_cancel":
+        await query.edit_message_text("❌ Upload cancelled.")
+        return ConversationHandler.END
+        
+    event_id = data.replace("alb_", "")
+    context.user_data["album_event_id"] = event_id
+    context.user_data["album_photo_count"] = 0
+    
+    await query.edit_message_text(
+        f"✅ <b>Event Selected!</b>\n\n"
+        f"Now, forward or upload as many photos as you want to this chat.\n"
+        f"You can send an entire album at once.\n\n"
+        f"When you are completely finished, type /done.",
+        parse_mode="HTML"
+    )
+    return AWAIT_ALBUM_PHOTOS
+
+async def addalbum_receive_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Step 3: Receive photo and save to DB silently."""
+    event_id = context.user_data.get("album_event_id")
+    if not event_id:
+        return ConversationHandler.END
+        
+    photo = update.message.photo[-1]
+    file_id = photo.file_id
+    
+    try:
+        await save_gallery_record(src_url=None, storage_path=None, caption="", category="event", telegram_file_id=file_id, event_id=event_id)
+        context.user_data["album_photo_count"] = context.user_data.get("album_photo_count", 0) + 1
+    except Exception as e:
+        logger.error(f"Failed to save album photo: {e}")
+        
+    # We do NOT reply to every photo to avoid spam
+    return AWAIT_ALBUM_PHOTOS
+    
+async def addalbum_done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Step 4: Admin types /done to finish."""
+    count = context.user_data.get("album_photo_count", 0)
+    await update.message.reply_text(
+        f"🎉 <b>Upload Complete!</b>\n\n"
+        f"Successfully saved <b>{count} photos</b> to the database.\n"
+        f"These photos cost 0 bytes of server storage and are now live!",
+        parse_mode="HTML"
+    )
+    context.user_data.clear()
+    return ConversationHandler.END
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # MEDIA & TEXT HANDLERS
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -884,6 +969,7 @@ async def post_init(application: Application) -> None:
         BotCommand("gallery", "Browse SSPK photo gallery"),
         BotCommand("events", "View upcoming scheduled events"),
         BotCommand("info", "Ask spiritual questions to AI"),
+        BotCommand("addalbum", "(Admin) Bulk upload photos to event"),
         BotCommand("help", "Show all available commands"),
         BotCommand("addgallery", "(Admin) Upload photo to website gallery"),
     ]
@@ -923,6 +1009,21 @@ def main() -> None:
         fallbacks=[CommandHandler("cancel", addgallery_cancel)],
     )
 
+    # /addalbum conversation
+    addalbum_conv = ConversationHandler(
+        entry_points=[CommandHandler("addalbum", addalbum_start)],
+        states={
+            AWAIT_ALBUM_EVENT: [
+                CallbackQueryHandler(addalbum_event_selected, pattern="^alb_"),
+            ],
+            AWAIT_ALBUM_PHOTOS: [
+                MessageHandler(filters.PHOTO, addalbum_receive_photo),
+                CommandHandler("done", addalbum_done),
+            ],
+        },
+        fallbacks=[CommandHandler("cancel", addgallery_cancel), CommandHandler("done", addalbum_done)],
+    )
+
     # Handlers
     app.add_handler(CommandHandler("start",   start))
     app.add_handler(CommandHandler("menu",    menu_command))
@@ -931,6 +1032,7 @@ def main() -> None:
     app.add_handler(CommandHandler("info",    info_command))
     app.add_handler(CommandHandler("help",    help_command))
     app.add_handler(addgallery_conv)
+    app.add_handler(addalbum_conv)
 
     # Private Channel Bulk Upload Listener
     app.add_handler(MessageHandler(filters.ChatType.CHANNEL & filters.PHOTO, handle_channel_post))
