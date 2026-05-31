@@ -30,6 +30,7 @@ Requirements:
 
 import os
 import io
+import zipfile
 import uuid
 import asyncio
 import logging
@@ -529,6 +530,14 @@ async def gallery_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         for i in range(0, len(media_group), 10):
             await context.bot.send_media_group(chat_id=query.message.chat_id, media=media_group[i:i+10])
             
+        # Add the Download All button
+        dl_keyboard = [[InlineKeyboardButton("📥 Download All Photos (.zip)", callback_data=f"dl_album_{event_id}")]]
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text="Enjoying these photos? Download the full album below!",
+            reply_markup=InlineKeyboardMarkup(dl_keyboard)
+        )
+            
     except Exception as e:
         logger.error(f"Gallery fetch error: {e}")
         await query.edit_message_text("❌ Failed to fetch gallery photos.")
@@ -551,6 +560,58 @@ async def request_photos_callback(update: Update, context: ContextTypes.DEFAULT_
             pass
             
     await query.edit_message_text("✅ Your request has been sent to the admins! Please check back later.")
+
+async def download_album_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle Download All Photos button: fetches files, zips them, and sends."""
+    query = update.callback_query
+    event_id = query.data.replace("dl_album_", "")
+    
+    await query.answer()
+    status_msg = await query.edit_message_text("⏳ Generating your ZIP file... Please wait.")
+
+    try:
+        res = supabase.table("gallery").select("telegram_file_id, caption").eq("event_id", event_id).execute()
+        photos = [item for item in res.data if item.get("telegram_file_id")]
+        
+        if not photos:
+            await status_msg.edit_text("❌ Photos no longer available.")
+            return
+            
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for idx, photo in enumerate(photos):
+                file_id = photo["telegram_file_id"]
+                try:
+                    # Download the file from Telegram servers
+                    tg_file = await context.bot.get_file(file_id)
+                    file_bytes = await tg_file.download_as_bytearray()
+                    
+                    # Create a sensible filename
+                    ext = tg_file.file_path.split('.')[-1] if tg_file.file_path else "jpg"
+                    caption = photo.get('caption')
+                    filename_base = f"{caption[:20]}_{idx}" if caption else f"photo_{idx}"
+                    # clean up filename to avoid invalid chars
+                    filename_base = "".join(c for c in filename_base if c.isalnum() or c in (' ', '_')).rstrip()
+                    
+                    zip_file.writestr(f"{filename_base}.{ext}", file_bytes)
+                except Exception as dl_err:
+                    logger.warning(f"Failed to download photo {file_id} for zip: {dl_err}")
+                    
+        zip_buffer.seek(0)
+        
+        await status_msg.edit_text("✅ ZIP file generated! Uploading...")
+        await context.bot.send_document(
+            chat_id=query.message.chat_id,
+            document=zip_buffer,
+            filename=f"Event_{event_id}_Photos.zip",
+            caption=f"📥 Here is the complete album for Event {event_id}!"
+        )
+        await status_msg.delete()
+        
+    except Exception as e:
+        logger.error(f"ZIP generation error: {e}")
+        await status_msg.edit_text("❌ Failed to generate ZIP file. It might be too large.")
+
 
 
 async def events_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -822,6 +883,7 @@ def main() -> None:
     app.add_handler(CallbackQueryHandler(menu_callback_handler, pattern="^menu_"))
     app.add_handler(CallbackQueryHandler(gallery_callback, pattern="^gal_"))
     app.add_handler(CallbackQueryHandler(request_photos_callback, pattern="^req_photos_"))
+    app.add_handler(CallbackQueryHandler(download_album_callback, pattern="^dl_album_"))
 
     # Global Inline Queries search
     app.add_handler(InlineQueryHandler(inline_query_handler))
