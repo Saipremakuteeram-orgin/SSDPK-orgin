@@ -1367,7 +1367,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = getLimitData(identifier);
     
     // Swami limit
-    const remainingSai = Math.max(0, 3 - data.sai_count);
+    const remainingSai = Math.max(0, 1 - data.sai_count);
     if (saiLimitText) saiLimitText.textContent = `Remaining today: ${remainingSai}`;
     if (getSaiQuoteBtn) {
       if (remainingSai === 0) {
@@ -1384,7 +1384,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Periyava limit
-    const remainingPeriyava = Math.max(0, 3 - data.periyava_count);
+    const remainingPeriyava = Math.max(0, 1 - data.periyava_count);
     if (periyavaLimitText) periyavaLimitText.textContent = `Remaining today: ${remainingPeriyava}`;
     if (getPeriyavaQuoteBtn) {
       if (remainingPeriyava === 0) {
@@ -1451,7 +1451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = getLimitData(session.identifier);
     const countKey = guru === 'sai' ? 'sai_count' : 'periyava_count';
 
-    if (data[countKey] >= 3) {
+    if (data[countKey] >= 1) {
       renderLimitUI(session.identifier);
       return;
     }
