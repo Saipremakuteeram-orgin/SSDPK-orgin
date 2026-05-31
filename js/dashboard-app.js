@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function clearAuth() {
     localStorage.removeItem(SESSION_KEY);
     localStorage.removeItem(TRUST_KEY);
+    localStorage.removeItem('sspk_member_data');
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -125,6 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const fname = fullName.split(' ')[0] || 'Google';
       const lname = fullName.split(' ').slice(1).join(' ') || 'User';
       await supabase.from('members').insert([{ fname, lname, email, member_id: uniqueId }]);
+      
+      // Pre-populate cache so dashboard renders instantly
+      localStorage.setItem('sspk_member_data', JSON.stringify({
+        fname, lname, member_id: uniqueId, registered_at: new Date().toISOString()
+      }));
+
       fetch('/api/send-welcome', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name: fullName })
@@ -405,6 +412,19 @@ document.addEventListener('DOMContentLoaded', () => {
   async function renderMembershipCard(session) {
     if (!session || !session.identifier) return;
 
+    // 1. Instant UI update from local cache
+    try {
+      const cached = JSON.parse(localStorage.getItem('sspk_member_data'));
+      if (cached) {
+        cardName.textContent = cached.fname + ' ' + cached.lname;
+        cardId.textContent = cached.member_id;
+        if (cardJoinedDate) {
+          cardJoinedDate.textContent = formatJoinedDate(cached.registered_at);
+        }
+      }
+    } catch (e) {}
+
+    // 2. Background sync to fetch fresh data
     const isEmail = session.identifier.includes('@');
     let query = supabase.from('members').select('fname, lname, member_id, registered_at');
     if (isEmail) {
@@ -415,8 +435,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const { data, error } = await query.maybeSingle();
 
-    if (error) { console.error('Card render error:', error); return; }
+    if (error) { console.error('Card background sync error:', error); return; }
     if (data) {
+      // Update cache
+      localStorage.setItem('sspk_member_data', JSON.stringify(data));
+      // Update UI with fresh data (if it changed)
       cardName.textContent = data.fname + ' ' + data.lname;
       cardId.textContent = data.member_id;
       if (cardJoinedDate) {
@@ -1384,7 +1407,21 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   async function fetchQuotes() {
+    const CACHE_KEY = 'sspk_quotes_cache';
     try {
+      // 1. Check local cache (expires after 24h)
+      const cachedStr = localStorage.getItem(CACHE_KEY);
+      if (cachedStr) {
+        const cached = JSON.parse(cachedStr);
+        if (cached && cached.timestamp && (Date.now() - cached.timestamp < 24 * 60 * 60 * 1000)) {
+          cachedQuotes.sai = cached.data.filter(q => q.guru === 'sai');
+          cachedQuotes.periyava = cached.data.filter(q => q.guru === 'periyava');
+          console.log(`Loaded ${cachedQuotes.sai.length} Sai and ${cachedQuotes.periyava.length} Periyava quotes from local cache.`);
+          return; // Skip network request
+        }
+      }
+
+      // 2. Fetch from database if cache is missing or expired
       const { data, error } = await supabase
         .from('quotes')
         .select('guru, quote_english, quote_tamil');
@@ -1395,6 +1432,12 @@ document.addEventListener('DOMContentLoaded', () => {
         cachedQuotes.sai = data.filter(q => q.guru === 'sai');
         cachedQuotes.periyava = data.filter(q => q.guru === 'periyava');
         console.log(`Loaded ${cachedQuotes.sai.length} Sai and ${cachedQuotes.periyava.length} Periyava quotes from DB.`);
+        
+        // Save to cache
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          timestamp: Date.now(),
+          data: data
+        }));
       }
     } catch (err) {
       console.warn('Failed to load quotes from Supabase quotes table, using fallback:', err.message);
