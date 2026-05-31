@@ -766,6 +766,10 @@ async def addalbum_done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 ACTIVE_EVENTS_CACHE = {}
 UPLOAD_TIMEOUT_SECONDS = 120  # 2 minutes window for bulk uploads
 
+# Format: { chat_id: [ {"file_id": "xyz", "caption": "abc", "timestamp": 171000000}, ... ] }
+ORPHAN_PHOTOS_CACHE = {}
+ORPHAN_TIMEOUT_SECONDS = 60 # 60 seconds waiting room
+
 async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Listen to private channel and save photos automatically to events.
        To trigger, post a photo with caption 'Event: 123' (or 'Event_123').
@@ -792,33 +796,54 @@ async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE
             "event_id": event_id,
             "timestamp": current_time
         }
+        
+        # Save the captioned photo immediately
+        try:
+            await save_gallery_record(src_url=None, storage_path=None, caption=caption, category="event", telegram_file_id=file_id, event_id=event_id)
+            logger.info(f"✅ Saved captioned channel photo to Event {event_id}")
+        except Exception as e:
+            logger.error(f"Failed to save captioned channel photo: {e}")
+
+        # Retroactively process any orphans that arrived before this caption!
+        orphans = ORPHAN_PHOTOS_CACHE.get(chat_id, [])
+        if orphans:
+            saved_orphans = 0
+            for orphan in orphans:
+                if current_time - orphan["timestamp"] <= ORPHAN_TIMEOUT_SECONDS:
+                    try:
+                        await save_gallery_record(src_url=None, storage_path=None, caption=orphan["caption"], category="event", telegram_file_id=orphan["file_id"], event_id=event_id)
+                        saved_orphans += 1
+                    except Exception as e:
+                        logger.error(f"Failed to save orphan photo: {e}")
+            logger.info(f"✅ Recovered and saved {saved_orphans} orphan photos to Event {event_id}!")
+            # Clear the orphan buffer for this chat
+            ORPHAN_PHOTOS_CACHE[chat_id] = []
+            
     else:
         # No caption. Check if there's an active event in the last 2 minutes.
         active_cache = ACTIVE_EVENTS_CACHE.get(chat_id)
-        if active_cache:
-            time_since_last = current_time - active_cache["timestamp"]
-            if time_since_last <= UPLOAD_TIMEOUT_SECONDS:
-                event_id = active_cache["event_id"]
-                # Optional: refresh the timestamp so continuous uploads don't timeout
-                active_cache["timestamp"] = current_time
-            else:
-                # Cache expired.
-                del ACTIVE_EVENTS_CACHE[chat_id]
-        
-    if event_id:
-        try:
-            # Save 0-byte file to database linked to the event
-            await save_gallery_record(
-                src_url=None, 
-                storage_path=None, 
-                caption=caption, 
-                category="event", 
-                telegram_file_id=file_id, 
-                event_id=event_id
-            )
-            logger.info(f"✅ Saved channel photo to Event {event_id}")
-        except Exception as e:
-            logger.error(f"Failed to save channel photo: {e}")
+        if active_cache and (current_time - active_cache["timestamp"] <= UPLOAD_TIMEOUT_SECONDS):
+            event_id = active_cache["event_id"]
+            active_cache["timestamp"] = current_time # refresh timeout
+            try:
+                await save_gallery_record(src_url=None, storage_path=None, caption=caption, category="event", telegram_file_id=file_id, event_id=event_id)
+                logger.info(f"✅ Saved channel photo to Event {event_id}")
+            except Exception as e:
+                logger.error(f"Failed to save channel photo: {e}")
+        else:
+            # No active event and no caption! This might be an early arrival.
+            # Put it in the orphan buffer waiting room.
+            if chat_id not in ORPHAN_PHOTOS_CACHE:
+                ORPHAN_PHOTOS_CACHE[chat_id] = []
+            ORPHAN_PHOTOS_CACHE[chat_id].append({
+                "file_id": file_id,
+                "caption": caption,
+                "timestamp": current_time
+            })
+            
+            # Keep orphan buffer clean (remove very old orphans)
+            ORPHAN_PHOTOS_CACHE[chat_id] = [o for o in ORPHAN_PHOTOS_CACHE[chat_id] if current_time - o["timestamp"] <= ORPHAN_TIMEOUT_SECONDS]
+            logger.info(f"⏳ Added uncaptioned photo to Orphan Buffer (Total orphans: {len(ORPHAN_PHOTOS_CACHE[chat_id])})")
 
 async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send back media as a downloadable document."""
