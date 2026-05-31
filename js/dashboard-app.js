@@ -1080,12 +1080,16 @@ document.addEventListener('DOMContentLoaded', () => {
         .order('date', { ascending: false });
 
       if (!error && data) {
+        const seenTitles = new Set();
         data.forEach(evt => {
-          const opt = document.createElement('option');
-          opt.value = evt.id;
-          opt.textContent = `${evt.title} (${evt.date})`;
-          opt.setAttribute('data-category', evt.category);
-          eventSelect.appendChild(opt);
+          if (!seenTitles.has(evt.title)) {
+            seenTitles.add(evt.title);
+            const opt = document.createElement('option');
+            opt.value = evt.id; // Uses the ID of the first occurrence
+            opt.textContent = `${evt.title} (${evt.date})`;
+            opt.setAttribute('data-category', evt.category);
+            eventSelect.appendChild(opt);
+          }
         });
       }
     } catch (err) {
@@ -1115,13 +1119,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const div = document.createElement('div');
       div.style = 'position:relative; border-radius:8px; overflow:hidden; aspect-ratio:1; background:#111;';
       const imgSrc = item.src_url || '';
-      div.innerHTML = imgSrc
-        ? `<img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover; opacity:0.85;">
-           <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); color:#fff; padding:4px 6px; font-size:10px;">${item.caption}</div>
-           <button class="del-gal-btn" data-id="${item.id}" data-path="${item.storage_path || ''}" style="position:absolute; top:4px; right:4px; background:red; color:white; border:none; border-radius:50%; width:24px; height:24px; font-size:12px; cursor:pointer;">&times;</button>`
-        : `<div style="display:flex; align-items:center; justify-content:center; height:100%; font-size:32px;">${item.placeholder || '🖼️'}</div>
-           <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); color:#fff; padding:4px 6px; font-size:10px;">${item.caption}</div>
-           <button class="del-gal-btn" data-id="${item.id}" data-path="" style="position:absolute; top:4px; right:4px; background:red; color:white; border:none; border-radius:50%; width:24px; height:24px; font-size:12px; cursor:pointer;">&times;</button>`;
+      const isVideo = imgSrc.match(/\.(mp4|webm|mov|ogg)$/i);
+      
+      let mediaHtml = '';
+      if (imgSrc) {
+        if (isVideo) {
+          mediaHtml = `<video src="${imgSrc}" controls style="width:100%; height:100%; object-fit:cover;"></video>`;
+        } else {
+          mediaHtml = `<img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover; opacity:0.85;">`;
+        }
+      } else {
+        mediaHtml = `<div style="display:flex; align-items:center; justify-content:center; height:100%; font-size:32px;">${item.placeholder || '🖼️'}</div>`;
+      }
+      
+      div.innerHTML = `
+        ${mediaHtml}
+        <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); color:#fff; padding:4px 6px; font-size:10px; max-height:40px; overflow:hidden; text-overflow:ellipsis;">${item.caption || ''}</div>
+        <button class="del-gal-btn" data-id="${item.id}" data-path="${item.storage_path || ''}" style="position:absolute; top:4px; right:4px; background:red; color:white; border:none; border-radius:50%; width:24px; height:24px; font-size:12px; cursor:pointer;">&times;</button>
+      `;
       adminGalleryList.appendChild(div);
     });
 
@@ -1144,71 +1159,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
   addGalleryForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const file = document.getElementById('galleryImageInput').files[0];
+    const files = document.getElementById('galleryImageInput').files;
     
     // Compute category from selected event, or default to general
     const eventSelect = document.getElementById('galleryEventSelect');
     let category = 'general';
+    let eventId = null;
     if (eventSelect && eventSelect.value) {
       const selectedOption = eventSelect.options[eventSelect.selectedIndex];
       category = selectedOption.getAttribute('data-category') || 'general';
+      eventId = parseInt(eventSelect.value);
     }
 
     const caption = document.getElementById('galleryCaption').value;
-    if (!file) return;
+    if (!files || files.length === 0) return;
 
     const uploadBtn = document.getElementById('uploadGalleryBtn');
-    uploadBtn.textContent = 'Uploading...';
     uploadBtn.disabled = true;
 
     try {
-      // Compress image using canvas
-      const compressedBlob = await compressImage(file, 1200, 0.75);
-      const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-      const storagePath = `${category}/${fileName}`;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        uploadBtn.textContent = `Uploading ${i + 1} of ${files.length}...`;
+        
+        const isVideo = file.type.startsWith('video/');
+        let uploadBlob = file;
+        let contentType = file.type || (isVideo ? 'video/mp4' : 'image/jpeg');
+        
+        // Compress only if it's an image
+        if (!isVideo && file.type.startsWith('image/')) {
+          uploadBlob = await compressImage(file, 1200, 0.75);
+          contentType = 'image/jpeg';
+        }
 
-      // Upload to Supabase Storage
-      const { error: storageError } = await supabase.storage
-        .from('gallery-images')
-        .upload(storagePath, compressedBlob, { contentType: 'image/jpeg', upsert: false });
+        const fileExt = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
+        const fileName = `${Date.now()}_${Math.floor(Math.random()*1000)}.${fileExt}`;
+        const storagePath = `${category}/${fileName}`;
 
-      let src_url = null;
-      if (!storageError) {
-        const { data: urlData } = supabase.storage.from('gallery-images').getPublicUrl(storagePath);
-        src_url = urlData?.publicUrl || null;
-      } else {
-        console.warn('Storage upload failed, saving without image URL:', storageError.message);
-      }
+        // Upload to Supabase Storage
+        const { error: storageError } = await supabase.storage
+          .from('gallery-images')
+          .upload(storagePath, uploadBlob, { contentType: contentType, upsert: false });
 
-      // Insert metadata into gallery table (with event_id if set)
-      const insertData = {
-        caption,
-        category,
-        src_url,
-        storage_path: storagePath
-      };
-
-      const eventSelect = document.getElementById('galleryEventSelect');
-      if (eventSelect && eventSelect.value) {
-        insertData.event_id = parseInt(eventSelect.value);
-      }
-
-      let { error: dbError } = await supabase.from('gallery').insert([insertData]);
-
-      if (dbError) {
-        console.warn('First insert attempt with event_id failed:', dbError.message);
-        if (dbError.message && (dbError.message.includes('event_id') || dbError.message.includes('column'))) {
-          // Retry without event_id
-          console.warn('Retrying database insert without event_id...');
-          delete insertData.event_id;
-          const { error: retryError } = await supabase.from('gallery').insert([insertData]);
-          if (retryError) {
-            alert('Database save failed: ' + retryError.message);
-            return;
-          }
+        let src_url = null;
+        if (!storageError) {
+          const { data: urlData } = supabase.storage.from('gallery-images').getPublicUrl(storagePath);
+          src_url = urlData?.publicUrl || null;
         } else {
-          alert('Database save failed: ' + dbError.message);
-          return;
+          console.warn('Storage upload failed, saving without URL:', storageError.message);
+          continue; // Skip DB insert if storage upload failed
+        }
+
+        // Insert metadata into gallery table
+        const insertData = {
+          caption,
+          category,
+          src_url,
+          storage_path: storagePath
+        };
+
+        if (eventId) {
+          insertData.event_id = eventId;
+        }
+
+        let { error: dbError } = await supabase.from('gallery').insert([insertData]);
+
+        if (dbError) {
+          console.warn('First insert attempt with event_id failed:', dbError.message);
+          if (dbError.message && (dbError.message.includes('event_id') || dbError.message.includes('column'))) {
+            // Retry without event_id
+            console.warn('Retrying database insert without event_id...');
+            delete insertData.event_id;
+            const { error: retryError } = await supabase.from('gallery').insert([insertData]);
+            if (retryError) {
+              console.error('Database save failed on retry: ' + retryError.message);
+            }
+          } else {
+            console.error('Database save failed: ' + dbError.message);
+          }
         }
       }
 
