@@ -577,24 +577,30 @@ async def download_album_callback(update: Update, context: ContextTypes.DEFAULT_
             return
             
         zip_buffer = io.BytesIO()
+        
+        # Async function to download a single photo
+        async def fetch_photo(photo, idx):
+            file_id = photo["telegram_file_id"]
+            try:
+                tg_file = await context.bot.get_file(file_id, read_timeout=60)
+                file_bytes = await tg_file.download_as_bytearray()
+                ext = tg_file.file_path.split('.')[-1] if tg_file.file_path else "jpg"
+                caption = photo.get('caption')
+                filename_base = f"{caption[:20]}_{idx}" if caption else f"photo_{idx}"
+                filename_base = "".join(c for c in filename_base if c.isalnum() or c in (' ', '_')).rstrip()
+                return (f"{filename_base}.{ext}", file_bytes)
+            except Exception as dl_err:
+                logger.warning(f"Failed to download photo {file_id} for zip: {dl_err}")
+                return None
+                
+        # Fetch all photos concurrently
+        results = await asyncio.gather(*[fetch_photo(p, i) for i, p in enumerate(photos)], return_exceptions=True)
+        
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-            for idx, photo in enumerate(photos):
-                file_id = photo["telegram_file_id"]
-                try:
-                    # Download the file from Telegram servers
-                    tg_file = await context.bot.get_file(file_id)
-                    file_bytes = await tg_file.download_as_bytearray()
-                    
-                    # Create a sensible filename
-                    ext = tg_file.file_path.split('.')[-1] if tg_file.file_path else "jpg"
-                    caption = photo.get('caption')
-                    filename_base = f"{caption[:20]}_{idx}" if caption else f"photo_{idx}"
-                    # clean up filename to avoid invalid chars
-                    filename_base = "".join(c for c in filename_base if c.isalnum() or c in (' ', '_')).rstrip()
-                    
-                    zip_file.writestr(f"{filename_base}.{ext}", file_bytes)
-                except Exception as dl_err:
-                    logger.warning(f"Failed to download photo {file_id} for zip: {dl_err}")
+            for result in results:
+                if result and not isinstance(result, Exception):
+                    filename, file_bytes = result
+                    zip_file.writestr(filename, file_bytes)
                     
         zip_buffer.seek(0)
         
@@ -603,7 +609,10 @@ async def download_album_callback(update: Update, context: ContextTypes.DEFAULT_
             chat_id=query.message.chat_id,
             document=zip_buffer,
             filename=f"Event_{event_id}_Photos.zip",
-            caption=f"📥 Here is the complete album for Event {event_id}!"
+            caption=f"📥 Here is the complete album for Event {event_id}!",
+            read_timeout=120,
+            write_timeout=120,
+            connect_timeout=120
         )
         await status_msg.delete()
         
