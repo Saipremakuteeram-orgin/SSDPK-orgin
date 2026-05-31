@@ -121,36 +121,16 @@ CATEGORY_EMOJIS = {
 }
 VALID_CATEGORIES = list(CATEGORY_EMOJIS.keys())
 
-# ConversationHandler states for /addgallery and /addalbum
-AWAIT_PHOTO, AWAIT_CAPTION, AWAIT_ALBUM_EVENT, AWAIT_ALBUM_PHOTOS = range(4)
+# ConversationHandler states for /addalbum
+AWAIT_ALBUM_EVENT, AWAIT_ALBUM_PHOTOS = range(2)
+
+# Authorized Admins
+ADMIN_IDS = [8250992325, 8646965285]
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
-
-async def ask_gemini(prompt: str) -> str:
-    """Query the Gemini AI model and return a formatted response."""
-    try:
-        response = gemini_model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        logger.error(f"Gemini API error: {e}")
-        return (
-            "🙏 *Sai Ram!*\n\n"
-            "I'm unable to process your question right now. "
-            "Please try again in a moment.\n\n"
-            "_Sai's grace is always with you._"
-        )
-
-
-async def get_sai_quote() -> str:
-    """Generate a high-quality spiritual quote using Gemini AI."""
-    prompt = (
-        "Generate an inspiring, short spiritual quote by Sri Sathya Sai Baba on love, peace, or service. "
-        "Do not include explanation, just the quote and '— Sri Sathya Sai Baba'. Keep it under 200 characters."
-    )
-    return await ask_gemini(prompt)
 
 
 async def upload_to_supabase_storage(file_bytes: bytes, filename: str) -> str | None:
@@ -206,11 +186,7 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
             InlineKeyboardButton("🖼 Browse Gallery", callback_data="menu_gallery"),
         ],
         [
-            InlineKeyboardButton("🕉 Daily Sai Quote", callback_data="menu_quote"),
             InlineKeyboardButton("📞 Contact SSPK", callback_data="menu_contact"),
-        ],
-        [
-            InlineKeyboardButton("💬 Ask AI", callback_data="menu_ai_info"),
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -249,19 +225,7 @@ async def menu_callback_handler(update: Update, context: ContextTypes.DEFAULT_TY
             parse_mode="Markdown"
         )
 
-    elif data == "menu_ai_info":
-        msg = (
-            "💬 *SSPK Spiritual AI Support*\n\n"
-            "Simply send *any spiritual question* directly in the chat, "
-            "and our Gemini AI engine will provide guidance immediately!\n\n"
-            "Example: _How do I achieve inner peace?_"
-        )
-        keyboard = [[InlineKeyboardButton("⬅ Back to Menu", callback_data="menu_main")]]
-        await query.edit_message_text(
-            text=msg,
-            reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode="Markdown"
-        )
+
 
     elif data == "menu_events":
         try:
@@ -313,42 +277,8 @@ async def menu_callback_handler(update: Update, context: ContextTypes.DEFAULT_TY
             await query.edit_message_text("❌ Error listing all events.", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⬅ Back", callback_data="menu_events")]]))
 
     elif data == "menu_gallery":
-        keyboard = [
-            [
-                InlineKeyboardButton("🎵 Bhajans", callback_data="mg_bhajan"),
-                InlineKeyboardButton("🤲 Seva", callback_data="mg_seva"),
-            ],
-            [
-                InlineKeyboardButton("🎉 Celebrations", callback_data="mg_celebration"),
-                InlineKeyboardButton("🤝 Community", callback_data="mg_community"),
-            ],
-            [InlineKeyboardButton("⬅ Back to Menu", callback_data="menu_main")]
-        ]
-        await query.edit_message_text(
-            text="🖼 *Gallery Categories*\nSelect a category to view directly in chat:",
-            reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode="Markdown"
-        )
-
-    elif data.startswith("mg_"):
-        category = data.replace("mg_", "")
-        await query.edit_message_text("⏳ Loading category photos...")
-        # Direct fallback triggers the normal gallery response
-        query.data = f"gal_{category}"
-        await gallery_callback(update, context)
-
-    elif data == "menu_quote":
-        await query.edit_message_text("🕉 *Tuning to Swami's message...*")
-        quote = await get_sai_quote()
-        keyboard = [
-            [InlineKeyboardButton("🔄 Refresh Quote", callback_data="menu_quote")],
-            [InlineKeyboardButton("⬅ Back to Menu", callback_data="menu_main")]
-        ]
-        await query.edit_message_text(
-            text=f"🕉 *Sai's Message for You:*\n━━━━━━━━━━━━━━━━━━━━━━━━\n\n_{quote}_",
-            reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode="Markdown"
-        )
+        await gallery_command(update, context)
+        return
 
     elif data == "menu_contact":
         msg = (
@@ -443,20 +373,7 @@ async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYP
                     )
                 )
 
-        # 3. Add a default Gemini Spiritual Quote if query is empty or asking for wisdom
-        if not query or "quote" in query or "wisdom" in query or "sai" in query:
-            quote = await get_sai_quote()
-            results.append(
-                InlineQueryResultArticle(
-                    id=str(uuid.uuid4()),
-                    title="🕉 Daily Sai Quote",
-                    description="Share Sri Sathya Sai Baba's spiritual wisdom card",
-                    input_message_content=InputTextMessageContent(
-                        message_text=f"🕉 *Sai's Message for You:*\n━━━━━━━━━━━━━━━━━━━━━━━━\n\n_{quote}_",
-                        parse_mode="Markdown"
-                    )
-                )
-            )
+
 
     except Exception as e:
         logger.error(f"Inline query error: {e}")
@@ -505,10 +422,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     # Fetch events summary
     try:
-        events_res = supabase.table("events").select("title, event_date").order("event_date", desc=True).limit(5).execute()
+        events_res = supabase.table("events").select("title, date").order("date", desc=True).limit(5).execute()
         events_text = "\n\n<b>📅 Recent & Upcoming Events:</b>\n"
         for ev in events_res.data:
-            events_text += f"• {ev['title']} ({ev['event_date']})\n"
+            events_text += f"• {ev['title']} ({ev['date']})\n"
     except Exception as e:
         events_text = ""
 
@@ -521,11 +438,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "━━━━━━━━━━━━━━━━━━\n"
         "📋 <b>What I can do:</b>\n"
         "📱 /menu — Interactive inline dashboard menu\n"
-        "🖼 /gallery — Browse & download gallery images\n"
+        "🖼 /gallery — Browse Event photos\n"
         "📅 /events — View upcoming events\n"
-        "💬 /info — Spiritual guidance via AI\n"
+        "📸 /addalbum — (Admin) Bulk upload photos\n"
         "❓ /help — Show all commands\n\n"
-        "<i>Try typing <code>@ssdspk_bot bhajan</code> in any chat to search events/photos!</i>"
+        "<i>Use the menu to easily navigate!</i>"
     )
     await update.message.reply_text(msg, parse_mode="HTML")
 
@@ -539,96 +456,87 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "📱 /menu — Open the interactive dashboard main menu\n"
         "🖼 /gallery — View and browse photos by category\n"
         "📅 /events — Get details of upcoming scheduled events\n"
-        "💬 /info — Get spiritual guidance powered by Gemini AI\n"
         "📸 /addgallery — (Admin only) Add new photos directly to the gallery\n"
         "❓ /help — Show this help message\n\n"
-        "_Tip: Send any text message to ask our Spiritual AI Assistant questions directly!_"
     )
     await update.message.reply_text(msg, parse_mode="Markdown")
 
 
 async def gallery_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Browse gallery categories."""
-    keyboard = [
-        [
-            InlineKeyboardButton("🎵 Bhajans",   callback_data="gal_bhajan"),
-            InlineKeyboardButton("🤲 Seva",       callback_data="gal_seva"),
-        ],
-        [
-            InlineKeyboardButton("📌 Events",     callback_data="gal_event"),
-            InlineKeyboardButton("🤝 Community",  callback_data="gal_community"),
-        ],
-        [InlineKeyboardButton("📂 All Photos", callback_data="gal_all")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(
-        "🖼 *Gallery — Choose a category to browse:*",
-        reply_markup=reply_markup,
-        parse_mode="Markdown",
-    )
+    """Browse Event Galleries."""
+    try:
+        res = supabase.table("events").select("id, title, date").order("date", desc=True).limit(10).execute()
+        events = res.data
+        if not events:
+            await update.message.reply_text("📭 No events found yet.")
+            return
 
+        keyboard = []
+        for ev in events:
+            title = ev['title'][:30] + "..." if len(ev['title']) > 30 else ev['title']
+            keyboard.append([InlineKeyboardButton(f"📅 [{ev['date']}] {title}", callback_data=f"gal_{ev['id']}")])
+            
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text(
+            "🖼 <b>Select an Event to view its Gallery:</b>",
+            reply_markup=reply_markup,
+            parse_mode="HTML",
+        )
+    except Exception as e:
+        logger.error(f"Gallery events fetch error: {e}")
+        await update.message.reply_text("❌ Failed to fetch events.")
 
 async def gallery_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle gallery category selection → fetch URLs from Supabase → send photos."""
+    """Handle gallery event selection → fetch URLs from Supabase → send photos or request."""
     query = update.callback_query
-    category = query.data.replace("gal_", "")
+    event_id = query.data.replace("gal_", "")
 
     try:
-        sb_query = (
-            supabase.table("gallery")
-            .select("id, caption, category, src_url, placeholder, source")
-            .order("created_at", desc=True)
-        )
-        if category != "all":
-            sb_query = sb_query.eq("category", category)
+        res = supabase.table("gallery").select("telegram_file_id, caption").eq("event_id", event_id).execute()
+        photos = [item for item in res.data if item.get("telegram_file_id")]
 
-        response = sb_query.execute()
-        items = response.data
-
-        if not items:
+        if not photos:
+            keyboard = [[InlineKeyboardButton("📸 Request Photos from Admin", callback_data=f"req_photos_{event_id}")]]
             await query.edit_message_text(
-                "📭 No images found in this category yet.\n\n"
-                "Admin can upload via /addgallery or through the website dashboard!"
+                "📭 <b>Photos for this event are not yet available.</b>\n\n"
+                "Would you like to request the admins to upload them?",
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML"
             )
             return
 
-        real_images = [i for i in items if i.get("src_url")]
-        placeholders = [i for i in items if not i.get("src_url")]
+        await query.edit_message_text(f"📸 Found <b>{len(photos)}</b> photo(s) for this event. Sending...", parse_mode="HTML")
 
-        await query.edit_message_text(
-            f"📸 Found *{len(real_images)}* photo(s) in *{category.title()}*. Sending...",
-            parse_mode="Markdown",
-        )
-
-        for item in real_images:
-            source_tag = "📱 via Telegram" if item.get("source") == "telegram" else "🖥 via Dashboard"
-            caption_text = (
-                f"🙏 *{item.get('caption', 'SSPK Gallery')}*\n"
-                f"📂 {CATEGORY_EMOJIS.get(item.get('category',''), '📌')} {item.get('category','').title()}\n"
-                f"{source_tag}\n\n"
-                f"_Tap ⬇ Download to save the original photo._"
-            )
-            try:
-                await context.bot.send_photo(
-                    chat_id=query.message.chat_id,
-                    photo=item["src_url"],
-                    caption=caption_text,
-                    parse_mode="Markdown",
-                )
-            except Exception as img_err:
-                logger.warning(f"Could not send photo {item['id']}: {img_err}")
-
-        if placeholders:
-            names = ", ".join(p.get("caption", "?") for p in placeholders)
-            await context.bot.send_message(
-                chat_id=query.message.chat_id,
-                text=f"📋 *{len(placeholders)}* placeholder items: _{names}_",
-                parse_mode="Markdown",
-            )
-
+        from telegram import InputMediaPhoto
+        media_group = []
+        for photo in photos:
+            media_group.append(InputMediaPhoto(media=photo["telegram_file_id"], caption=photo.get("caption", "")))
+            
+        for i in range(0, len(media_group), 10):
+            await context.bot.send_media_group(chat_id=query.message.chat_id, media=media_group[i:i+10])
+            
     except Exception as e:
         logger.error(f"Gallery fetch error: {e}")
-        await query.edit_message_text("❌ Failed to fetch gallery.")
+        await query.edit_message_text("❌ Failed to fetch gallery photos.")
+
+async def request_photos_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle photo requests."""
+    query = update.callback_query
+    event_id = query.data.replace("req_photos_", "")
+    user = update.effective_user
+    
+    # Send notification to admins
+    for admin_id in ADMIN_IDS:
+        try:
+            await context.bot.send_message(
+                chat_id=admin_id,
+                text=f"🔔 <b>Photo Request!</b>\n\nUser <b>{user.first_name}</b> requested photos for Event ID <b>{event_id}</b>.\nPlease upload them ASAP via /addalbum!",
+                parse_mode="HTML"
+            )
+        except Exception:
+            pass
+            
+    await query.edit_message_text("✅ Your request has been sent to the admins! Please check back later.")
 
 
 async def events_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -677,132 +585,13 @@ async def events_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text("❌ Could not fetch events.")
 
 
-async def info_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send Gemini AI spiritual info."""
-    question = " ".join(context.args) if context.args else None
-    if not question:
-        await update.message.reply_text(
-            "💬 *Ask a spiritual question!*\n\n"
-            "Usage: `/info Who is Sathya Sai Baba?`\n\n"
-            "_Or just type your question directly in the chat._",
-            parse_mode="Markdown",
-        )
-        return
-    await update.message.reply_text("🧠 Thinking with Swami's grace...")
-    response_text = await ask_gemini(question)
-    await update.message.reply_text(response_text, parse_mode="Markdown")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# /addgallery CONVERSATION
-# ══════════════════════════════════════════════════════════════════════════════
 
-async def addgallery_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Step 1: Ask admin to select category."""
-    keyboard = [
-        [
-            InlineKeyboardButton("🎵 Bhajan",     callback_data="ag_bhajan"),
-            InlineKeyboardButton("🤲 Seva",       callback_data="ag_seva"),
-        ],
-        [
-            InlineKeyboardButton("🎉 Celebration",callback_data="ag_celebration"),
-            InlineKeyboardButton("🤝 Community",  callback_data="ag_community"),
-        ],
-        [
-            InlineKeyboardButton("📌 Event",      callback_data="ag_event"),
-            InlineKeyboardButton("📚 Study",      callback_data="ag_study"),
-        ],
-        [InlineKeyboardButton("❌ Cancel",        callback_data="ag_cancel")],
-    ]
-    await update.message.reply_text(
-        "📤 *Add Photo to Gallery*\n\n"
-        "Step 1: Select the category for this photo:",
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode="Markdown",
-    )
-    return AWAIT_PHOTO
-
-
-async def addgallery_category_selected(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Step 2: Category chosen — now ask for the photo."""
-    query = update.callback_query
-    await query.answer()
-
-    if query.data == "ag_cancel":
-        await query.edit_message_text("❌ Upload cancelled.")
-        return ConversationHandler.END
-
-    category = query.data.replace("ag_", "")
-    context.user_data["gallery_category"] = category
-    emoji = CATEGORY_EMOJIS.get(category, "📌")
-
-    await query.edit_message_text(
-        f"✅ Category: {emoji} *{category.title()}*\n\n"
-        f"Step 2: Now *send the photo* you want to add to the gallery.\n\n"
-        f"_The image will be uploaded to Supabase Storage and appear on the website automatically._",
-        parse_mode="Markdown",
-    )
-    return AWAIT_PHOTO
-
-
-async def addgallery_receive_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Step 3: Photo received — ask for caption."""
-    if not update.message.photo:
-        await update.message.reply_text("⚠️ Please send a *photo*.", parse_mode="Markdown")
-        return AWAIT_PHOTO
-
-    photo = update.message.photo[-1]
-    context.user_data["gallery_file_id"] = photo.file_id
-
-    await update.message.reply_text(
-        "📝 Step 3: Send the *caption* for this photo.\n\n"
-        "Example: `Evening Bhajans at SSPK Hall`",
-        parse_mode="Markdown",
-    )
-    return AWAIT_CAPTION
-
-
-async def addgallery_receive_caption(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Step 4: Caption received → Save telegram_file_id to Supabase (Zero Storage Used!)."""
-    caption   = update.message.text.strip()
-    file_id   = context.user_data.get("gallery_file_id")
-    category  = context.user_data.get("gallery_category", "event")
-
-    if not file_id:
-        await update.message.reply_text("❌ No photo found. Start again with /addgallery.")
-        return ConversationHandler.END
-
-    status_msg = await update.message.reply_text("⏳ Saving to database (Zero Server Storage)...")
-
-    try:
-        # Save Table row with ONLY the telegram_file_id (no src_url or storage_path)
-        saved = await save_gallery_record(src_url=None, storage_path=None, caption=caption, category=category, telegram_file_id=file_id)
-
-        if saved:
-            emoji = CATEGORY_EMOJIS.get(category, "📌")
-            await status_msg.edit_text(
-                f"✅ <b>Photo added to gallery successfully!</b>\n\n"
-                f"📂 Category: {emoji} {category.title()}\n"
-                f"📝 Caption: {caption}\n"
-                f"🔗 <b>Storage:</b> Saved securely on Telegram (0 bytes on server)\n\n"
-                f"<i>The photo is now accessible via the bot and website deep links.</i>",
-                parse_mode="HTML",
-            )
-        else:
-            await status_msg.edit_text("⚠️ Database insert failed. Did you run the SQL script?")
-
-    except Exception as e:
-        logger.error(f"addgallery error: {e}")
-        await status_msg.edit_text(f"❌ Upload failed: {str(e)}")
-
-    context.user_data.clear()
-    return ConversationHandler.END
-
-
-async def addgallery_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Cancel upload."""
-    context.user_data.clear()
+async def addalbum_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Cancel the upload process."""
     await update.message.reply_text("❌ Upload cancelled.")
+    context.user_data.clear()
     return ConversationHandler.END
 
 
@@ -812,9 +601,13 @@ async def addgallery_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
 async def addalbum_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Step 1: Ask admin to select an event."""
+    if update.effective_user.id not in ADMIN_IDS:
+        await update.message.reply_text("⛔️ Access Denied. Only authorized admins can use this command.")
+        return ConversationHandler.END
+
     try:
         # Fetch top 10 recent events
-        res = supabase.table("events").select("id, title, event_date").order("event_date", desc=True).limit(10).execute()
+        res = supabase.table("events").select("id, title, date").order("date", desc=True).limit(10).execute()
         events = res.data
         if not events:
             await update.message.reply_text("❌ No events found in the database.")
@@ -822,7 +615,7 @@ async def addalbum_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             
         keyboard = []
         for ev in events:
-            keyboard.append([InlineKeyboardButton(f"📅 {ev['title']} ({ev['event_date']})", callback_data=f"alb_{ev['id']}")])
+            keyboard.append([InlineKeyboardButton(f"📅 {ev['title']} ({ev['date']})", callback_data=f"alb_{ev['id']}")])
         keyboard.append([InlineKeyboardButton("❌ Cancel", callback_data="alb_cancel")])
         
         await update.message.reply_text(
@@ -948,12 +741,7 @@ async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await message.reply_video(video=message.video.file_id)
 
 
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Respond to text with Gemini AI."""
-    user_text = update.message.text
-    await update.message.reply_text("🙏 *Sai Ram!* Answering with Swami's grace...", parse_mode="Markdown")
-    response_text = await ask_gemini(user_text)
-    await update.message.reply_text(response_text, parse_mode="Markdown")
+
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -966,12 +754,10 @@ async def post_init(application: Application) -> None:
     commands = [
         BotCommand("start", "Welcome message & description"),
         BotCommand("menu", "SSPK interactive dashboard menu"),
-        BotCommand("gallery", "Browse SSPK photo gallery"),
+        BotCommand("gallery", "Browse Event photos"),
         BotCommand("events", "View upcoming scheduled events"),
-        BotCommand("info", "Ask spiritual questions to AI"),
         BotCommand("addalbum", "(Admin) Bulk upload photos to event"),
         BotCommand("help", "Show all available commands"),
-        BotCommand("addgallery", "(Admin) Upload photo to website gallery"),
     ]
     try:
         await application.bot.set_my_commands(commands)
@@ -993,22 +779,6 @@ def main() -> None:
 
     app = Application.builder().token(TELEGRAM_BOT_TOKEN).post_init(post_init).build()
 
-    # /addgallery conversation
-    addgallery_conv = ConversationHandler(
-        entry_points=[CommandHandler("addgallery", addgallery_start)],
-        states={
-            AWAIT_PHOTO: [
-                CallbackQueryHandler(addgallery_category_selected, pattern="^ag_"),
-                MessageHandler(filters.PHOTO, addgallery_receive_photo),
-                MessageHandler(filters.TEXT & ~filters.COMMAND, addgallery_receive_photo),
-            ],
-            AWAIT_CAPTION: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, addgallery_receive_caption),
-            ],
-        },
-        fallbacks=[CommandHandler("cancel", addgallery_cancel)],
-    )
-
     # /addalbum conversation
     addalbum_conv = ConversationHandler(
         entry_points=[CommandHandler("addalbum", addalbum_start)],
@@ -1021,17 +791,14 @@ def main() -> None:
                 CommandHandler("done", addalbum_done),
             ],
         },
-        fallbacks=[CommandHandler("cancel", addgallery_cancel), CommandHandler("done", addalbum_done)],
+        fallbacks=[CommandHandler("cancel", addalbum_cancel), CommandHandler("done", addalbum_done)],
     )
 
-    # Handlers
     app.add_handler(CommandHandler("start",   start))
     app.add_handler(CommandHandler("menu",    menu_command))
     app.add_handler(CommandHandler("gallery", gallery_command))
     app.add_handler(CommandHandler("events",  events_command))
-    app.add_handler(CommandHandler("info",    info_command))
     app.add_handler(CommandHandler("help",    help_command))
-    app.add_handler(addgallery_conv)
     app.add_handler(addalbum_conv)
 
     # Private Channel Bulk Upload Listener
@@ -1039,8 +806,8 @@ def main() -> None:
 
     # Callback queries for interactive menu (prefix 'menu_') and category selections (prefix 'gal_')
     app.add_handler(CallbackQueryHandler(menu_callback_handler, pattern="^menu_"))
-    app.add_handler(CallbackQueryHandler(menu_callback_handler, pattern="^mg_"))
     app.add_handler(CallbackQueryHandler(gallery_callback, pattern="^gal_"))
+    app.add_handler(CallbackQueryHandler(request_photos_callback, pattern="^req_photos_"))
 
     # Global Inline Queries search
     app.add_handler(InlineQueryHandler(inline_query_handler))
@@ -1049,9 +816,6 @@ def main() -> None:
     app.add_handler(MessageHandler(filters.PHOTO,        handle_media))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_media))
     app.add_handler(MessageHandler(filters.VIDEO,        handle_media))
-
-    # Catch-all AI guidance handler
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
     logger.info("✅ Bot is running. Press Ctrl+C to stop.")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
