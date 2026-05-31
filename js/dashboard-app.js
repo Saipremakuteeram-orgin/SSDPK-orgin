@@ -13,157 +13,79 @@ document.addEventListener('DOMContentLoaded', () => {
   const cardId = document.getElementById('cardId');
   const cardJoinedDate = document.getElementById('cardJoinedDate');
 
-  // Initialize state — async so we can check live Supabase session first
-  // This prevents the race condition when Google OAuth redirects back here
-  // before onAuthStateChange has had a chance to fire
+  // ══════════════════════════════════════════════════════════════════════════
+  // SESSION CONSTANTS
+  // ══════════════════════════════════════════════════════════════════════════
+  const SESSION_DURATION_MS  = 30 * 24 * 60 * 60 * 1000; // 30 days
+  const SESSION_KEY          = 'sspk_session';
+  const TRUST_KEY            = 'sspk_trusted_device';
+  const ADMIN_EMAILS         = ['sk143sathya@gmail.com'];
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function makeSession(role, identifier, mode) {
+    // mode: '30days' | 'forever' | 'none'
+    const expiresAt = (mode === 'forever' || mode === 'none')
+      ? null
+      : Date.now() + SESSION_DURATION_MS;
+    return { role, identifier, expiresAt, mode: mode || '30days' };
+  }
+
+  function isSessionValid(session) {
+    if (!session) return false;
+    if (!session.expiresAt) return true; // forever
+    return Date.now() < session.expiresAt;
+  }
+
+  function getTrust(identifier) {
+    try {
+      const t = JSON.parse(localStorage.getItem(TRUST_KEY));
+      if (!t || t.identifier !== identifier) return null;
+      if (t.expiresAt && Date.now() >= t.expiresAt) {
+        localStorage.removeItem(TRUST_KEY);
+        return null;
+      }
+      return t;
+    } catch { return null; }
+  }
+
+  function setTrust(identifier, mode) {
+    const expiresAt = mode === 'forever' ? null : Date.now() + SESSION_DURATION_MS;
+    localStorage.setItem(TRUST_KEY, JSON.stringify({ identifier, mode, expiresAt }));
+  }
+
+  function clearAuth() {
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(TRUST_KEY);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ASYNC INIT — checks live Supabase session BEFORE falling back to localStorage
+  // Handles the Google OAuth redirect race condition
+  // ══════════════════════════════════════════════════════════════════════════
   initAuthState();
 
-  // Sync state on OAuth redirect / auth state changes
   supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('onAuthStateChange event:', event, session);
-
-    // Skip INITIAL_SESSION — already handled by initAuthState()
-    if (event === 'INITIAL_SESSION') return;
+    console.log('onAuthStateChange:', event);
+    if (event === 'INITIAL_SESSION') return; // handled by initAuthState
 
     if (session && session.user) {
-      const email = session.user.email;
-      if (!email) return;
-
-      // Check if this user is an admin
-      const ADMIN_EMAILS = ['sk143sathya@gmail.com'];
-      let isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
-
-      if (!isAdmin) {
-        try {
-          const { data: adminRecord } = await supabase
-            .from('site_admins')
-            .select('email')
-            .eq('email', email)
-            .maybeSingle();
-          if (adminRecord) isAdmin = true;
-        } catch (e) {
-          console.warn("site_admins check failed:", e);
-        }
-      }
-
-      if (isAdmin) {
-        localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin', identifier: email }));
-        checkAuthState();
-        return;
-      }
-
-      const { data: member, error } = await supabase
-        .from('members')
-        .select('id')
-        .eq('email', email)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error verifying member on Google Sign-In:', error.message);
-        return;
-      }
-
-      if (!member) {
-        const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
-        const fullName = session.user.user_metadata?.full_name || 'Google User';
-        const fname = fullName.split(' ')[0] || 'Google';
-        const lname = fullName.split(' ').slice(1).join(' ') || 'User';
-
-        const insertPayload = {
-          fname,
-          lname,
-          email,
-          member_id: uniqueId
-        };
-
-        const { error: insertError } = await supabase.from('members').insert([insertPayload]);
-        if (insertError) {
-          console.error('Auto-registration insert failed on Google Sign-In:', insertError.message);
-          return;
-        }
-
-        // Send welcome email on Google registration
-        fetch('/api/send-welcome', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, name: fullName })
-        }).catch(err => console.error('Failed to send welcome email:', err));
-      }
-
-      localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: email }));
-      checkAuthState();
+      await resolveAndSaveSession(session);
     } else if (event === 'SIGNED_OUT') {
-      localStorage.removeItem('sspk_session');
-      checkAuthState();
+      clearAuth();
+      window.location.href = 'login.html';
     }
   });
 
-  // ── ASYNC init: checks live Supabase session FIRST before falling back to localStorage
-  // This handles the Google OAuth redirect case where tokens are in the URL
   async function initAuthState() {
     try {
-      // getSession() processes the OAuth hash/code from the URL if present
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.warn('getSession error:', error.message);
-      }
+      const { data: { session } } = await supabase.auth.getSession();
 
       if (session && session.user) {
-        const email = session.user.email;
-        if (!email) { checkAuthState(); return; }
-
-        // Check if this user is an admin
-        const ADMIN_EMAILS = ['sk143sathya@gmail.com'];
-        let isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
-
-        if (!isAdmin) {
-          try {
-            const { data: adminRecord } = await supabase
-              .from('site_admins')
-              .select('email')
-              .eq('email', email)
-              .maybeSingle();
-            if (adminRecord) isAdmin = true;
-          } catch (e) {
-            console.warn("site_admins check failed in initAuthState:", e);
-          }
-        }
-
-        if (isAdmin) {
-          localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin', identifier: email }));
-          checkAuthState();
-          return;
-        }
-
-        // Ensure member profile exists (auto-create for Google OAuth new users)
-        const { data: member } = await supabase
-          .from('members')
-          .select('id')
-          .eq('email', email)
-          .maybeSingle();
-
-        if (!member) {
-          const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
-          const fullName = session.user.user_metadata?.full_name || 'Google User';
-          const fname = fullName.split(' ')[0] || 'Google';
-          const lname = fullName.split(' ').slice(1).join(' ') || 'User';
-
-          await supabase.from('members').insert([{ fname, lname, email, member_id: uniqueId }]);
-
-          fetch('/api/send-welcome', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, name: fullName })
-          }).catch(() => {});
-        }
-
-        localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: email }));
-        checkAuthState();
+        await resolveAndSaveSession(session);
         return;
       }
 
-      // No live session — fall back to localStorage check
+      // No live Supabase session — check localStorage
       checkAuthState();
     } catch (err) {
       console.error('initAuthState error:', err);
@@ -171,9 +93,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Determines role, auto-creates member profile if needed, saves session
+  async function resolveAndSaveSession(session) {
+    const email = session.user.email;
+    if (!email) { checkAuthState(); return; }
+
+    // Check admin
+    let isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
+    if (!isAdmin) {
+      try {
+        const { data: ar } = await supabase
+          .from('site_admins').select('email')
+          .eq('email', email).maybeSingle();
+        if (ar) isAdmin = true;
+      } catch (e) { console.warn('site_admins check failed:', e); }
+    }
+
+    if (isAdmin) {
+      saveSession('admin', email);
+      checkAuthState();
+      return;
+    }
+
+    // Auto-create member profile for Google OAuth new users
+    const { data: member } = await supabase
+      .from('members').select('id').eq('email', email).maybeSingle();
+
+    if (!member) {
+      const uniqueId = Math.floor(1000 + Math.random() * 9000).toString();
+      const fullName = session.user.user_metadata?.full_name || 'Google User';
+      const fname = fullName.split(' ')[0] || 'Google';
+      const lname = fullName.split(' ').slice(1).join(' ') || 'User';
+      await supabase.from('members').insert([{ fname, lname, email, member_id: uniqueId }]);
+      fetch('/api/send-welcome', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name: fullName })
+      }).catch(() => {});
+    }
+
+    saveSession('user', email);
+    checkAuthState();
+  }
+
+  function saveSession(role, identifier) {
+    // Get existing session to preserve mode if already set
+    const existing = (() => { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } })();
+    const trust = getTrust(identifier);
+    const mode = trust?.mode || existing?.mode || '30days';
+    localStorage.setItem(SESSION_KEY, JSON.stringify(makeSession(role, identifier, mode)));
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // CHECK AUTH STATE — validates session expiry, shows correct view
+  // ══════════════════════════════════════════════════════════════════════════
   function checkAuthState() {
-    const session = JSON.parse(localStorage.getItem('sspk_session'));
-    if (session) {
+    const raw = localStorage.getItem(SESSION_KEY);
+    let session = null;
+    try { session = JSON.parse(raw); } catch {}
+
+    if (session && isSessionValid(session)) {
       if (session.role === 'admin') {
         showView(adminView);
         renderAdminDashboard();
@@ -183,13 +161,166 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.initQuoteLimits && session.identifier) {
           window.initQuoteLimits(session.identifier);
         }
+        // Show trust modal if device not yet trusted for this user
+        const trust = getTrust(session.identifier);
+        if (!trust) {
+          setTimeout(() => showTrustModal(session.identifier), 600);
+        }
       }
     } else {
+      // Session expired or missing
+      if (session) clearAuth();
       window.location.href = 'login.html';
     }
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // TRUSTED DEVICE MODAL
+  // ══════════════════════════════════════════════════════════════════════════
+  function showTrustModal(identifier) {
+    // Remove any existing modal
+    document.getElementById('sspk-trust-modal')?.remove();
 
+    const modal = document.createElement('div');
+    modal.id = 'sspk-trust-modal';
+    modal.style.cssText = [
+      'position:fixed', 'inset:0', 'z-index:9999',
+      'display:flex', 'align-items:center', 'justify-content:center',
+      'background:rgba(0,0,0,0.55)', 'backdrop-filter:blur(6px)',
+      'animation:sspkFadeIn 0.25s ease'
+    ].join(';');
+
+    modal.innerHTML = `
+      <style>
+        @keyframes sspkFadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+        @keyframes sspkSlideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+        #sspk-trust-modal .trust-card {
+          background: var(--surface, #1e1e2e);
+          border: 1px solid var(--border, rgba(255,255,255,0.1));
+          border-radius: 20px;
+          padding: 36px 32px;
+          max-width: 400px;
+          width: 90%;
+          box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+          animation: sspkSlideUp 0.3s ease;
+        }
+        #sspk-trust-modal .trust-icon {
+          font-size: 40px;
+          text-align: center;
+          margin-bottom: 12px;
+        }
+        #sspk-trust-modal h3 {
+          font-family: var(--font-heading, Georgia, serif);
+          font-size: 20px;
+          font-weight: 700;
+          text-align: center;
+          color: var(--fg, #fff);
+          margin: 0 0 6px;
+        }
+        #sspk-trust-modal .trust-sub {
+          text-align: center;
+          color: var(--muted, #aaa);
+          font-size: 13px;
+          margin-bottom: 28px;
+        }
+        #sspk-trust-modal .trust-opt {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 14px 16px;
+          border: 1.5px solid var(--border, rgba(255,255,255,0.1));
+          border-radius: 12px;
+          margin-bottom: 10px;
+          cursor: pointer;
+          transition: all 0.2s;
+          background: transparent;
+          width: 100%;
+          text-align: left;
+        }
+        #sspk-trust-modal .trust-opt:hover {
+          border-color: var(--accent, oklch(62% 0.16 50));
+          background: var(--accent, oklch(62% 0.16 50 / 0.08));
+          transform: translateX(2px);
+        }
+        #sspk-trust-modal .trust-opt-icon {
+          font-size: 22px;
+          flex-shrink: 0;
+          margin-top: 1px;
+        }
+        #sspk-trust-modal .trust-opt-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--fg, #fff);
+          display: block;
+          margin-bottom: 2px;
+        }
+        #sspk-trust-modal .trust-opt-desc {
+          font-size: 12px;
+          color: var(--muted, #aaa);
+          display: block;
+          line-height: 1.4;
+        }
+        #sspk-trust-modal .trust-opt.danger:hover {
+          border-color: var(--danger, #f87171);
+          background: rgba(248,113,113,0.08);
+        }
+      </style>
+      <div class="trust-card">
+        <div class="trust-icon">🔒</div>
+        <h3>Trust this device?</h3>
+        <p class="trust-sub">Choose how you want to stay signed in on this browser</p>
+
+        <button class="trust-opt" id="trust-30days">
+          <span class="trust-opt-icon">📅</span>
+          <span>
+            <span class="trust-opt-title">Remember me for 30 days</span>
+            <span class="trust-opt-desc">Stay signed in automatically. You'll need to sign in again after 30 days.</span>
+          </span>
+        </button>
+
+        <button class="trust-opt" id="trust-forever">
+          <span class="trust-opt-icon">♾️</span>
+          <span>
+            <span class="trust-opt-title">Always trust this device</span>
+            <span class="trust-opt-desc">Never ask again on this browser. Only signing out will log you out.</span>
+          </span>
+        </button>
+
+        <button class="trust-opt danger" id="trust-none">
+          <span class="trust-opt-icon">🚪</span>
+          <span>
+            <span class="trust-opt-title">Don't trust — sign in each time</span>
+            <span class="trust-opt-desc">Your session will end when you close this browser tab.</span>
+          </span>
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const applyTrust = (mode) => {
+      setTrust(identifier, mode);
+      // Update the session to use the selected mode
+      try {
+        const s = JSON.parse(localStorage.getItem(SESSION_KEY));
+        if (s) {
+          s.mode = mode;
+          s.expiresAt = mode === 'forever' ? null : mode === 'none' ? Date.now() + 60 * 60 * 1000 : Date.now() + SESSION_DURATION_MS;
+          localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+        }
+      } catch {}
+      modal.style.animation = 'sspkFadeIn 0.15s ease reverse';
+      setTimeout(() => modal.remove(), 150);
+    };
+
+    document.getElementById('trust-30days').addEventListener('click', () => applyTrust('30days'));
+    document.getElementById('trust-forever').addEventListener('click', () => applyTrust('forever'));
+    document.getElementById('trust-none').addEventListener('click',    () => applyTrust('none'));
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // HELPERS
+  // ══════════════════════════════════════════════════════════════════════════
   function showView(view) {
     if (authView) authView.classList.add('hidden');
     dashboardView.classList.add('hidden');
@@ -197,17 +328,15 @@ document.addEventListener('DOMContentLoaded', () => {
     view.classList.remove('hidden');
   }
 
-  logoutBtn?.addEventListener('click', async () => {
-    localStorage.removeItem('sspk_session');
+  const doLogout = async () => {
+    clearAuth();
     await supabase.auth.signOut();
-    checkAuthState();
-  });
+    window.location.href = 'login.html';
+  };
 
-  document.getElementById('adminLogoutBtn')?.addEventListener('click', async () => {
-    localStorage.removeItem('sspk_session');
-    await supabase.auth.signOut();
-    checkAuthState();
-  });
+  logoutBtn?.addEventListener('click', doLogout);
+  document.getElementById('adminLogoutBtn')?.addEventListener('click', doLogout);
+
 
   // ── Change Admin Password ─────────────────────────────────────────────────
   const toggleChangePwdBtn = document.getElementById('toggleChangePwdBtn');
