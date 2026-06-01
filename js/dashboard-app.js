@@ -4,7 +4,7 @@
 // Bfcache fix: expose a re-init hook for pageshow event
 window._sspkReinit = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+function initDashboard() {
   // Elements
   const authView = document.getElementById('authView');
   const dashboardView = document.getElementById('dashboardView');
@@ -1564,7 +1564,13 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthState();
   };
 
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+  initDashboard();
+}
 
 // ── Bfcache back-navigation fix ────────────────────────────────────────────────
 // When the user navigates Back from Events/Gallery, the browser may restore
