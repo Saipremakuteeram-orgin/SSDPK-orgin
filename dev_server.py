@@ -2,6 +2,7 @@ import http.server
 import socketserver
 import os
 import json
+import subprocess
 from dotenv import load_dotenv
 
 # Load local environment variables
@@ -30,7 +31,24 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_POST(self):
         print(f"POST Request received: {self.path}")
-        if self.path in ['/api/send-welcome', '/api/notify-event']:
+        if self.path == '/api/run-report':
+            try:
+                # Execute the report generator script
+                subprocess.run(["python", "run_report.py"], check=True)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                response = {"success": True, "message": "Report generated successfully."}
+                self.wfile.write(json.dumps(response).encode('utf-8'))
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                response = {"error": f"Failed to run report: {str(e)}"}
+                self.wfile.write(json.dumps(response).encode('utf-8'))
+        elif self.path in ['/api/send-welcome', '/api/notify-event']:
             content_length = int(self.headers.get('Content-Length', 0))
             if content_length > 0:
                 post_data = self.rfile.read(content_length)
@@ -54,6 +72,7 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             response = {"error": "Not Found"}
             self.wfile.write(json.dumps(response).encode('utf-8'))
+
 
 if __name__ == '__main__':
     # Allow prompt socket reuse to prevent port-in-use errors on restarts

@@ -212,3 +212,62 @@
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
+/* Token Notification Bar Styles */
+.chatbot-notify-bar {
+  position: relative;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 12px;
+  font-size: 11px;
+  overflow: hidden;
+}
+.chatbot-notify-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: oklch(75% 0.14 85 / 0.2);
+  transition: width 0.3s ease;
+  z-index: 1;
+}
+.chatbot-notify-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+.chatbot-notify-renew {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* Warnings and Danger states */
+.chatbot-notify-bar.warning-alert .chatbot-notify-progress {
+  background: oklch(75% 0.14 70 / 0.35);
+}
+.chatbot-notify-bar.warning-alert .chatbot-notify-content {
+  color: oklch(50% 0.14 70);
+}
+
+.chatbot-notify-bar.danger-alert {
+  animation: pulseBg 1.5s infinite alternate;
+}
+.chatbot-notify-bar.danger-alert .chatbot-notify-progress {
+  background: oklch(60% 0.18 20 / 0.5);
+}
+.chatbot-notify-bar.danger-alert .chatbot-notify-content {
+  color: oklch(55% 0.18 20);
+  font-weight: bold;
+}
+
+@keyframes pulseBg {
+  from { background-color: var(--surface); }
+  to { background-color: oklch(95% 0.02 20); }
+}
+

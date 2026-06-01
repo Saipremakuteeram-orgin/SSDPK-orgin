@@ -15,7 +15,7 @@
     }
   }
 </script>
-<link rel="stylesheet" href="css/theme.css?v=1.0.5">
+<link rel="stylesheet" href="css/theme.css?v=1.1.0">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="css/chatbot.css">
 <style>
@@ -123,10 +123,23 @@
   </div>
 </section>
 
-<!-- Lightbox -->
+<!-- Lightbox / Modal Popup -->
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightboxClose">&times;</button>
-  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-content">
+    <div class="lightbox-header">
+      <h2 id="modalEventTitle" class="lightbox-title">Event Name</h2>
+      <div id="modalEventSubtitle" class="lightbox-subtitle">Category &bull; 0 photos</div>
+    </div>
+    
+    <div class="lightbox-view-area">
+      <button id="modalPrevBtn" class="lightbox-nav-btn prev">&larr;</button>
+      <img id="lightboxImg" class="lightbox-img" src="" alt="Active preview image">
+      <button id="modalNextBtn" class="lightbox-nav-btn next">&rarr;</button>
+    </div>
+    
+    <div id="modalThumbnails" class="lightbox-thumb-strip"></div>
+  </div>
 </div>
 
 <!-- Footer -->
@@ -162,63 +175,235 @@
   </div>
 </footer>
 
-<script src="js/supabase-client.js?v=1.0.7"></script>
-<script src="js/main.js?v=1.0.8"></script>
+<script src="js/supabase-client.js?v=1.1.0"></script>
+<script src="js/main.js?v=1.1.0"></script>
 <script>
 // Gallery logic — powered by Supabase
 (function() {
-  // Credentials loaded from js/supabase-client.js (must be included before this script)
-  // If supabase client is not available, fall back gracefully
   const sb = (typeof supabase !== 'undefined') ? supabase : null;
-
   var grid = document.getElementById('galleryGrid');
   if (grid) grid.innerHTML = '<p style="padding:40px; color:var(--muted); text-align:center;">Loading gallery...</p>';
+
+  // Modal elements
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxClose = document.getElementById('lightboxClose');
+  var modalEventTitle = document.getElementById('modalEventTitle');
+  var modalEventSubtitle = document.getElementById('modalEventSubtitle');
+  var modalPrevBtn = document.getElementById('modalPrevBtn');
+  var modalNextBtn = document.getElementById('modalNextBtn');
+  var modalThumbnails = document.getElementById('modalThumbnails');
+
+  let activeEvent = null;
+  let activeIndex = 0;
+
+  function updateSlideshow() {
+    if (!activeEvent) return;
+    if (activeEvent.photos.length === 0) {
+      lightboxImg.src = '';
+      lightboxImg.style.opacity = '0';
+      modalEventSubtitle.innerHTML = `${activeEvent.category.toUpperCase()} &bull; 0 photos`;
+      return;
+    }
+    const photo = activeEvent.photos[activeIndex];
+    
+    // Use fade effect
+    lightboxImg.style.opacity = '0';
+    setTimeout(function() {
+      lightboxImg.src = photo;
+      lightboxImg.style.opacity = '1';
+    }, 150);
+
+    modalEventSubtitle.innerHTML = `${activeEvent.category.toUpperCase()} &bull; Photo ${activeIndex + 1} of ${activeEvent.photos.length}`;
+    
+    // Highlight active thumbnail
+    const thumbs = modalThumbnails.getElementsByClassName('lightbox-thumb');
+    for (let i = 0; i < thumbs.length; i++) {
+      if (i === activeIndex) {
+        thumbs[i].classList.add('active');
+        thumbs[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      } else {
+        thumbs[i].classList.remove('active');
+      }
+    }
+  }
+
+  function openGalleryModal(eventData) {
+    activeEvent = eventData;
+    activeIndex = 0;
+    
+    modalEventTitle.textContent = activeEvent.name;
+    modalThumbnails.innerHTML = '';
+    
+    if (activeEvent.photos.length === 0) {
+      if (modalPrevBtn) modalPrevBtn.style.display = 'none';
+      if (modalNextBtn) modalNextBtn.style.display = 'none';
+      
+      var emptyMsg = document.createElement('p');
+      emptyMsg.style.color = 'var(--muted)';
+      emptyMsg.style.textAlign = 'center';
+      emptyMsg.style.padding = '40px 20px';
+      emptyMsg.style.width = '100%';
+      emptyMsg.textContent = 'No photos have been uploaded for this event yet.';
+      modalThumbnails.appendChild(emptyMsg);
+      
+      updateSlideshow();
+    } else {
+      if (modalPrevBtn) modalPrevBtn.style.display = '';
+      if (modalNextBtn) modalNextBtn.style.display = '';
+      
+      activeEvent.photos.forEach((photoUrl, idx) => {
+        var thumb = document.createElement('img');
+        thumb.src = photoUrl;
+        thumb.className = 'lightbox-thumb';
+        thumb.alt = `Thumbnail ${idx + 1}`;
+        thumb.addEventListener('click', () => {
+          activeIndex = idx;
+          updateSlideshow();
+        });
+        modalThumbnails.appendChild(thumb);
+      });
+      
+      updateSlideshow();
+    }
+    
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGalleryModal() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Navigation handlers
+  if (modalPrevBtn) {
+    modalPrevBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!activeEvent) return;
+      activeIndex = (activeIndex - 1 + activeEvent.photos.length) % activeEvent.photos.length;
+      updateSlideshow();
+    });
+  }
+
+  if (modalNextBtn) {
+    modalNextBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!activeEvent) return;
+      activeIndex = (activeIndex + 1) % activeEvent.photos.length;
+      updateSlideshow();
+    });
+  }
+
+  if (lightboxClose) {
+    lightboxClose.addEventListener('click', closeGalleryModal);
+  }
+
+  // Close lightbox on clicking outside the content
+  if (lightbox) {
+    lightbox.addEventListener('click', function(e) {
+      if (e.target === lightbox) {
+        closeGalleryModal();
+      }
+    });
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft') {
+      activeIndex = (activeIndex - 1 + activeEvent.photos.length) % activeEvent.photos.length;
+      updateSlideshow();
+    } else if (e.key === 'ArrowRight') {
+      activeIndex = (activeIndex + 1) % activeEvent.photos.length;
+      updateSlideshow();
+    } else if (e.key === 'Escape') {
+      closeGalleryModal();
+    }
+  });
 
   async function loadGallery() {
     if (!sb) {
       if (grid) grid.innerHTML = '<p style="color:var(--muted); text-align:center; padding:40px;">Gallery not configured yet. Add your Supabase credentials to js/supabase-client.js</p>';
       return;
     }
-    let result = await sb.from('gallery').select('*, events(title, category)').order('created_at', { ascending: false });
-    if (result.error) {
-      console.warn('Selecting nested events failed, falling back to basic gallery select:', result.error.message);
-      result = await sb.from('gallery').select('*').order('created_at', { ascending: false });
+    
+    // Fetch all events from events table
+    let eventsRes = await sb.from('events').select('*').order('date', { ascending: false });
+    const eventsData = eventsRes.data || [];
+    
+    // Fetch all gallery items
+    let galleryRes = await sb.from('gallery').select('*, events(title, category)').order('created_at', { ascending: false });
+    if (galleryRes.error) {
+      console.warn('Selecting nested events failed, falling back to basic gallery select:', galleryRes.error.message);
+      galleryRes = await sb.from('gallery').select('*').order('created_at', { ascending: false });
     }
-    const { data, error } = result;
-    if (error || !data) {
-      if (grid) grid.innerHTML = '<p style="color:red; text-align:center;">Failed to load gallery.</p>';
+    const galleryData = galleryRes.data || [];
+
+    if (grid) grid.innerHTML = '';
+    
+    // Group photos by unique event name
+    const eventsMap = {};
+    
+    // Initialize eventsMap with all known events from database
+    eventsData.forEach(function(evt) {
+      eventsMap[evt.title] = {
+        name: evt.title,
+        category: evt.category || 'event',
+        photos: []
+      };
+    });
+    
+    // Populate gallery items
+    galleryData.forEach(function(item) {
+      if (item.events && item.events.title) {
+        const eventName = item.events.title;
+        if (eventsMap[eventName]) {
+          if (item.src_url) {
+            eventsMap[eventName].photos.push(item.src_url);
+          }
+        }
+      }
+    });
+
+    const eventsList = Object.values(eventsMap);
+    
+    if (eventsList.length === 0) {
+      if (grid) grid.innerHTML = '<p style="color:var(--muted); text-align:center; padding:40px;">No photos found in the gallery.</p>';
       return;
     }
 
-    if (grid) grid.innerHTML = '';
-    data.forEach(function(item) {
-      var div = document.createElement('div');
-      div.className = 'gallery-item';
+    eventsList.forEach(function(event) {
+      var card = document.createElement('div');
+      card.className = 'gallery-event-card';
+      
+      // Select visual icon based on category
+      let icon = '📂';
+      const catLower = event.category.toLowerCase();
+      if (catLower.includes('seva') || catLower.includes('service')) icon = '🤝';
+      else if (catLower.includes('bhajan') || catLower.includes('devotion')) icon = '🎶';
+      else if (catLower.includes('study') || catLower.includes('circle')) icon = '📖';
+      else if (catLower.includes('celebration') || catLower.includes('festival')) icon = '✨';
 
-      var captionText = item.caption;
-      if (item.events && item.events.title) {
-        captionText = item.events.title + ' - ' + item.caption;
-      }
-      div.setAttribute('data-caption', captionText);
-
-      if (item.src_url) {
-        div.setAttribute('data-lightbox', item.src_url);
-        div.style.backgroundImage = 'url(' + item.src_url + ')';
-        div.style.backgroundSize = 'cover';
-        div.style.backgroundPosition = 'center';
-        div.style.cursor = 'zoom-in';
-        div.innerHTML = '<div class="gallery-caption">' + captionText + '</div>';
-      } else {
-        div.innerHTML = '<div class="gallery-placeholder">' + (item.placeholder || '\ud83d\uddbc\ufe0f') + '</div><div class="gallery-caption">' + captionText + '</div>';
-      }
-      if (grid) grid.appendChild(div);
+      card.innerHTML = `
+        <div class="gallery-event-icon">${icon}</div>
+        <h3 class="gallery-event-title">${event.name}</h3>
+        <span class="gallery-event-category">${event.category}</span>
+        <div class="gallery-event-count">${event.photos.length} photo(s) &bull; View Gallery</div>
+      `;
+      
+      card.addEventListener('click', function() {
+        openGalleryModal(event);
+      });
+      
+      if (grid) grid.appendChild(card);
     });
 
     // Update dynamic photo counter
     var indicator = document.getElementById('galleryIndicator');
     var countEl = document.getElementById('galleryCount');
-    if (indicator && countEl && data.length > 0) {
-      countEl.textContent = data.length + ' photo(s) in gallery';
+    if (indicator && countEl && eventsList.length > 0) {
+      countEl.textContent = eventsList.length + ' event gallery folder(s) loaded';
       indicator.style.display = '';
     }
   }
@@ -226,6 +411,6 @@
   loadGallery();
 })();
 </script>
-<script src="js/chatbot.js?v=1.0.9"></script>
+<script src="js/chatbot.js?v=1.1.0"></script>
 </body>
 </html>
