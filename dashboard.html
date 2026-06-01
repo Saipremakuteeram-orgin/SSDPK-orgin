@@ -4,20 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sathya Sai Trust — Dashboard</title>
-<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- DNS Preconnect — resolves domain before scripts request them -->
+<link rel="preconnect" href="https://zkzotagctwqthxypczej.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+
+<!-- Tailwind config (inline only — runtime loaded async below) -->
 <script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' }
-        }
-      }
-    }
-  }
+  tailwind = { config: { theme: { extend: { colors: { saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' } } } } } };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@latest/dist/html2canvas-pro.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <link rel="stylesheet" href="css/theme.css?v=1.1.0">
 <style>
   .hidden { display: none !important; }
@@ -641,9 +638,15 @@
   </div>
 </div>
 
-<script src="js/main.js?v=1.1.0"></script>
-<script src="js/supabase-client.js?v=1.1.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@latest/dist/html2canvas-pro.min.js"></script>
-<script src="js/dashboard-app.js?v=1.1.1"></script>
+
+<!-- Scripts — deferred so they never block HTML parse -->
+<!-- Tailwind CSS runtime (async, non-critical render path) -->
+<script async src="https://cdn.tailwindcss.com"></script>
+<!-- Supabase JS SDK -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- App scripts — defer preserves execution order -->
+<script defer src="js/main.js?v=1.1.0"></script>
+<script defer src="js/supabase-client.js?v=1.1.1"></script>
+<script defer src="js/dashboard-app.js?v=1.1.2"></script>
 </body>
 </html>

@@ -63,15 +63,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // ASYNC INIT — checks live Supabase session BEFORE falling back to localStorage
-  // Handles the Google OAuth redirect race condition
+  // ASYNC INIT — Zero-latency: show UI from cache instantly, verify async
   // ══════════════════════════════════════════════════════════════════════════
+
+  // STEP 1: Pre-show the correct view from localStorage RIGHT NOW (0ms latency)
+  // This makes the dashboard appear instantly while Supabase session is verified
+  // in the background. If the session turns out to be invalid, we redirect.
+  const _rawSession = localStorage.getItem(SESSION_KEY);
+  let _preSession = null;
+  try { _preSession = JSON.parse(_rawSession); } catch {}
+  if (_preSession && isSessionValid(_preSession)) {
+    if (_preSession.role === 'admin') {
+      showView(adminView);
+    } else {
+      showView(dashboardView);
+      // Instantly render card from cache — Supabase sync happens after
+      renderMembershipCard(_preSession);
+      if (window.initQuoteLimits && _preSession.identifier) {
+        window.initQuoteLimits(_preSession.identifier);
+      }
+    }
+  }
+
+  // STEP 2: Async Supabase verification (runs in background, corrects state if needed)
   initAuthState();
 
   supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('onAuthStateChange:', event);
     if (event === 'INITIAL_SESSION') return; // handled by initAuthState
-
     if (session && session.user) {
       await resolveAndSaveSession(session);
     } else if (event === 'SIGNED_OUT') {
@@ -89,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // No live Supabase session — check localStorage
+      // No live Supabase session — fall back to localStorage
       checkAuthState();
     } catch (err) {
       console.error('initAuthState error:', err);
@@ -452,15 +470,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ============================================================
-  // ADMIN DASHBOARD
+  // ADMIN DASHBOARD — all queries run in PARALLEL for speed
   // ============================================================
   async function renderAdminDashboard() {
-    await loadCategories();
-    renderAdminUsers();
-    renderAdminEvents();
+    // Fire all independent fetches simultaneously instead of serially
+    await Promise.all([
+      loadCategories(),
+      renderAdminUsers(),
+      renderAdminEvents(),
+      renderAdminGallery(),
+      populateGalleryEventDropdown()
+    ]);
+    // Categories must be loaded for the category list UI — render after
     renderAdminCategories();
-    renderAdminGallery();
-    populateGalleryEventDropdown();
   }
 
   async function renderAdminUsers() {
@@ -1280,27 +1302,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ============================================================
-  // DOWNLOAD CARD
+  // DOWNLOAD CARD — html2canvas lazy-loaded on demand (saves ~500KB on startup)
   // ============================================================
   const downloadCardBtn = document.getElementById('downloadCardBtn');
-  downloadCardBtn?.addEventListener('click', () => {
+  let _html2canvasPromise = null;
+
+  function loadHtml2Canvas() {
+    if (window.html2canvas) return Promise.resolve(window.html2canvas);
+    if (_html2canvasPromise) return _html2canvasPromise;
+    _html2canvasPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/html2canvas-pro@latest/dist/html2canvas-pro.min.js';
+      s.onload = () => resolve(window.html2canvas);
+      s.onerror = () => reject(new Error('Failed to load html2canvas'));
+      document.head.appendChild(s);
+    });
+    return _html2canvasPromise;
+  }
+
+  downloadCardBtn?.addEventListener('click', async () => {
     const cardElement = document.querySelector('.member-card');
     if (!cardElement) return;
-    const originalTransform = cardElement.style.transform;
-    cardElement.style.transform = 'none';
-    html2canvas(cardElement, { scale: 2, backgroundColor: null, useCORS: true })
-      .then(canvas => {
-        cardElement.style.transform = originalTransform;
-        const link = document.createElement('a');
-        link.download = 'Sathya_Sai_Membership_Card.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      })
-      .catch(err => {
-        console.error('Card download error:', err);
-        cardElement.style.transform = originalTransform;
-        alert('Failed to download card. Please try again.');
-      });
+    const btn = downloadCardBtn;
+    btn.textContent = 'Preparing...';
+    btn.disabled = true;
+    try {
+      const h2c = await loadHtml2Canvas();
+      const originalTransform = cardElement.style.transform;
+      cardElement.style.transform = 'none';
+      const canvas = await h2c(cardElement, { scale: 2, backgroundColor: null, useCORS: true });
+      cardElement.style.transform = originalTransform;
+      const link = document.createElement('a');
+      link.download = 'Sathya_Sai_Membership_Card.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Card download error:', err);
+      alert('Failed to download card. Please try again.');
+    } finally {
+      btn.textContent = 'Download Digital Card';
+      btn.disabled = false;
+    }
   });
 
   // ============================================================
