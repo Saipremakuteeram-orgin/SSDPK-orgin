@@ -1,7 +1,7 @@
 // js/chatbot.js
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inject Chatbot HTML
+  // Inject Chatbot HTML with Token Notification Bar
   const chatbotHTML = `
     <div class="chatbot-fab" id="chatbotFab" title="Ask Sai AI">
       &#x2728;
@@ -26,6 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div class="chatbot-messages hidden" id="chatbotMessages">
         <div class="chat-msg bot">Sai Ram! How can I help you regarding our events, gallery, or trust activities today?</div>
+      </div>
+
+      <!-- Token Notification Bar -->
+      <div class="chatbot-notify-bar hidden" id="chatbotNotifyBar">
+        <div class="chatbot-notify-progress" id="chatbotNotifyProgress" style="width: 0%;"></div>
+        <div class="chatbot-notify-content">
+          <span class="chatbot-notify-text" id="chatbotNotifyText">Token Usage: 0%</span>
+          <span class="chatbot-notify-renew" id="chatbotNotifyRenew">Renew: Stable</span>
+        </div>
       </div>
 
       <form class="chatbot-input hidden" id="chatbotForm">
@@ -131,11 +140,99 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Rate Limit / Token Constants
+  const TOKEN_BUDGET = 50000; // Cumulative token limit before rule trigger
+  const RPM_LIMIT = 15; // Requests Per Minute limit
+  
+  // DOM Elements for notification
+  const notifyBar = document.getElementById('chatbotNotifyBar');
+  const notifyProgress = document.getElementById('chatbotNotifyProgress');
+  const notifyText = document.getElementById('chatbotNotifyText');
+  const notifyRenew = document.getElementById('chatbotNotifyRenew');
+
+  // Load/initialize token state
+  let cumulativeTokens = parseInt(localStorage.getItem('sspk_chatbot_token_count')) || 0;
+  let requestTimestamps = JSON.parse(localStorage.getItem('sspk_chatbot_request_times')) || [];
+  let reportTriggered = sessionStorage.getItem('sspk_report_triggered') === 'true';
+
+  function updateTokenUI() {
+    if (!apiKey) {
+      notifyBar.classList.add('hidden');
+      return;
+    }
+    notifyBar.classList.remove('hidden');
+    
+    // Clean old timestamps (> 60s)
+    const now = Date.now();
+    requestTimestamps = requestTimestamps.filter(t => now - t < 60000);
+    localStorage.setItem('sspk_chatbot_request_times', JSON.stringify(requestTimestamps));
+
+    // Calculate percentage
+    const percent = Math.min(100, Math.round((cumulativeTokens / TOKEN_BUDGET) * 100));
+    notifyProgress.style.width = percent + '%';
+    notifyText.textContent = `Tokens: ${percent}% (${cumulativeTokens}/${TOKEN_BUDGET})`;
+    
+    // Colors & Animations based on limit
+    if (percent >= 90) {
+      notifyBar.classList.add('danger-alert');
+      notifyText.textContent = `⚠️ 90% reached! Executing report...`;
+      if (!reportTriggered) {
+        reportTriggered = true;
+        sessionStorage.setItem('sspk_report_triggered', 'true');
+        triggerAutoReport();
+      }
+    } else if (percent >= 75) {
+      notifyBar.classList.add('warning-alert');
+      notifyBar.classList.remove('danger-alert');
+    } else {
+      notifyBar.classList.remove('warning-alert', 'danger-alert');
+    }
+
+    // RPM Renew countdown
+    if (requestTimestamps.length > 0) {
+      const oldest = requestTimestamps[0];
+      const remaining = Math.max(0, Math.ceil((oldest + 60000 - now) / 1000));
+      if (remaining > 0) {
+        notifyRenew.textContent = `Renew in: ${remaining}s`;
+      } else {
+        notifyRenew.textContent = `Stable`;
+      }
+    } else {
+      notifyRenew.textContent = `Stable`;
+    }
+  }
+
+  async function triggerAutoReport() {
+    try {
+      console.log('Sending request to /api/run-report (90% limit reached)...');
+      const res = await fetch('/api/run-report', { method: 'POST' });
+      if (res.ok) {
+        console.log('Auto-report successfully executed!');
+      } else {
+        console.error('Failed to run auto-report on dev server.');
+      }
+    } catch (e) {
+      console.error('Error triggering auto-report:', e);
+    }
+  }
+
+  // Set interval to update UI countdowns
+  setInterval(updateTokenUI, 1000);
+
+  // Initialize UI on load
+  updateTokenUI();
+
   // Chat Logic
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text || !apiKey) return;
+
+    // Track request timestamp
+    const now = Date.now();
+    requestTimestamps.push(now);
+    localStorage.setItem('sspk_chatbot_request_times', JSON.stringify(requestTimestamps));
+    updateTokenUI();
 
     appendMessage('user', text);
     input.value = '';
@@ -144,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const typingId = showTyping();
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -162,6 +259,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const data = await response.json();
+      
+      // Parse usageMetadata and update cumulative tokens
+      if (data.usageMetadata && data.usageMetadata.totalTokenCount) {
+        cumulativeTokens += data.usageMetadata.totalTokenCount;
+        localStorage.setItem('sspk_chatbot_token_count', cumulativeTokens);
+        updateTokenUI();
+      }
+
       const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't process that.";
       appendMessage('bot', botReply);
 

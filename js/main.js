@@ -351,7 +351,7 @@
       var href = link.getAttribute('href');
       if (href) {
         var base = href.split('?')[0];
-        link.setAttribute('href', base + '?v=1.0.8');
+        link.setAttribute('href', base + '?v=1.1.0');
       }
     });
   }

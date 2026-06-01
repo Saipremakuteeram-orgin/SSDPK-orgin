@@ -1077,20 +1077,17 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const { data, error } = await supabase
         .from('events')
-        .select('id, title, category, date')
+        .select('id, title, category, date, time')
         .order('date', { ascending: false });
 
       if (!error && data) {
-        const seenTitles = new Set();
         data.forEach(evt => {
-          if (!seenTitles.has(evt.title)) {
-            seenTitles.add(evt.title);
-            const opt = document.createElement('option');
-            opt.value = evt.id; // Uses the ID of the first occurrence
-            opt.textContent = `${evt.title} (${evt.date})`;
-            opt.setAttribute('data-category', evt.category);
-            eventSelect.appendChild(opt);
-          }
+          const opt = document.createElement('option');
+          opt.value = evt.id;
+          const timeStr = evt.time ? ` - ${evt.time}` : '';
+          opt.textContent = `${evt.title} (${evt.date}${timeStr})`;
+          opt.setAttribute('data-category', evt.category);
+          eventSelect.appendChild(opt);
         });
       }
     } catch (err) {

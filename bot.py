@@ -45,6 +45,7 @@ from telegram import (
     InlineQueryResultArticle,
     InputTextMessageContent,
     InlineQueryResultPhoto,
+    InputMediaPhoto,
 )
 from telegram.ext import (
     Application,
@@ -155,6 +156,25 @@ async def upload_to_supabase_storage(file_bytes: bytes, filename: str) -> str | 
 async def save_gallery_record(src_url: str | None, storage_path: str | None, caption: str, category: str, telegram_file_id: str | None = None, event_id: str | None = None) -> bool:
     """Insert a record into the Supabase gallery table."""
     try:
+        # If no src_url is provided but we have a telegram_file_id, download and upload to Supabase storage
+        if not src_url and telegram_file_id:
+            try:
+                from telegram import Bot
+                bot = Bot(TELEGRAM_BOT_TOKEN)
+                logger.info(f"📥 Automatically downloading Telegram file {telegram_file_id} for public web preview...")
+                file_obj = await bot.get_file(telegram_file_id)
+                file_bytes = await file_obj.download_as_bytearray()
+                
+                # Upload to Supabase Storage
+                filename = f"{uuid.uuid4()}.jpg"
+                public_url, path = await upload_to_supabase_storage(bytes(file_bytes), filename)
+                if public_url:
+                    src_url = public_url
+                    storage_path = path
+                    logger.info(f"📤 Uploaded to Supabase Storage. Public URL: {src_url}")
+            except Exception as dl_err:
+                logger.error(f"Failed to automatically upload Telegram photo to Supabase storage: {dl_err}")
+
         data = {
             "caption":      caption,
             "category":     category,
@@ -768,6 +788,345 @@ async def addalbum_done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# /deletealbum / /deletephotos / /delete COMMANDS & CALLBACKS
+# ══════════════════════════════════════════════════════════════════════════════
+
+async def delete_photos_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Start interactive album deletion flow for admins."""
+    if update.effective_user.id not in ADMIN_IDS:
+        await update.message.reply_text("⛔️ Access Denied. Only authorized admins can use this command.")
+        return
+
+    try:
+        # Fetch events that have photos in the gallery
+        res = supabase.table("events").select("id, title, date").order("date", desc=True).limit(20).execute()
+        events = res.data
+        if not events:
+            await update.message.reply_text("❌ No events found in the database.")
+            return
+
+        keyboard = []
+        for ev in events:
+            keyboard.append([InlineKeyboardButton(f"📅 {ev['title']} ({ev['date']})", callback_data=f"delalb_choose_{ev['id']}")])
+        
+        await update.message.reply_text(
+            "🗑️ <b>Delete Event Album / Photos</b>\n\n"
+            "Please select the event you want to manage:",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+    except Exception as e:
+        logger.error(f"delete_photos_command error: {e}")
+        await update.message.reply_text("❌ Error fetching events.")
+
+async def delete_reply_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Fast-track deletion: Admin replies to a photo in private chat with /delete."""
+    if update.effective_user.id not in ADMIN_IDS:
+        await update.message.reply_text("⛔️ Access Denied. Only authorized admins can use this command.")
+        return
+
+    message = update.message
+    if not message.reply_to_message:
+        await message.reply_text(
+            "ℹ️ <b>How to delete a single photo quickly:</b>\n"
+            "Reply to any photo message in this chat and type <code>/delete</code>.",
+            parse_mode="HTML"
+        )
+        return
+
+    replied = message.reply_to_message
+    if not replied.photo:
+        await message.reply_text("❌ The replied message does not contain a photo.")
+        return
+
+    file_id = replied.photo[-1].file_id
+
+    try:
+        # Query gallery table for this file_id
+        res = supabase.table("gallery").select("id, storage_path").eq("telegram_file_id", file_id).execute()
+        records = res.data
+        
+        if not records:
+            await message.reply_text("❌ This photo was not found in the gallery database.")
+            return
+
+        record = records[0]
+        gallery_id = record["id"]
+        storage_path = record.get("storage_path")
+
+        # Delete from storage if present
+        if storage_path:
+            try:
+                supabase.storage.from_(STORAGE_BUCKET).remove([storage_path])
+                logger.info(f"Deleted storage file: {storage_path}")
+            except Exception as e:
+                logger.warning(f"Could not delete storage file: {e}")
+
+        # Delete from DB
+        supabase.table("gallery").delete().eq("id", gallery_id).execute()
+        await message.reply_text("✅ <b>Photo deleted successfully!</b>", parse_mode="HTML")
+
+    except Exception as e:
+        logger.error(f"delete_reply_handler error: {e}")
+        await message.reply_text("❌ Error deleting photo from the database.")
+
+
+async def delete_photos_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handles deletion menu callback buttons."""
+    query = update.callback_query
+    if query.from_user.id not in ADMIN_IDS:
+        await query.answer("⛔️ Access Denied.", show_alert=True)
+        return
+
+    await query.answer()
+    data = query.data
+
+    if data.startswith("delalb_choose_"):
+        event_id = data.replace("delalb_choose_", "")
+        try:
+            # Get event title
+            ev_res = supabase.table("events").select("title").eq("id", event_id).execute()
+            if not ev_res.data:
+                await query.edit_message_text("❌ Event not found.")
+                return
+            event_title = ev_res.data[0]["title"]
+
+            # Count photos
+            photo_res = supabase.table("gallery").select("id").eq("event_id", event_id).execute()
+            photo_count = len(photo_res.data)
+
+            keyboard = [
+                [
+                    InlineKeyboardButton("🗑️ Delete Entire Album", callback_data=f"delalb_confall_{event_id}"),
+                    InlineKeyboardButton("🖼️ Manage Individually", callback_data=f"delalb_manage_{event_id}_0")
+                ],
+                [InlineKeyboardButton("⬅️ Back to Events", callback_data="delalb_back")]
+            ]
+
+            await query.edit_message_text(
+                f"📅 <b>Event Selected:</b> {event_title}\n\n"
+                f"This event currently has <b>{photo_count}</b> photos in the gallery.\n\n"
+                "What action would you like to perform?",
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML"
+            )
+        except Exception as e:
+            logger.error(f"delalb_choose error: {e}")
+            await query.edit_message_text("❌ Error loading event details.")
+
+    elif data == "delalb_back":
+        # Return to events list
+        try:
+            res = supabase.table("events").select("id, title, date").order("date", desc=True).limit(20).execute()
+            events = res.data
+            keyboard = []
+            for ev in events:
+                keyboard.append([InlineKeyboardButton(f"📅 {ev['title']} ({ev['date']})", callback_data=f"delalb_choose_{ev['id']}")])
+            
+            await query.edit_message_text(
+                "🗑️ <b>Delete Event Album / Photos</b>\n\n"
+                "Please select the event you want to manage:",
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML"
+            )
+        except Exception as e:
+            logger.error(f"delalb_back error: {e}")
+            await query.edit_message_text("❌ Error fetching events.")
+
+    elif data.startswith("delalb_confall_"):
+        event_id = data.replace("delalb_confall_", "")
+        try:
+            ev_res = supabase.table("events").select("title").eq("id", event_id).execute()
+            event_title = ev_res.data[0]["title"] if ev_res.data else "Event"
+
+            # Confirmation buttons
+            keyboard = [
+                [
+                    InlineKeyboardButton("🔥 Yes, Delete EVERYTHING", callback_data=f"delalb_deleteall_{event_id}"),
+                    InlineKeyboardButton("❌ Cancel", callback_data=f"delalb_choose_{event_id}")
+                ]
+            ]
+            await query.edit_message_text(
+                f"⚠️ <b>WARNING! BULK DELETION</b>\n\n"
+                f"Are you absolutely sure you want to delete <b>ALL photos</b> for the event: <i>{event_title}</i>?\n"
+                "This action cannot be undone!",
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML"
+            )
+        except Exception as e:
+            logger.error(f"delalb_confall error: {e}")
+            await query.edit_message_text("❌ Error preparing confirmation.")
+
+    elif data.startswith("delalb_deleteall_"):
+        event_id = data.replace("delalb_deleteall_", "")
+        try:
+            # Query all records to delete from storage first
+            res = supabase.table("gallery").select("id, storage_path").eq("event_id", event_id).execute()
+            records = res.data
+            
+            deleted_storage_count = 0
+            for r in records:
+                storage_path = r.get("storage_path")
+                if storage_path:
+                    try:
+                        supabase.storage.from_(STORAGE_BUCKET).remove([storage_path])
+                        deleted_storage_count += 1
+                    except Exception as e:
+                        logger.warning(f"Could not delete storage file {storage_path}: {e}")
+
+            # Delete from DB
+            db_res = supabase.table("gallery").delete().eq("event_id", event_id).execute()
+            deleted_db_count = len(records)
+
+            await query.edit_message_text(
+                f"✅ <b>Bulk Deletion Complete!</b>\n\n"
+                f"Successfully deleted <b>{deleted_db_count}</b> gallery database records.\n"
+                f"Removed <b>{deleted_storage_count}</b> files from Supabase Storage.",
+                parse_mode="HTML"
+            )
+        except Exception as e:
+            logger.error(f"delalb_deleteall error: {e}")
+            await query.edit_message_text("❌ Error occurred during bulk deletion.")
+
+    elif data.startswith("delalb_manage_"):
+        # Format: delalb_manage_<event_id>_<index>
+        parts = data.split("_")
+        event_id = parts[2]
+        index = int(parts[3])
+        
+        await show_single_photo_management(query, event_id, index)
+
+    elif data.startswith("del_s_"):
+        # Format: del_s_<gallery_id>_<index>
+        parts = data.split("_")
+        gallery_id = parts[2]
+        index = int(parts[3])
+
+        try:
+            # Query gallery item to get event_id and storage_path
+            res = supabase.table("gallery").select("event_id, storage_path").eq("id", gallery_id).execute()
+            if not res.data:
+                await query.answer("❌ Photo not found in database.", show_alert=True)
+                return
+                
+            item = res.data[0]
+            event_id = item["event_id"]
+            storage_path = item.get("storage_path")
+
+            if storage_path:
+                try:
+                    supabase.storage.from_(STORAGE_BUCKET).remove([storage_path])
+                except Exception as e:
+                    logger.warning(f"Could not delete storage file {storage_path}: {e}")
+
+            # Delete DB record
+            supabase.table("gallery").delete().eq("id", gallery_id).execute()
+
+            # Refresh and show next photo at the same index
+            await show_single_photo_management(query, event_id, index, deleted=True)
+
+        except Exception as e:
+            logger.error(f"del_s error: {e}")
+            await query.edit_message_text("❌ Error deleting photo.")
+
+    elif data.startswith("delalb_done_"):
+        # Finished individual management
+        chat_id = query.message.chat_id
+        message_id = query.message.message_id
+        try:
+            await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+        except Exception:
+            pass
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text="✅ <b>Finished photo management.</b>",
+            parse_mode="HTML"
+        )
+
+
+async def show_single_photo_management(query, event_id: str, index: int, deleted: bool = False) -> None:
+    """Helper to display or edit the message to show a single photo with delete/nav keys."""
+    try:
+        # Fetch event title
+        ev_res = supabase.table("events").select("title").eq("id", event_id).execute()
+        event_title = ev_res.data[0]["title"] if ev_res.data else "Event"
+
+        # Fetch all photos for this event
+        photo_res = supabase.table("gallery").select("id, telegram_file_id, src_url, caption").eq("event_id", event_id).execute()
+        photos = photo_res.data
+        total_photos = len(photos)
+
+        if total_photos == 0:
+            msg = f"✅ All photos managed for event: <b>{event_title}</b>"
+            if query.message.photo:
+                try:
+                    await query.message.delete()
+                except Exception:
+                    pass
+                await query.message.reply_text(msg, parse_mode="HTML")
+            else:
+                await query.edit_message_text(msg, parse_mode="HTML")
+            return
+
+        # Ensure index is bounds-safe
+        if index < 0:
+            index = 0
+        if index >= total_photos:
+            index = total_photos - 1
+
+        photo_item = photos[index]
+        gallery_id = photo_item["id"]
+        file_id_or_url = photo_item.get("telegram_file_id") or photo_item.get("src_url")
+        caption = photo_item.get("caption") or "(No Caption)"
+
+        # Prepare caption text
+        caption_text = (
+            f"🖼️ <b>Event Album Photo {index + 1}/{total_photos}</b>\n"
+            f"📅 <b>Event:</b> {event_title}\n"
+            f"📝 <b>Caption:</b> {caption}\n\n"
+            "Use the buttons below to navigate or delete this photo."
+        )
+
+        keyboard = []
+        nav_row = []
+        if index > 0:
+            nav_row.append(InlineKeyboardButton("⬅️ Prev", callback_data=f"delalb_manage_{event_id}_{index - 1}"))
+        
+        # Delete photo button (del_s_<gallery_id>_<index>)
+        nav_row.append(InlineKeyboardButton("🗑️ Delete", callback_data=f"del_s_{gallery_id}_{index}"))
+
+        if index < total_photos - 1:
+            nav_row.append(InlineKeyboardButton("Next ➡️", callback_data=f"delalb_manage_{event_id}_{index + 1}"))
+
+        keyboard.append(nav_row)
+        keyboard.append([
+            InlineKeyboardButton("❌ Done", callback_data=f"delalb_done_{event_id}"),
+            InlineKeyboardButton("🔙 Back to Menu", callback_data=f"delalb_choose_{event_id}")
+        ])
+
+        # Render message
+        if query.message.photo:
+            await query.edit_message_media(
+                media=InputMediaPhoto(media=file_id_or_url, caption=caption_text, parse_mode="HTML"),
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            try:
+                await query.message.delete()
+            except Exception:
+                pass
+            await query.message.reply_photo(
+                photo=file_id_or_url,
+                caption=caption_text,
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML"
+            )
+    except Exception as e:
+        logger.error(f"show_single_photo_management error: {e}")
+        await query.message.reply_text("❌ Error displaying photo.")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # MEDIA & TEXT HANDLERS
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -796,11 +1155,29 @@ async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE
     current_time = time.time()
     
     import re
-    match = re.search(r'event[_\s:]*([a-zA-Z0-9\-]+)', caption, re.IGNORECASE)
     
+    # Robust parsing of Event ID (must be digits) in the caption
+    event_id = None
+    
+    # 1. Match patterns like "event: 12", "event_12", "event 12"
+    match = re.search(r'event[_\s:]*([0-9]+)', caption, re.IGNORECASE)
     if match:
-        # We found a caption! Set this as the active event for this chat.
         event_id = match.group(1)
+        
+    # 2. If not found, match pattern "#12"
+    if not event_id:
+        match = re.search(r'#([0-9]+)', caption)
+        if match:
+            event_id = match.group(1)
+            
+    # 3. If not found, check if the clean caption itself is just a number
+    if not event_id:
+        clean_caption = caption.strip()
+        if clean_caption.isdigit():
+            event_id = clean_caption
+            
+    if event_id:
+        # We found a caption! Set this as the active event for this chat.
         ACTIVE_EVENTS_CACHE[chat_id] = {
             "event_id": event_id,
             "timestamp": current_time
@@ -881,6 +1258,8 @@ async def post_init(application: Application) -> None:
         BotCommand("menu", "SSPK interactive dashboard menu"),
         BotCommand("gallery", "Browse Event photos"),
         BotCommand("events", "View upcoming scheduled events"),
+        BotCommand("deletealbum", "Manage/Delete event albums (Admin)"),
+        BotCommand("delete", "Delete replied photo (Admin)"),
         BotCommand("help", "Show all available commands"),
     ]
     try:
@@ -923,6 +1302,9 @@ def main() -> None:
     app.add_handler(CommandHandler("gallery", gallery_command))
     app.add_handler(CommandHandler("events",  events_command))
     app.add_handler(CommandHandler("help",    help_command))
+    app.add_handler(CommandHandler("deletealbum", delete_photos_command))
+    app.add_handler(CommandHandler("deletephotos", delete_photos_command))
+    app.add_handler(CommandHandler("delete", delete_reply_handler))
     app.add_handler(addalbum_conv)
 
     # Private Channel Bulk Upload Listener
@@ -933,6 +1315,7 @@ def main() -> None:
     app.add_handler(CallbackQueryHandler(gallery_callback, pattern="^gal_"))
     app.add_handler(CallbackQueryHandler(request_photos_callback, pattern="^req_photos_"))
     app.add_handler(CallbackQueryHandler(download_album_callback, pattern="^dl_album_"))
+    app.add_handler(CallbackQueryHandler(delete_photos_callback, pattern="^(delalb_|del_s_)"))
 
     # Global Inline Queries search
     app.add_handler(InlineQueryHandler(inline_query_handler))
