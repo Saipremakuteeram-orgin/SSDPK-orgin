@@ -93,6 +93,11 @@ function initDashboard() {
     if (session && session.user) {
       await resolveAndSaveSession(session);
     } else if (event === 'SIGNED_OUT') {
+      const localSession = JSON.parse(localStorage.getItem('sspk_session') || '{}');
+      if (localSession && localSession.identifier && !localSession.identifier.includes('@')) {
+        // Phone-based session: ignore Supabase SIGNED_OUT events since there's no auth session
+        return;
+      }
       clearAuth();
       window.location.href = 'login.html';
     }
@@ -434,16 +439,25 @@ function initDashboard() {
     if (!session || !session.identifier) return;
 
     // 1. Instant UI update from local cache
+    let cached = null;
     try {
-      const cached = JSON.parse(localStorage.getItem('sspk_member_data'));
-      if (cached) {
-        cardName.textContent = cached.fname + ' ' + cached.lname;
-        cardId.textContent = cached.member_id;
-        if (cardJoinedDate) {
-          cardJoinedDate.textContent = formatJoinedDate(cached.registered_at);
-        }
-      }
+      cached = JSON.parse(localStorage.getItem('sspk_member_data'));
     } catch (e) {}
+
+    if (cached) {
+      cardName.textContent = cached.fname + ' ' + cached.lname;
+      cardId.textContent = cached.member_id;
+      if (cardJoinedDate) {
+        cardJoinedDate.textContent = formatJoinedDate(cached.registered_at);
+      }
+    } else {
+      // Skeleton loader while fetching
+      cardName.innerHTML = '<span class="sspk-skeleton skeleton-text" style="width: 150px;"></span>';
+      cardId.innerHTML = '<span class="sspk-skeleton skeleton-text" style="width: 80px;"></span>';
+      if (cardJoinedDate) {
+        cardJoinedDate.innerHTML = '<span class="sspk-skeleton skeleton-text" style="width: 90px;"></span>';
+      }
+    }
 
     // 2. Background sync to fetch fresh data
     const isEmail = session.identifier.includes('@');

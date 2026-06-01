@@ -1086,3 +1086,21 @@ footer a:hover { color: white; text-decoration: none; }
 .fadeIn {
   animation: fadeIn 0.4s ease forwards;
 }
+
+
+/* Skeleton Loader Styles for Dashboard Cards */
+.sspk-skeleton {
+  display: inline-block;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: sspkShimmer 1.5s infinite;
+  border-radius: 4px;
+}
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 4px;
+}
+@keyframes sspkShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

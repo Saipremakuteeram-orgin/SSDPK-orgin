@@ -17,7 +17,7 @@
   }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="css/theme.css?v=1.1.0">
+<link rel="stylesheet" href="css/theme.css?v=1.1.1">
 <style>
   .hidden { display: none !important; }
   
@@ -398,7 +398,17 @@ document.addEventListener('DOMContentLoaded', () => {
           // ✅ Regular member via Supabase Auth
           localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
         }
-
+        // Cache member profile for instant card rendering
+        (async () => {
+          const { data: memberData, error: memberErr } = await supabase
+            .from('members')
+            .select('fname, lname, member_id, registered_at')
+            .eq('email', identifier)
+            .maybeSingle();
+          if (!memberErr && memberData) {
+            localStorage.setItem('sspk_member_data', JSON.stringify(memberData));
+          }
+        })();
         window.location.href = 'dashboard.html';
         return;
       }
@@ -421,7 +431,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // ✅ Regular member via phone login – cache profile for instant card rendering
       localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
+      // Cache member profile (already fetched in data above)
+      if (data) {
+        const { fname, lname, member_id, registered_at } = data;
+        localStorage.setItem('sspk_member_data', JSON.stringify({ fname, lname, member_id, registered_at }));
+      }
       window.location.href = 'dashboard.html';
 
     } finally {
