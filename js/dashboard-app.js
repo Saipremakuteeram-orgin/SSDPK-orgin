@@ -1,6 +1,9 @@
 // dashboard-app.js
 // Handles Auth flow and Dashboard UI State — powered by Supabase
 
+// Bfcache fix: expose a re-init hook for pageshow event
+window._sspkReinit = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   // Elements
   const authView = document.getElementById('authView');
@@ -1514,4 +1517,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Run quotes setup
   fetchQuotes();
 
+  // ── BFCache fix: expose re-init hook so pageshow event can restore dashboard ──
+  window._sspkReinit = () => {
+    checkAuthState();
+  };
+
+});
+
+// ── Bfcache back-navigation fix ────────────────────────────────────────────────
+// When the user navigates Back from Events/Gallery, the browser may restore
+// this page from bfcache without firing DOMContentLoaded, leaving all views
+// hidden. The pageshow event ALWAYS fires, and persisted=true means bfcache.
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted && typeof window._sspkReinit === 'function') {
+    // Small delay to let Supabase JS finish hydrating its internal state
+    setTimeout(window._sspkReinit, 50);
+  }
 });

@@ -136,18 +136,19 @@
     background: linear-gradient(135deg, #fbe79b 0%, #d49539 30%, #fef3c5 50%, #d49539 70%, #9e5b12 100%);
     border: 1px solid rgba(255, 235, 170, 0.6);
     border-radius: 16px;
-    padding: 24px;
+    padding: 20px 22px;
     box-shadow: 0 20px 40px rgba(232, 139, 42, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.8), inset 0 -1px 1px rgba(0,0,0,0.2);
     position: relative;
     overflow: hidden;
     color: #4a2c11;
     text-align: left;
-    transform-style: preserve-3d;
     transition: transform 0.4s ease;
-    aspect-ratio: 1.586 / 1;
+    /* Replace rigid aspect-ratio with min-height so content never clips */
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 8px;
   }
   .member-card::before {
     content: '';
@@ -155,11 +156,12 @@
     inset: 0;
     background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.6) 30%, transparent 40%);
     pointer-events: none;
-    transform: translateZ(1px);
     mix-blend-mode: overlay;
+    z-index: 0;
   }
   .member-card > * {
-    transform: translateZ(40px);
+    position: relative;
+    z-index: 1;
   }
   .atm-card-header {
     display: flex;
@@ -212,12 +214,12 @@
   }
   .atm-card-number {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 26px;
+    font-size: clamp(18px, 4vw, 26px);
     font-weight: 700;
     color: #241508;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
     text-shadow: -1px -1px 0px rgba(255,255,255,1), 1px 1px 1px rgba(0,0,0,0.4);
-    margin-top: 12px;
+    margin-top: 4px;
   }
   .atm-card-info {
     display: flex;
@@ -235,12 +237,17 @@
   }
   .atm-name {
     font-family: var(--font-heading);
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: #241508;
     text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+    /* Prevent long names from breaking layout */
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .atm-date {
     font-family: 'Courier New', Courier, monospace;
@@ -330,10 +337,8 @@
                 
                 <div class="atm-card-number" id="cardId">####</div>
                 
-                <div style="font-size: 11px; font-style: italic; color: #241508; margin-top: 8px; line-height: 1.4; text-shadow: 0 1px 0 rgba(255,255,255,0.9); font-weight: 600;">
-                  "With the love of Swami,<br>
-                  You are the choosen perosn and ,<br>
-                  you are a member of Sathya Sai Brindhavan & Sri Sai Kanchi Periyava Illam."
+                <div style="font-size: 9.5px; font-style: italic; color: #241508; line-height: 1.45; text-shadow: 0 1px 0 rgba(255,255,255,0.9); font-weight: 600; overflow: hidden;">
+                  "With the love of Swami, you are the chosen person and a member of Sathya Sai Brindhavan &amp; Sri Sai Kanchi Periyava Illam."
                 </div>
                 
                 <div class="atm-card-info" style="margin-top: auto;">
@@ -639,6 +644,6 @@
 <script src="js/main.js?v=1.1.0"></script>
 <script src="js/supabase-client.js?v=1.1.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@latest/dist/html2canvas-pro.min.js"></script>
-<script src="js/dashboard-app.js?v=1.1.0"></script>
+<script src="js/dashboard-app.js?v=1.1.1"></script>
 </body>
 </html>
