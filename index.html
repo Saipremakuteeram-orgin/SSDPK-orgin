@@ -148,16 +148,16 @@ footer a:hover{color:#fff;text-decoration:none}
 
 /* Lotus */
 .lotus-wrap{width:80px;height:80px;position:relative;margin:0 auto 20px}
-.lotus-p{position:absolute;width:28px;height:42px;background:linear-gradient(180deg,oklch(72% 0.14 85 / 0.25),oklch(65% 0.17 55 / 0.08));border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;left:50%;bottom:50%;transform-origin:bottom center;animation:lBloom 4s ease-in-out infinite}
-.lotus-p:nth-child(1){transform:translateX(-50%) rotate(0);animation-delay:0s}
-.lotus-p:nth-child(2){transform:translateX(-50%) rotate(45deg);animation-delay:.3s}
-.lotus-p:nth-child(3){transform:translateX(-50%) rotate(90deg);animation-delay:.6s}
-.lotus-p:nth-child(4){transform:translateX(-50%) rotate(135deg);animation-delay:.9s}
-.lotus-p:nth-child(5){transform:translateX(-50%) rotate(180deg);animation-delay:1.2s}
-.lotus-p:nth-child(6){transform:translateX(-50%) rotate(225deg);animation-delay:1.5s}
-.lotus-p:nth-child(7){transform:translateX(-50%) rotate(270deg);animation-delay:1.8s}
-.lotus-p:nth-child(8){transform:translateX(-50%) rotate(315deg);animation-delay:2.1s}
-@keyframes lBloom{0%,100%{opacity:.4;transform:translateX(-50%) rotate(var(--r,0deg)) scale(.8)}50%{opacity:1;transform:translateX(-50%) rotate(var(--r,0deg)) scale(1.1)}}
+.lotus-p{position:absolute;width:28px;height:42px;background:linear-gradient(180deg,oklch(72% 0.14 85 / 0.25),oklch(65% 0.17 55 / 0.08));border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;left:50%;bottom:50%;transform-origin:bottom center;animation:lBloom 3.5s ease-in-out infinite}
+.lotus-p:nth-child(1){--r:0deg;animation-delay:0s}
+.lotus-p:nth-child(2){--r:45deg;animation-delay:.2s}
+.lotus-p:nth-child(3){--r:90deg;animation-delay:.4s}
+.lotus-p:nth-child(4){--r:135deg;animation-delay:.6s}
+.lotus-p:nth-child(5){--r:180deg;animation-delay:.8s}
+.lotus-p:nth-child(6){--r:225deg;animation-delay:1s}
+.lotus-p:nth-child(7){--r:270deg;animation-delay:1.2s}
+.lotus-p:nth-child(8){--r:315deg;animation-delay:1.4s}
+@keyframes lBloom{0%{opacity:.2;transform:translateX(-50%) rotate(var(--r,0deg)) scale(.3)}50%{opacity:1;transform:translateX(-50%) rotate(var(--r,0deg)) scale(1.15)}100%{opacity:.2;transform:translateX(-50%) rotate(var(--r,0deg)) scale(.3)}}
 
 /* Orb */
 .sacred-orb{width:100px;height:100px;border-radius:50%;background:radial-gradient(circle at 30% 30%,oklch(80% 0.14 85),oklch(65% 0.17 55) 40%,oklch(45% 0.12 30) 80%,transparent);box-shadow:0 0 40px oklch(72% 0.14 85 / 0.4),0 0 80px oklch(65% 0.17 55 / 0.2),inset 0 0 30px oklch(72% 0.14 85 / 0.2);animation:orbP 4s ease-in-out infinite;margin:0 auto 20px}
