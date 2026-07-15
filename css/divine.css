@@ -1,0 +1,449 @@
+/* =============================================================
+   DIVINE PREMIUM — Elegant Spiritual UI Enhancements
+   Sri Sai Dharma Samrakshana Prema Kuteeram
+   All rights reserved.
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Cinzel:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@400;500;600;700&display=swap');
+
+/* ── Sacred Color Palette ─────────────────────────────────── */
+:root {
+  --divine-gold:      oklch(72% 0.14 85);
+  --divine-saffron:   oklch(65% 0.17 55);
+  --divine-crimson:   oklch(52% 0.18 20);
+  --divine-maroon:    oklch(35% 0.12 15);
+  --divine-cream:     oklch(97% 0.008 80);
+  --divine-ivory:     oklch(99% 0.003 80);
+  --divine-silk:      oklch(96% 0.012 75);
+  --divine-ember:     oklch(60% 0.16 45);
+  --divine-sacred:    oklch(45% 0.15 145);
+  --divine-deep:      oklch(18% 0.015 300);
+
+  --font-sacred:  'Cinzel', 'Georgia', serif;
+  --font-devotion: 'Cormorant Garamond', 'Georgia', serif;
+  --font-sanskrit: 'Noto Serif Devanagari', serif;
+
+  --glow-gold:  0 0 20px oklch(72% 0.14 85 / 0.3), 0 0 40px oklch(72% 0.14 85 / 0.15);
+  --glow-saffron: 0 0 20px oklch(65% 0.17 55 / 0.3), 0 0 40px oklch(65% 0.17 55 / 0.15);
+  --glow-sacred: 0 0 30px oklch(72% 0.14 85 / 0.25), 0 0 60px oklch(65% 0.17 55 / 0.1);
+}
+
+/* ── Sacred Ornament Divider ──────────────────────────────── */
+.divine-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 32px 0;
+  opacity: 0.7;
+}
+.divine-divider::before,
+.divine-divider::after {
+  content: '';
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--divine-gold), transparent);
+}
+.divine-divider .om {
+  font-family: var(--font-sanskrit);
+  font-size: 24px;
+  color: var(--divine-gold);
+  text-shadow: var(--glow-gold);
+  animation: divinePulse 3s ease-in-out infinite;
+}
+
+@keyframes divinePulse {
+  0%, 100% { text-shadow: 0 0 8px oklch(72% 0.14 85 / 0.3); }
+  50% { text-shadow: 0 0 20px oklch(72% 0.14 85 / 0.6), 0 0 40px oklch(72% 0.14 85 / 0.3); }
+}
+
+/* ── Sacred Geometry Background Pattern ───────────────────── */
+.sacred-bg {
+  position: relative;
+  overflow: hidden;
+}
+.sacred-bg::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(circle at 30% 40%, oklch(72% 0.14 85 / 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, oklch(65% 0.17 55 / 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, oklch(45% 0.15 145 / 0.02) 0%, transparent 70%);
+  animation: sacredFloat 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes sacredFloat {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(2%, -1%) rotate(1deg); }
+  50% { transform: translate(-1%, 2%) rotate(-0.5deg); }
+  75% { transform: translate(1%, -2%) rotate(0.5deg); }
+}
+
+/* ── Hero Divine Enhancement ──────────────────────────────── */
+.hero {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 30% 20%, oklch(72% 0.14 85 / 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, oklch(65% 0.17 55 / 0.06) 0%, transparent 60%),
+    linear-gradient(180deg, oklch(97% 0.01 80) 0%, var(--divine-ivory) 100%);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, var(--divine-ivory), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+.hero h1 {
+  font-family: var(--font-sacred);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, var(--divine-maroon) 0%, var(--divine-saffron) 50%, var(--divine-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+.hero-badge {
+  font-family: var(--font-devotion);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px !important;
+  background: linear-gradient(135deg, oklch(95% 0.03 85), oklch(92% 0.04 80));
+  border: 1px solid oklch(72% 0.14 85 / 0.2);
+  box-shadow: var(--glow-gold);
+}
+
+/* ── Section Sacred Headers ───────────────────────────────── */
+.section-title {
+  font-family: var(--font-sacred);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--divine-maroon);
+}
+.section-subtitle {
+  font-family: var(--font-devotion);
+  font-size: 18px;
+  font-style: italic;
+  color: oklch(45% 0.06 50);
+}
+.section-divider {
+  background: linear-gradient(90deg, var(--divine-gold), var(--divine-saffron), var(--divine-gold));
+  box-shadow: 0 0 8px oklch(72% 0.14 85 / 0.3);
+  height: 2px;
+}
+
+/* ── Sacred Card Design ──────────────────────────────────── */
+.card {
+  background: linear-gradient(135deg, oklch(100% 0.003 80), oklch(98% 0.008 75));
+  border: 1px solid oklch(90% 0.02 70);
+  border-radius: var(--radius-md);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--divine-gold), var(--divine-saffron), var(--divine-gold));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.card:hover::before {
+  opacity: 1;
+}
+.card:hover {
+  box-shadow:
+    0 8px 32px oklch(72% 0.14 85 / 0.12),
+    0 0 0 1px oklch(72% 0.14 85 / 0.1);
+  transform: translateY(-4px);
+  border-color: oklch(72% 0.14 85 / 0.2);
+}
+
+.feature-icon {
+  background: linear-gradient(135deg, oklch(96% 0.03 85), oklch(93% 0.04 80));
+  border: 1px solid oklch(72% 0.14 85 / 0.15);
+  box-shadow: 0 4px 12px oklch(72% 0.14 85 / 0.1);
+}
+
+/* ── Sacred Button Styles ─────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--divine-saffron) 0%, var(--divine-ember) 100%);
+  border: 1px solid oklch(72% 0.14 85 / 0.3);
+  box-shadow: 0 4px 16px oklch(65% 0.17 55 / 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-devotion);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.btn-primary:hover {
+  box-shadow: 0 6px 24px oklch(65% 0.17 55 / 0.4), var(--glow-saffron);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  border: 1.5px solid var(--divine-gold);
+  color: var(--divine-maroon);
+  font-family: var(--font-devotion);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: all 0.3s ease;
+}
+.btn-outline:hover {
+  background: linear-gradient(135deg, oklch(96% 0.03 85), oklch(93% 0.04 80));
+  border-color: var(--divine-saffron);
+  box-shadow: var(--glow-gold);
+  transform: translateY(-2px);
+}
+
+/* ── Navigation Divine Style ──────────────────────────────── */
+nav {
+  background: oklch(98% 0.005 80 / 0.85);
+  backdrop-filter: blur(16px) saturate(130%);
+  border-bottom: 1px solid oklch(72% 0.14 85 / 0.08);
+  box-shadow: 0 1px 12px oklch(72% 0.14 85 / 0.05);
+}
+.nav-brand {
+  font-family: var(--font-sacred);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--divine-maroon);
+}
+.nav-logo-img {
+  border: 2.5px solid var(--divine-gold) !important;
+  box-shadow: 0 0 12px oklch(72% 0.14 85 / 0.4), 0 0 24px oklch(72% 0.14 85 / 0.2) !important;
+}
+.nav-links a {
+  font-family: var(--font-devotion);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  background: oklch(96% 0.02 80);
+  color: var(--divine-maroon);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Footer Divine Style ──────────────────────────────────── */
+footer {
+  background: linear-gradient(180deg, var(--divine-deep), oklch(12% 0.01 300));
+  position: relative;
+  overflow: hidden;
+}
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--divine-gold), var(--divine-saffron), var(--divine-gold), transparent);
+}
+.footer-brand {
+  font-family: var(--font-sacred);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+footer h4 {
+  font-family: var(--font-sacred);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+/* ── Page Header Sacred ───────────────────────────────────── */
+.page-header {
+  background:
+    radial-gradient(ellipse at 50% 0%, oklch(72% 0.14 85 / 0.06) 0%, transparent 60%),
+    linear-gradient(180deg, oklch(96% 0.02 80), var(--divine-ivory));
+}
+.page-header h1 {
+  font-family: var(--font-sacred);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--divine-maroon);
+}
+
+/* ── Donation Section Sacred ──────────────────────────────── */
+.donation-section {
+  background: linear-gradient(135deg, oklch(99% 0.005 80), oklch(97% 0.01 80));
+  border: 1px solid oklch(72% 0.14 85 / 0.1);
+  box-shadow: 0 8px 32px oklch(72% 0.14 85 / 0.06);
+}
+.donation-section h2 {
+  font-family: var(--font-sacred);
+  color: var(--divine-maroon);
+}
+.donation-tier {
+  border: 1.5px solid oklch(88% 0.02 70);
+  transition: all 0.3s ease;
+}
+.donation-tier:hover,
+.donation-tier.selected {
+  border-color: var(--divine-gold);
+  background: oklch(97% 0.015 85);
+  box-shadow: var(--glow-gold);
+}
+
+/* ── Stat Card Divine ─────────────────────────────────────── */
+.stat-card {
+  background: linear-gradient(135deg, oklch(99% 0.005 80), oklch(97% 0.01 75));
+  border: 1px solid oklch(72% 0.14 85 / 0.08);
+}
+.stat-card .stat-value {
+  font-family: var(--font-sacred);
+  background: linear-gradient(135deg, var(--divine-saffron), var(--divine-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Event Card Divine ────────────────────────────────────── */
+.event-card {
+  background: linear-gradient(135deg, oklch(99% 0.005 80), oklch(97% 0.01 75));
+  border: 1px solid oklch(88% 0.02 70);
+  transition: all 0.3s ease;
+}
+.event-card:hover {
+  border-color: oklch(72% 0.14 85 / 0.2);
+  box-shadow: 0 4px 20px oklch(72% 0.14 85 / 0.08);
+}
+.event-date .day {
+  font-family: var(--font-sacred);
+  color: var(--divine-saffron);
+}
+
+/* ── Gallery Sacred ───────────────────────────────────────── */
+.gallery-item {
+  border: 1px solid oklch(88% 0.02 70);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gallery-item:hover {
+  border-color: oklch(72% 0.14 85 / 0.3);
+  box-shadow: 0 8px 32px oklch(72% 0.14 85 / 0.15);
+}
+
+/* ── Lightbox Divine ──────────────────────────────────────── */
+.lightbox-content {
+  border: 1px solid oklch(72% 0.14 85 / 0.1);
+  box-shadow: 0 24px 80px oklch(18% 0.015 300 / 0.3);
+}
+.lightbox-title {
+  font-family: var(--font-sacred);
+  color: var(--divine-maroon);
+}
+
+/* ── Sacred Scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(96% 0.01 80);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--divine-gold), var(--divine-saffron));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--divine-saffron), var(--divine-ember));
+}
+
+/* ── Selection Color ──────────────────────────────────────── */
+::selection {
+  background: oklch(72% 0.14 85 / 0.2);
+  color: var(--divine-maroon);
+}
+
+/* ── Smooth Page Transitions ──────────────────────────────── */
+body {
+  animation: pageReveal 0.6s ease;
+}
+@keyframes pageReveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Sacred Hover Glow Effect ─────────────────────────────── */
+.sacred-glow {
+  transition: all 0.3s ease;
+}
+.sacred-glow:hover {
+  box-shadow: var(--glow-sacred);
+}
+
+/* ── Text Gradient Sacred ─────────────────────────────────── */
+.text-sacred {
+  background: linear-gradient(135deg, var(--divine-maroon) 0%, var(--divine-saffron) 50%, var(--divine-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Border Ornament ──────────────────────────────────────── */
+.border-ornament {
+  position: relative;
+  border: 1px solid oklch(72% 0.14 85 / 0.15);
+}
+.border-ornament::before,
+.border-ornament::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--divine-gold);
+}
+.border-ornament::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+.border-ornament::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+/* ── Responsive Divine Adjustments ────────────────────────── */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 48px);
+  }
+  .section-title {
+    font-size: clamp(24px, 3.5vw, 36px);
+  }
+}
+
+/* ── Loading Shimmer Sacred ───────────────────────────────── */
+@keyframes sacredShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.sacred-shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(96% 0.01 80) 25%,
+    oklch(93% 0.02 85) 50%,
+    oklch(96% 0.01 80) 75%
+  );
+  background-size: 200% 100%;
+  animation: sacredShimmer 2s ease-in-out infinite;
+}
