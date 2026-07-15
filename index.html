@@ -6,13 +6,22 @@
 <title>Sathya Sai Prema Kuterram — Home</title>
 <meta name="description" content="Sri Sai Dharma Samrakshana Prema Kuteeram — A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba. Love All, Serve All.">
 
-<!-- Preconnect for speed -->
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- ComicSansMS3 Font -->
+<style>
+@font-face {
+  font-family: 'ComicSansMS3';
+  src: url('https://db.onlinewebfonts.com/t/15fbe4ccea5683707815c9aa9cf71a46.woff2') format('woff2'),
+       url('https://db.onlinewebfonts.com/t/15fbe4ccea5683707815c9aa9cf71a46.woff') format('woff'),
+       url('https://db.onlinewebfonts.com/t/15fbe4ccea5683707815c9aa9cf71a46.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+</style>
 
 <!-- Critical CSS inlined for instant render -->
 <style>
-:root{--divine-gold:oklch(72% 0.14 85);--divine-saffron:oklch(65% 0.17 55);--divine-maroon:oklch(35% 0.12 15);--divine-ivory:oklch(99% 0.003 80);--accent:oklch(62% 0.16 50);--fg:oklch(20% 0.015 45);--muted:oklch(50% 0.02 45);--surface:oklch(100% 0.005 55 / 0.7);--border:oklch(92% 0.02 55);--font-sacred:'Cinzel',Georgia,serif;--font-devotion:'Cormorant Garamond',Georgia,serif}
+:root{--divine-gold:oklch(72% 0.14 85);--divine-saffron:oklch(65% 0.17 55);--divine-maroon:oklch(35% 0.12 15);--divine-ivory:oklch(99% 0.003 80);--accent:oklch(62% 0.16 50);--fg:oklch(20% 0.015 45);--muted:oklch(50% 0.02 45);--surface:oklch(100% 0.005 55 / 0.7);--border:oklch(92% 0.02 55);--font-sacred:'ComicSansMS3','Comic Sans MS',cursive;--font-devotion:'ComicSansMS3','Comic Sans MS',cursive}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--font-devotion),sans-serif;background:var(--divine-ivory);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased;animation:pageReveal .5s ease}
@@ -38,13 +47,15 @@ h1,h2,h3,h4{font-family:var(--font-sacred);font-weight:600;line-height:1.2}
 nav{position:fixed;top:0;left:0;right:0;height:64px;background:oklch(98% 0.005 80 / 0.85);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border-bottom:1px solid oklch(72% 0.14 85 / 0.08);z-index:100;display:flex;align-items:center;transition:box-shadow .3s}
 nav.scrolled{box-shadow:0 4px 20px oklch(72% 0.14 85 / 0.1)}
 nav .container{display:flex;align-items:center;justify-content:space-between;width:100%}
-.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-sacred);font-size:16px;font-weight:700;color:var(--divine-maroon);letter-spacing:.04em;text-decoration:none}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-sacred);font-size:16px;font-weight:700;color:var(--divine-maroon);letter-spacing:.03em;text-decoration:none;transition:transform .3s}
+.nav-brand:hover{animation:brandBounce .5s ease}
+@keyframes brandBounce{0%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}60%{transform:translateY(-2px)}}
 .nav-logo-img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2.5px solid var(--divine-gold);box-shadow:0 0 12px oklch(72% 0.14 85 / 0.4);transition:transform .3s,box-shadow .3s}
 .nav-brand:hover .nav-logo-img{transform:scale(1.08) rotate(3deg);box-shadow:0 0 20px oklch(72% 0.14 85 / 0.6)}
 .nav-toggle{display:none;background:none;border:none;font-size:22px;color:var(--fg);cursor:pointer;padding:4px}
 .nav-links{display:flex;gap:4px}
-.nav-links a{padding:8px 16px;border-radius:8px;color:var(--fg);font-family:var(--font-devotion);font-size:15px;font-weight:500;letter-spacing:.02em;transition:background .2s,color .2s;text-decoration:none}
-.nav-links a:hover,.nav-links a.active{background:oklch(96% 0.02 80);color:var(--divine-maroon)}
+.nav-links a{padding:8px 16px;border-radius:8px;color:var(--fg);font-family:var(--font-devotion);font-size:15px;font-weight:600;letter-spacing:.01em;transition:all .2s;text-decoration:none}
+.nav-links a:hover,.nav-links a.active{background:oklch(96% 0.02 80);color:var(--divine-maroon);transform:translateY(-1px)}
 .nav-links a.donate-btn{background:var(--accent);color:#fff;font-weight:600}
 .nav-links a.donate-btn:hover{background:oklch(50% 0.14 45)}
 
@@ -52,34 +63,37 @@ nav .container{display:flex;align-items:center;justify-content:space-between;wid
 .hero{min-height:80vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:calc(64px + 60px) 20px 80px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 30% 20%,oklch(72% 0.14 85 / 0.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,oklch(65% 0.17 55 / 0.06) 0%,transparent 60%),linear-gradient(180deg,oklch(97% 0.01 80),var(--divine-ivory))}
 .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,var(--divine-ivory),transparent);pointer-events:none;z-index:1}
 .hero-content{position:relative;z-index:2;max-width:720px}
-.hero-badge{display:inline-block;padding:6px 20px;background:linear-gradient(135deg,oklch(95% 0.03 85),oklch(92% 0.04 80));color:var(--divine-maroon);border:1px solid oklch(72% 0.14 85 / 0.2);border-radius:20px;font-family:var(--font-devotion);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:24px;box-shadow:0 0 20px oklch(72% 0.14 85 / 0.15);animation:badgeGlow 3s ease-in-out infinite}
+.hero-badge{display:inline-block;padding:6px 20px;background:linear-gradient(135deg,oklch(95% 0.03 85),oklch(92% 0.04 80));color:var(--divine-maroon);border:1px solid oklch(72% 0.14 85 / 0.2);border-radius:20px;font-family:var(--font-devotion);font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:24px;box-shadow:0 0 20px oklch(72% 0.14 85 / 0.15);animation:badgeGlow 3s ease-in-out infinite,badgeFloat 4s ease-in-out infinite}
+@keyframes badgeFloat{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-3px) rotate(-.5deg)}75%{transform:translateY(-3px) rotate(.5deg)}}
 @keyframes badgeGlow{0%,100%{box-shadow:0 0 12px oklch(72% 0.14 85 / 0.15)}50%{box-shadow:0 0 24px oklch(72% 0.14 85 / 0.35),0 0 48px oklch(65% 0.17 55 / 0.15)}}
-.hero h1{font-family:var(--font-sacred);font-size:clamp(32px,5.5vw,60px);margin-bottom:20px;letter-spacing:.02em;background:linear-gradient(135deg,var(--divine-maroon) 0%,var(--divine-saffron) 50%,var(--divine-gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15}
+.hero h1{font-family:var(--font-sacred);font-size:clamp(32px,5.5vw,60px);margin-bottom:20px;letter-spacing:.01em;font-weight:700;background:linear-gradient(135deg,var(--divine-maroon) 0%,var(--divine-saffron) 50%,var(--divine-gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15;animation:heroWiggle 3s ease-in-out infinite}
+@keyframes heroWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-.5deg)}75%{transform:rotate(.5deg)}}
 .hero p{font-family:var(--font-devotion);font-size:clamp(16px,2.2vw,20px);color:var(--muted);margin-bottom:36px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7}
 .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:8px;font-family:var(--font-devotion);font-size:16px;font-weight:600;border:none;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:8px;font-family:var(--font-devotion);font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;text-decoration:none}
 .btn-primary{background:linear-gradient(135deg,var(--divine-saffron),oklch(60% 0.16 45));color:#fff;border:1px solid oklch(72% 0.14 85 / 0.3);box-shadow:0 4px 16px oklch(65% 0.17 55 / 0.25)}
-.btn-primary:hover{box-shadow:0 6px 24px oklch(65% 0.17 55 / 0.4),0 0 20px oklch(72% 0.14 85 / 0.3);transform:translateY(-2px);text-decoration:none}
+.btn-primary:hover{box-shadow:0 6px 24px oklch(65% 0.17 55 / 0.4),0 0 20px oklch(72% 0.14 85 / 0.3);transform:translateY(-2px) scale(1.03);text-decoration:none;animation:btnWiggle .4s ease}
+@keyframes btnWiggle{0%,100%{transform:translateY(-2px) scale(1.03) rotate(0)}25%{transform:translateY(-2px) scale(1.03) rotate(-1deg)}75%{transform:translateY(-2px) scale(1.03) rotate(1deg)}}
 .btn-outline{background:transparent;color:var(--divine-maroon);border:1.5px solid var(--divine-gold)}
-.btn-outline:hover{background:linear-gradient(135deg,oklch(96% 0.03 85),oklch(93% 0.04 80));border-color:var(--divine-saffron);box-shadow:0 0 20px oklch(72% 0.14 85 / 0.2);transform:translateY(-2px);text-decoration:none}
+.btn-outline:hover{background:linear-gradient(135deg,oklch(96% 0.03 85),oklch(93% 0.04 80));border-color:var(--divine-saffron);box-shadow:0 0 20px oklch(72% 0.14 85 / 0.2);transform:translateY(-2px) scale(1.03);text-decoration:none}
 
 /* Sections */
 .section{padding:80px 0}
 .section-alt{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.section-title{font-family:var(--font-sacred);font-size:clamp(26px,4vw,40px);text-align:center;margin-bottom:8px;color:var(--divine-maroon);letter-spacing:.04em}
-.section-subtitle{text-align:center;color:var(--muted);font-family:var(--font-devotion);font-size:clamp(15px,2vw,18px);font-style:italic;margin-bottom:48px;max-width:600px;margin-left:auto;margin-right:auto}
+.section-title{font-family:var(--font-sacred);font-size:clamp(26px,4vw,40px);text-align:center;margin-bottom:8px;color:var(--divine-maroon);letter-spacing:.02em;font-weight:700}
+.section-subtitle{text-align:center;color:var(--muted);font-family:var(--font-devotion);font-size:clamp(15px,2vw,18px);font-style:normal;margin-bottom:48px;max-width:600px;margin-left:auto;margin-right:auto;font-weight:600}
 .section-divider{width:60px;height:2px;background:linear-gradient(90deg,var(--divine-gold),var(--divine-saffron),var(--divine-gold));margin:12px auto 24px;border-radius:2px;box-shadow:0 0 8px oklch(72% 0.14 85 / 0.3)}
 
 /* Cards */
 .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
-.card{background:linear-gradient(135deg,oklch(100% 0.003 80),oklch(98% 0.008 75));border:1px solid oklch(90% 0.02 70);border-radius:12px;overflow:hidden;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative}
+.card{background:linear-gradient(135deg,oklch(100% 0.003 80),oklch(98% 0.008 75));border:1px solid oklch(90% 0.02 70);border-radius:12px;overflow:hidden;transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--divine-gold),var(--divine-saffron),var(--divine-gold));opacity:0;transition:opacity .4s}
 .card:hover::before{opacity:1}
-.card:hover{box-shadow:0 8px 32px oklch(72% 0.14 85 / 0.12),0 0 0 1px oklch(72% 0.14 85 / 0.1);transform:translateY(-4px);border-color:oklch(72% 0.14 85 / 0.2)}
+.card:hover{box-shadow:0 8px 32px oklch(72% 0.14 85 / 0.12),0 0 0 1px oklch(72% 0.14 85 / 0.1);transform:translateY(-4px) scale(1.01);border-color:oklch(72% 0.14 85 / 0.2)}
 .feature-card{text-align:center;padding:32px 20px}
 .feature-icon{width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:linear-gradient(135deg,oklch(96% 0.03 85),oklch(93% 0.04 80));border:1px solid oklch(72% 0.14 85 / 0.15);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px oklch(72% 0.14 85 / 0.1);transition:transform .3s,box-shadow .3s}
 .card:hover .feature-icon{transform:scale(1.1);box-shadow:0 6px 20px oklch(72% 0.14 85 / 0.2)}
-.card-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.card-title{font-size:18px;font-weight:700;margin-bottom:8px}
 .card-text{font-size:14px;color:var(--muted);line-height:1.6}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 
@@ -90,10 +104,10 @@ nav .container{display:flex;align-items:center;justify-content:space-between;wid
 footer{background:linear-gradient(180deg,oklch(18% 0.015 300),oklch(12% 0.01 300));color:var(--divine-ivory);padding:48px 0 32px;margin-top:80px;position:relative;overflow:hidden}
 footer::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--divine-gold),var(--divine-saffron),var(--divine-gold),transparent)}
 footer .container{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
-footer h4{font-family:var(--font-sacred);color:#fff;margin-bottom:16px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+footer h4{font-family:var(--font-sacred);color:#fff;margin-bottom:16px;font-size:13px;letter-spacing:.03em;text-transform:uppercase;font-weight:700}
 footer p,facre a{font-size:14px;color:oklch(70% 0.01 80);line-height:2}
 footer a:hover{color:#fff;text-decoration:none}
-.footer-brand{font-family:var(--font-sacred);font-size:16px;color:#fff !important;margin-bottom:8px;letter-spacing:.04em}
+.footer-brand{font-family:var(--font-sacred);font-size:16px;color:#fff !important;margin-bottom:8px;letter-spacing:.02em;font-weight:700}
 .footer-bottom{grid-column:1/-1;border-top:1px solid oklch(35% 0.01 70);padding-top:20px;margin-top:20px;text-align:center;font-size:13px;color:oklch(60% 0.01 80)}
 
 /* Sacred particles */
@@ -153,7 +167,7 @@ footer a:hover{color:#fff;text-decoration:none}
 .flowtree-section{position:relative;overflow:hidden}
 .flowtree{display:flex;align-items:center;justify-content:center;gap:0;padding:40px 20px;position:relative;min-height:200px;user-select:none}
 .tree-root{position:relative;z-index:5;display:flex;align-items:center;gap:12px;padding:18px 32px;background:linear-gradient(135deg,var(--accent),oklch(50% 0.14 45));color:#fff;border-radius:14px;font-family:var(--font-sacred);font-size:clamp(16px,2.2vw,22px);font-weight:700;box-shadow:0 4px 24px oklch(58% 0.14 50 / 0.35);border:2px solid oklch(70% 0.12 50 / 0.3);white-space:nowrap;transition:all .3s;cursor:pointer}
-.tree-root:hover{box-shadow:0 6px 32px oklch(58% 0.14 50 / 0.5);transform:translateY(-2px)}
+.tree-root:hover{box-shadow:0 6px 32px oklch(58% 0.14 50 / 0.5);transform:translateY(-2px) scale(1.02)}
 .tree-arrow{font-size:12px;transition:transform .5s cubic-bezier(.34,1.56,.64,1);margin-left:6px;display:inline-block}
 .tree-arrow.open{transform:rotate(180deg)}
 .tree-svg-wrap{position:relative;width:140px;height:140px;flex-shrink:0}
@@ -169,8 +183,8 @@ footer a:hover{color:#fff;text-decoration:none}
 .tree-child-row.open{opacity:1;pointer-events:auto;transform:translateX(0) scale(1)}
 .tree-child-row:nth-child(1).open{transition-delay:.35s}
 .tree-child-row:nth-child(2).open{transition-delay:.5s}
-.tree-child-node{display:flex;align-items:center;gap:10px;padding:12px 24px;background:var(--surface);border:2px solid oklch(92% 0.02 55);border-radius:12px;font-family:var(--font-sacred);font-size:clamp(13px,1.4vw,16px);font-weight:600;color:var(--fg);white-space:nowrap;transition:all .3s;box-shadow:0 2px 8px oklch(0 0 0 / 0.03)}
-.tree-child-node:hover{border-color:var(--accent);box-shadow:0 4px 20px oklch(58% 0.14 50 / 0.15);transform:translateY(-2px)}
+.tree-child-node{display:flex;align-items:center;gap:10px;padding:12px 24px;background:var(--surface);border:2px solid oklch(92% 0.02 55);border-radius:12px;font-family:var(--font-sacred);font-size:clamp(13px,1.4vw,16px);font-weight:700;color:var(--fg);white-space:nowrap;transition:all .3s;box-shadow:0 2px 8px oklch(0 0 0 / 0.03)}
+.tree-child-node:hover{border-color:var(--accent);box-shadow:0 4px 20px oklch(58% 0.14 50 / 0.15);transform:translateY(-2px) scale(1.02)}
 
 /* Responsive */
 @media(max-width:768px){.nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);flex-direction:column;padding:12px 20px;gap:4px}.nav-links.open{display:flex}.nav-toggle{display:block}.grid-2,.grid-3{grid-template-columns:1fr}footer .container{grid-template-columns:1fr;gap:24px}.hero{min-height:70vh}.flowtree{flex-direction:column;gap:8px}.tree-svg-wrap{width:80px;height:60px}}
