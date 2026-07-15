@@ -1,4 +1,47 @@
-# === Python ===
+# =============================================================
+# SATHYA SAI PREMA KUTEERAM — .gitignore
+# All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram
+# =============================================================
+
+# ── Environment & Secrets ────────────────────────────────────
+.env
+.env.local
+.env.production
+.env.development
+.env.staging
+*.env
+client_secret_*.json
+client_secret.json.enc
+*.enc
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+
+# ── Server & Backend Source (CONFIDENTIAL) ───────────────────
+api/
+bot.py
+dev_server.py
+decrypt_secret.py
+encrypt_secret.py
+
+# ── Database Schemas (CONFIDENTIAL) ─────────────────────────
+*.sql
+supabase_setup.sql
+telegram_storage_schema.sql
+
+# ── Quote Data & Scripts (CONFIDENTIAL) ─────────────────────
+quote/
+
+# ── Internal Docs (CONFIDENTIAL) ────────────────────────────
+CHECKLIST.md
+IMPLEMENTATION.md
+*.patch
+
+# ── Dependencies & Build Artifacts ──────────────────────────
+node_modules/
+package-lock.json
 __pycache__/
 *.py[cod]
 *.pyo
@@ -8,33 +51,37 @@ __pycache__/
 dist/
 build/
 .eggs/
-*.spec
+requirements.txt
 
-# === Environment / Secrets ===
-.env
-*.env.local
-*.env.production
-client_secret_*.json
+# ── Third-Party Tools ───────────────────────────────────────
+graphify-tool/
+graphify-out/
+graphify/
 
-# === OS Files ===
+# ── OS & IDE Files ──────────────────────────────────────────
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# === Node / npm (if ever used) ===
-node_modules/
-npm-debug.log*
-
-# === IDE ===
 .vscode/settings.json
 .idea/
 *.swp
 *.swo
+*~
 
-# === Logs ===
+# ── Logs ────────────────────────────────────────────────────
 *.log
 logs/
 
+# ── Vercel ──────────────────────────────────────────────────
 .vercel
-graphify/
 
+# ── Python ──────────────────────────────────────────────────
+*.spec
+.venv/
+venv/
+env/
+
+# ── Misc ────────────────────────────────────────────────────
+*.bak
+*.tmp
+*.temp
