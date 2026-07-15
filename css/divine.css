@@ -447,3 +447,404 @@ body {
   background-size: 200% 100%;
   animation: sacredShimmer 2s ease-in-out infinite;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   ADVANCED ANIMATIONS & INTERACTIONS
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Scroll Reveal System ─────────────────────────────────── */
+[data-animate] {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-animate="fade-up"]    { transform: translateY(40px); }
+[data-animate="fade-down"]  { transform: translateY(-40px); }
+[data-animate="fade-left"]  { transform: translateX(-40px); }
+[data-animate="fade-right"] { transform: translateX(40px); }
+[data-animate="scale-in"]   { transform: scale(0.85); }
+[data-animate="rotate-in"]  { transform: rotate(-8deg) scale(0.9); }
+
+[data-animate].in-view {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1) rotate(0deg);
+}
+
+/* Staggered children */
+[data-animate].in-view:nth-child(1)  { transition-delay: 0s; }
+[data-animate].in-view:nth-child(2)  { transition-delay: 0.1s; }
+[data-animate].in-view:nth-child(3)  { transition-delay: 0.2s; }
+[data-animate].in-view:nth-child(4)  { transition-delay: 0.3s; }
+[data-animate].in-view:nth-child(5)  { transition-delay: 0.4s; }
+[data-animate].in-view:nth-child(6)  { transition-delay: 0.5s; }
+
+/* ── Floating Particles Container ─────────────────────────── */
+.divine-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.divine-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, oklch(72% 0.14 85 / 0.6), transparent);
+  border-radius: 50%;
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── Cursor Glow Trail ────────────────────────────────────── */
+.cursor-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, oklch(72% 0.14 85 / 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease, top 0.15s ease;
+  mix-blend-mode: screen;
+}
+
+/* ── Typewriter Effect ────────────────────────────────────── */
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid var(--divine-gold);
+  animation: typewriterBlink 0.75s step-end infinite;
+}
+@keyframes typewriterBlink {
+  from, to { border-color: transparent; }
+  50% { border-color: var(--divine-gold); }
+}
+
+/* ── Counter Animation ────────────────────────────────────── */
+.counter-value {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+.counter-value.counting {
+  animation: counterPulse 0.1s ease infinite;
+}
+@keyframes counterPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ── Sacred Lotus Animation ───────────────────────────────── */
+.lotus-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+.lotus-petal {
+  position: absolute;
+  width: 40px;
+  height: 60px;
+  background: linear-gradient(180deg, oklch(72% 0.14 85 / 0.3), oklch(65% 0.17 55 / 0.1));
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: bottom center;
+  animation: lotusBloom 4s ease-in-out infinite;
+}
+.lotus-petal:nth-child(1) { transform: translateX(-50%) rotate(0deg); animation-delay: 0s; }
+.lotus-petal:nth-child(2) { transform: translateX(-50%) rotate(45deg); animation-delay: 0.3s; }
+.lotus-petal:nth-child(3) { transform: translateX(-50%) rotate(90deg); animation-delay: 0.6s; }
+.lotus-petal:nth-child(4) { transform: translateX(-50%) rotate(135deg); animation-delay: 0.9s; }
+.lotus-petal:nth-child(5) { transform: translateX(-50%) rotate(180deg); animation-delay: 1.2s; }
+.lotus-petal:nth-child(6) { transform: translateX(-50%) rotate(225deg); animation-delay: 1.5s; }
+.lotus-petal:nth-child(7) { transform: translateX(-50%) rotate(270deg); animation-delay: 1.8s; }
+.lotus-petal:nth-child(8) { transform: translateX(-50%) rotate(315deg); animation-delay: 2.1s; }
+
+@keyframes lotusBloom {
+  0%, 100% { opacity: 0.4; transform: translateX(-50%) rotate(var(--r, 0deg)) scale(0.8); }
+  50% { opacity: 1; transform: translateX(-50%) rotate(var(--r, 0deg)) scale(1.1); }
+}
+
+/* ── Glowing Orb ──────────────────────────────────────────── */
+.sacred-orb {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%,
+    oklch(80% 0.14 85),
+    oklch(65% 0.17 55) 40%,
+    oklch(45% 0.12 30) 80%,
+    transparent
+  );
+  box-shadow:
+    0 0 40px oklch(72% 0.14 85 / 0.4),
+    0 0 80px oklch(65% 0.17 55 / 0.2),
+    inset 0 0 40px oklch(72% 0.14 85 / 0.2);
+  animation: orbPulse 4s ease-in-out infinite;
+}
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px oklch(72% 0.14 85 / 0.4), 0 0 80px oklch(65% 0.17 55 / 0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 0 60px oklch(72% 0.14 85 / 0.6), 0 0 120px oklch(65% 0.17 55 / 0.3); }
+}
+
+/* ── Ripple Click Effect ───────────────────────────────────── */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: oklch(72% 0.14 85 / 0.15);
+  transform: scale(0);
+  animation: rippleExpand 0.6s ease-out;
+  pointer-events: none;
+}
+@keyframes rippleExpand {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ── Magnetic Button ──────────────────────────────────────── */
+.magnetic-btn {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Smooth Parallax Layers ───────────────────────────────── */
+[data-parallax] {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* ── Animated Gradient Border ─────────────────────────────── */
+.gradient-border {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    var(--border-angle, 0deg),
+    var(--divine-gold),
+    var(--divine-saffron),
+    var(--divine-crimson),
+    var(--divine-gold)
+  );
+  z-index: -1;
+  animation: borderRotate 4s linear infinite;
+}
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes borderRotate {
+  to { --border-angle: 360deg; }
+}
+
+/* ── Text Reveal Animation ────────────────────────────────── */
+.text-reveal {
+  display: inline-block;
+  overflow: hidden;
+}
+.text-reveal span {
+  display: inline-block;
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.text-reveal.revealed span {
+  transform: translateY(0);
+}
+
+/* ── Card Shine Effect ────────────────────────────────────── */
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+.card-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    oklch(100% 0 0 / 0.08) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg) translateX(-100%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+.card-shine:hover::after {
+  transform: rotate(45deg) translateX(100%);
+}
+
+/* ── Smooth Accordion ─────────────────────────────────────── */
+.accordion-item {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
+}
+.accordion-item.open {
+  max-height: 500px;
+}
+
+/* ── Progress Bar Animation ───────────────────────────────── */
+.sacred-progress {
+  height: 4px;
+  background: oklch(90% 0.02 70);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sacred-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--divine-gold), var(--divine-saffron));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Marquee / Infinite Scroll ────────────────────────────── */
+.sacred-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.sacred-marquee-inner {
+  display: inline-flex;
+  animation: marqueeScroll 20s linear infinite;
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── Back to Top Button ───────────────────────────────────── */
+.back-to-top {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--divine-saffron), var(--divine-gold));
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 16px oklch(65% 0.17 55 / 0.3);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 998;
+  pointer-events: none;
+}
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.back-to-top:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px oklch(65% 0.17 55 / 0.5), var(--glow-saffron);
+}
+
+/* ── Loading Screen ───────────────────────────────────────── */
+.divine-loader {
+  position: fixed;
+  inset: 0;
+  background: var(--divine-ivory);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.divine-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.divine-loader-ring {
+  width: 60px;
+  height: 60px;
+  border: 3px solid oklch(90% 0.02 70);
+  border-top-color: var(--divine-gold);
+  border-radius: 50%;
+  animation: loaderSpin 1s linear infinite;
+}
+@keyframes loaderSpin {
+  to { transform: rotate(360deg); }
+}
+.divine-loader-text {
+  margin-top: 16px;
+  font-family: var(--font-devotion);
+  font-size: 16px;
+  color: var(--divine-maroon);
+  letter-spacing: 0.05em;
+}
+
+/* ── Tooltip Sacred ───────────────────────────────────────── */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  padding: 6px 12px;
+  background: var(--divine-deep);
+  color: oklch(95% 0.01 80);
+  font-size: 12px;
+  font-family: var(--font-devotion);
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ── Smooth Image Lazy Load ───────────────────────────────── */
+img[data-src] {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+img[data-src].loaded {
+  opacity: 1;
+}
+
+/* ── Reduced Motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-animate] {
+    opacity: 1;
+    transform: none;
+  }
+}

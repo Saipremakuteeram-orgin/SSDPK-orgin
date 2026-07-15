@@ -4,237 +4,201 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sathya Sai Prema Kuterram — Home</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' }
-        }
-      }
-    }
-  }
-</script>
-<link rel="stylesheet" href="css/theme.css?v=1.1.0">
-<link rel="stylesheet" href="css/divine.css?v=1.0.0">
+<meta name="description" content="Sri Sai Dharma Samrakshana Prema Kuteeram — A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba. Love All, Serve All.">
+
+<!-- Preconnect for speed -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Critical CSS inlined for instant render -->
 <style>
-/* ---- Flow Tree — SVG Branch Animation ---- */
-.flowtree-section {
-  position: relative;
-  overflow: hidden;
-}
-.flowtree-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 20% 50%, oklch(58% 0.14 50 / 0.06), transparent 70%);
-  pointer-events: none;
-}
+:root{--divine-gold:oklch(72% 0.14 85);--divine-saffron:oklch(65% 0.17 55);--divine-maroon:oklch(35% 0.12 15);--divine-ivory:oklch(99% 0.003 80);--accent:oklch(62% 0.16 50);--fg:oklch(20% 0.015 45);--muted:oklch(50% 0.02 45);--surface:oklch(100% 0.005 55 / 0.7);--border:oklch(92% 0.02 55);--font-sacred:'Cinzel',Georgia,serif;--font-devotion:'Cormorant Garamond',Georgia,serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-devotion),sans-serif;background:var(--divine-ivory);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased;animation:pageReveal .5s ease}
+@keyframes pageReveal{from{opacity:0}to{opacity:1}}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--accent);text-decoration:none}
+ul{list-style:none}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+h1,h2,h3,h4{font-family:var(--font-sacred);font-weight:600;line-height:1.2}
+::selection{background:oklch(72% 0.14 85 / 0.2);color:var(--divine-maroon)}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:oklch(96% 0.01 80)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--divine-gold),var(--divine-saffron));border-radius:4px}
 
-.flowtree {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: 40px 20px;
-  position: relative;
-  min-height: 200px;
-  user-select: none;
-}
+/* Loading screen */
+.loader{position:fixed;inset:0;background:var(--divine-ivory);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .4s,visibility .4s}
+.loader.done{opacity:0;visibility:hidden;pointer-events:none}
+.loader-ring{width:48px;height:48px;border:3px solid oklch(90% 0.02 70);border-top-color:var(--divine-gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{margin-top:12px;font-family:var(--font-sacred);font-size:14px;color:var(--divine-maroon);letter-spacing:.05em}
 
-/* Root node */
-.tree-root {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 20px 36px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  color: var(--fg);
-  border-radius: 14px;
-  font-family: var(--font-heading);
-  font-size: clamp(18px, 2.5vw, 26px);
-  font-weight: 700;
-  box-shadow: 0 4px 24px oklch(58% 0.14 50 / 0.35);
-  border: 2px solid oklch(70% 0.12 50 / 0.3);
-  white-space: nowrap;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-.tree-root:hover {
-  box-shadow: 0 6px 32px oklch(58% 0.14 50 / 0.5);
-  transform: translateY(-2px);
-}
-.tree-root:active {
-  transform: scale(0.97);
-}
-.tree-root.neon-glow {
-  animation-duration: 3s;
-}
-.tree-arrow {
-  font-size: 12px;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-left: 6px;
-  display: inline-block;
-}
-.tree-arrow.open {
-  transform: rotate(180deg);
-}
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;height:64px;background:oklch(98% 0.005 80 / 0.85);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border-bottom:1px solid oklch(72% 0.14 85 / 0.08);z-index:100;display:flex;align-items:center;transition:box-shadow .3s}
+nav.scrolled{box-shadow:0 4px 20px oklch(72% 0.14 85 / 0.1)}
+nav .container{display:flex;align-items:center;justify-content:space-between;width:100%}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-sacred);font-size:16px;font-weight:700;color:var(--divine-maroon);letter-spacing:.04em;text-decoration:none}
+.nav-logo-img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2.5px solid var(--divine-gold);box-shadow:0 0 12px oklch(72% 0.14 85 / 0.4);transition:transform .3s,box-shadow .3s}
+.nav-brand:hover .nav-logo-img{transform:scale(1.08) rotate(3deg);box-shadow:0 0 20px oklch(72% 0.14 85 / 0.6)}
+.nav-toggle{display:none;background:none;border:none;font-size:22px;color:var(--fg);cursor:pointer;padding:4px}
+.nav-links{display:flex;gap:4px}
+.nav-links a{padding:8px 16px;border-radius:8px;color:var(--fg);font-family:var(--font-devotion);font-size:15px;font-weight:500;letter-spacing:.02em;transition:background .2s,color .2s;text-decoration:none}
+.nav-links a:hover,.nav-links a.active{background:oklch(96% 0.02 80);color:var(--divine-maroon)}
+.nav-links a.donate-btn{background:var(--accent);color:#fff;font-weight:600}
+.nav-links a.donate-btn:hover{background:oklch(50% 0.14 45)}
 
-/* SVG branch area */
-.tree-svg-wrap {
-  position: relative;
-  width: 160px;
-  height: 160px;
-  flex-shrink: 0;
-}
-.tree-svg-wrap svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-/* Branch paths start invisible, animate in */
-.branch-path {
-  fill: none;
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke: var(--accent);
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.branch-path.open {
-  stroke-dashoffset: 0;
-}
-/* Branch joint dots */
-.branch-dot {
-  fill: var(--accent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.branch-dot.open { opacity: 1; }
-/* Neon glow on branches */
-.branch-glow {
-  stroke: oklch(58% 0.14 50 / 0.25);
-  stroke-width: 8;
-  fill: none;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.15s;
-}
-.branch-glow.open { opacity: 1; }
+/* Hero */
+.hero{min-height:80vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:calc(64px + 60px) 20px 80px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 30% 20%,oklch(72% 0.14 85 / 0.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,oklch(65% 0.17 55 / 0.06) 0%,transparent 60%),linear-gradient(180deg,oklch(97% 0.01 80),var(--divine-ivory))}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,var(--divine-ivory),transparent);pointer-events:none;z-index:1}
+.hero-content{position:relative;z-index:2;max-width:720px}
+.hero-badge{display:inline-block;padding:6px 20px;background:linear-gradient(135deg,oklch(95% 0.03 85),oklch(92% 0.04 80));color:var(--divine-maroon);border:1px solid oklch(72% 0.14 85 / 0.2);border-radius:20px;font-family:var(--font-devotion);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:24px;box-shadow:0 0 20px oklch(72% 0.14 85 / 0.15);animation:badgeGlow 3s ease-in-out infinite}
+@keyframes badgeGlow{0%,100%{box-shadow:0 0 12px oklch(72% 0.14 85 / 0.15)}50%{box-shadow:0 0 24px oklch(72% 0.14 85 / 0.35),0 0 48px oklch(65% 0.17 55 / 0.15)}}
+.hero h1{font-family:var(--font-sacred);font-size:clamp(32px,5.5vw,60px);margin-bottom:20px;letter-spacing:.02em;background:linear-gradient(135deg,var(--divine-maroon) 0%,var(--divine-saffron) 50%,var(--divine-gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15}
+.hero p{font-family:var(--font-devotion);font-size:clamp(16px,2.2vw,20px);color:var(--muted);margin-bottom:36px;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:8px;font-family:var(--font-devotion);font-size:16px;font-weight:600;border:none;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,var(--divine-saffron),oklch(60% 0.16 45));color:#fff;border:1px solid oklch(72% 0.14 85 / 0.3);box-shadow:0 4px 16px oklch(65% 0.17 55 / 0.25)}
+.btn-primary:hover{box-shadow:0 6px 24px oklch(65% 0.17 55 / 0.4),0 0 20px oklch(72% 0.14 85 / 0.3);transform:translateY(-2px);text-decoration:none}
+.btn-outline{background:transparent;color:var(--divine-maroon);border:1.5px solid var(--divine-gold)}
+.btn-outline:hover{background:linear-gradient(135deg,oklch(96% 0.03 85),oklch(93% 0.04 80));border-color:var(--divine-saffron);box-shadow:0 0 20px oklch(72% 0.14 85 / 0.2);transform:translateY(-2px);text-decoration:none}
 
-/* Children container */
-.tree-children-col {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  position: relative;
-}
-.tree-child-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transform: translateX(-20px) scale(0.9);
-}
-.tree-child-row.open {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0) scale(1);
-}
-.tree-child-row:nth-child(1).open { transition-delay: 0.4s; }
-.tree-child-row:nth-child(2).open { transition-delay: 0.55s; }
+/* Sections */
+.section{padding:80px 0}
+.section-alt{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.section-title{font-family:var(--font-sacred);font-size:clamp(26px,4vw,40px);text-align:center;margin-bottom:8px;color:var(--divine-maroon);letter-spacing:.04em}
+.section-subtitle{text-align:center;color:var(--muted);font-family:var(--font-devotion);font-size:clamp(15px,2vw,18px);font-style:italic;margin-bottom:48px;max-width:600px;margin-left:auto;margin-right:auto}
+.section-divider{width:60px;height:2px;background:linear-gradient(90deg,var(--divine-gold),var(--divine-saffron),var(--divine-gold));margin:12px auto 24px;border-radius:2px;box-shadow:0 0 8px oklch(72% 0.14 85 / 0.3)}
 
-.tree-child-node {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
-  background: var(--surface);
-  border: 2px solid var(--accent-light);
-  border-radius: 12px;
-  font-family: var(--font-heading);
-  font-size: clamp(14px, 1.5vw, 18px);
-  font-weight: 600;
-  color: var(--fg);
-  white-space: nowrap;
-  position: relative;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px oklch(0% 0 0 / 0.04);
-}
-.tree-child-node:hover {
-  border-color: var(--accent);
-  box-shadow: 0 4px 20px oklch(58% 0.14 50 / 0.2), 0 0 30px oklch(58% 0.14 50 / 0.1);
-  transform: translateY(-2px);
-}
-.tree-child-node .icon {
-  font-size: 22px;
-}
+/* Cards */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
+.card{background:linear-gradient(135deg,oklch(100% 0.003 80),oklch(98% 0.008 75));border:1px solid oklch(90% 0.02 70);border-radius:12px;overflow:hidden;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--divine-gold),var(--divine-saffron),var(--divine-gold));opacity:0;transition:opacity .4s}
+.card:hover::before{opacity:1}
+.card:hover{box-shadow:0 8px 32px oklch(72% 0.14 85 / 0.12),0 0 0 1px oklch(72% 0.14 85 / 0.1);transform:translateY(-4px);border-color:oklch(72% 0.14 85 / 0.2)}
+.feature-card{text-align:center;padding:32px 20px}
+.feature-icon{width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:linear-gradient(135deg,oklch(96% 0.03 85),oklch(93% 0.04 80));border:1px solid oklch(72% 0.14 85 / 0.15);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px oklch(72% 0.14 85 / 0.1);transition:transform .3s,box-shadow .3s}
+.card:hover .feature-icon{transform:scale(1.1);box-shadow:0 6px 20px oklch(72% 0.14 85 / 0.2)}
+.card-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.card-text{font-size:14px;color:var(--muted);line-height:1.6}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 
-/* Glow underline on child nodes */
-.tree-child-node::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 20%;
-  width: 60%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  border-radius: 2px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.tree-child-node:hover::after {
-  opacity: 0.6;
-}
+/* Grid 2 */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
 
-/* Mobile — stack vertical */
-@media (max-width: 640px) {
-  .flowtree {
-    flex-direction: column;
-    gap: 8px;
-    padding: 24px 12px;
-    min-height: 160px;
-  }
-  .tree-svg-wrap {
-    width: 80px;
-    height: 60px;
-  }
-  .tree-children-col { gap: 12px; align-items: center; }
-  .tree-child-row { justify-content: center; }
-  .tree-root { padding: 14px 24px; font-size: 16px; }
-  .tree-child-node { padding: 10px 20px; font-size: 14px; }
-}
+/* Footer */
+footer{background:linear-gradient(180deg,oklch(18% 0.015 300),oklch(12% 0.01 300));color:var(--divine-ivory);padding:48px 0 32px;margin-top:80px;position:relative;overflow:hidden}
+footer::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--divine-gold),var(--divine-saffron),var(--divine-gold),transparent)}
+footer .container{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+footer h4{font-family:var(--font-sacred);color:#fff;margin-bottom:16px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+footer p,facre a{font-size:14px;color:oklch(70% 0.01 80);line-height:2}
+footer a:hover{color:#fff;text-decoration:none}
+.footer-brand{font-family:var(--font-sacred);font-size:16px;color:#fff !important;margin-bottom:8px;letter-spacing:.04em}
+.footer-bottom{grid-column:1/-1;border-top:1px solid oklch(35% 0.01 70);padding-top:20px;margin-top:20px;text-align:center;font-size:13px;color:oklch(60% 0.01 80)}
 
-/* ---- Entrance animations ---- */
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.animate-on-scroll.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* Sacred particles */
+.divine-particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.divine-particle{position:absolute;width:6px;height:6px;background:radial-gradient(circle,oklch(72% 0.14 85 / 0.5),transparent);border-radius:50%;animation:pFloat linear infinite}
+@keyframes pFloat{0%{transform:translateY(100vh) rotate(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) rotate(720deg);opacity:0}}
 
-/* ---- Hero enhancements ---- */
-.hero-badge.neon-text {
-  animation-duration: 3s;
-}
+/* Cursor glow */
+.cursor-glow{position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,oklch(72% 0.14 85 / 0.05) 0%,transparent 70%);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;mix-blend-mode:screen}
 
+/* Back to top */
+.back-to-top{position:fixed;bottom:90px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--divine-saffron),var(--divine-gold));color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 16px oklch(65% 0.17 55 / 0.3);opacity:0;transform:translateY(20px);transition:all .3s;z-index:998;pointer-events:none}
+.back-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.back-to-top:hover{transform:translateY(-4px);box-shadow:0 6px 24px oklch(65% 0.17 55 / 0.5)}
+
+/* Ripple */
+.ripple{position:relative;overflow:hidden}
+.ripple-wave{position:absolute;border-radius:50%;background:oklch(72% 0.14 85 / 0.12);transform:scale(0);animation:rippleExp .5s ease-out;pointer-events:none}
+@keyframes rippleExp{to{transform:scale(4);opacity:0}}
+
+/* Scroll reveal */
+[data-animate]{opacity:0;transition:opacity .6s ease,transform .6s cubic-bezier(.4,0,.2,1)}
+[data-animate="fade-up"]{transform:translateY(36px)}
+[data-animate="fade-down"]{transform:translateY(-36px)}
+[data-animate="fade-left"]{transform:translateX(-36px)}
+[data-animate="fade-right"]{transform:translateX(36px)}
+[data-animate="scale-in"]{transform:scale(.88)}
+[data-animate].in-view{opacity:1;transform:translateY(0) translateX(0) scale(1)}
+[data-animate].in-view:nth-child(1){transition-delay:0s}
+[data-animate].in-view:nth-child(2){transition-delay:.08s}
+[data-animate].in-view:nth-child(3){transition-delay:.16s}
+[data-animate].in-view:nth-child(4){transition-delay:.24s}
+
+/* Counter */
+.counter-value{display:inline-block}
+.counter-value.counting{animation:cPulse .1s ease infinite}
+@keyframes cPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+/* Lotus */
+.lotus-wrap{width:80px;height:80px;position:relative;margin:0 auto 20px}
+.lotus-p{position:absolute;width:28px;height:42px;background:linear-gradient(180deg,oklch(72% 0.14 85 / 0.25),oklch(65% 0.17 55 / 0.08));border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;left:50%;bottom:50%;transform-origin:bottom center;animation:lBloom 4s ease-in-out infinite}
+.lotus-p:nth-child(1){transform:translateX(-50%) rotate(0);animation-delay:0s}
+.lotus-p:nth-child(2){transform:translateX(-50%) rotate(45deg);animation-delay:.3s}
+.lotus-p:nth-child(3){transform:translateX(-50%) rotate(90deg);animation-delay:.6s}
+.lotus-p:nth-child(4){transform:translateX(-50%) rotate(135deg);animation-delay:.9s}
+.lotus-p:nth-child(5){transform:translateX(-50%) rotate(180deg);animation-delay:1.2s}
+.lotus-p:nth-child(6){transform:translateX(-50%) rotate(225deg);animation-delay:1.5s}
+.lotus-p:nth-child(7){transform:translateX(-50%) rotate(270deg);animation-delay:1.8s}
+.lotus-p:nth-child(8){transform:translateX(-50%) rotate(315deg);animation-delay:2.1s}
+@keyframes lBloom{0%,100%{opacity:.4;transform:translateX(-50%) rotate(var(--r,0deg)) scale(.8)}50%{opacity:1;transform:translateX(-50%) rotate(var(--r,0deg)) scale(1.1)}}
+
+/* Orb */
+.sacred-orb{width:100px;height:100px;border-radius:50%;background:radial-gradient(circle at 30% 30%,oklch(80% 0.14 85),oklch(65% 0.17 55) 40%,oklch(45% 0.12 30) 80%,transparent);box-shadow:0 0 40px oklch(72% 0.14 85 / 0.4),0 0 80px oklch(65% 0.17 55 / 0.2),inset 0 0 30px oklch(72% 0.14 85 / 0.2);animation:orbP 4s ease-in-out infinite;margin:0 auto 20px}
+@keyframes orbP{0%,100%{transform:scale(1);box-shadow:0 0 40px oklch(72% 0.14 85 / 0.4),0 0 80px oklch(65% 0.17 55 / 0.2)}50%{transform:scale(1.06);box-shadow:0 0 60px oklch(72% 0.14 85 / 0.6),0 0 120px oklch(65% 0.17 55 / 0.3)}}
+
+/* Flow tree */
+.flowtree-section{position:relative;overflow:hidden}
+.flowtree{display:flex;align-items:center;justify-content:center;gap:0;padding:40px 20px;position:relative;min-height:200px;user-select:none}
+.tree-root{position:relative;z-index:5;display:flex;align-items:center;gap:12px;padding:18px 32px;background:linear-gradient(135deg,var(--accent),oklch(50% 0.14 45));color:#fff;border-radius:14px;font-family:var(--font-sacred);font-size:clamp(16px,2.2vw,22px);font-weight:700;box-shadow:0 4px 24px oklch(58% 0.14 50 / 0.35);border:2px solid oklch(70% 0.12 50 / 0.3);white-space:nowrap;transition:all .3s;cursor:pointer}
+.tree-root:hover{box-shadow:0 6px 32px oklch(58% 0.14 50 / 0.5);transform:translateY(-2px)}
+.tree-arrow{font-size:12px;transition:transform .5s cubic-bezier(.34,1.56,.64,1);margin-left:6px;display:inline-block}
+.tree-arrow.open{transform:rotate(180deg)}
+.tree-svg-wrap{position:relative;width:140px;height:140px;flex-shrink:0}
+.tree-svg-wrap svg{width:100%;height:100%;display:block}
+.branch-path{fill:none;stroke-width:3;stroke-linecap:round;stroke:var(--accent);stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .65s cubic-bezier(.22,1,.36,1)}
+.branch-path.open{stroke-dashoffset:0}
+.branch-dot{fill:var(--accent);opacity:0;transition:opacity .3s}
+.branch-dot.open{opacity:1}
+.branch-glow{stroke:oklch(58% 0.14 50 / 0.25);stroke-width:8;fill:none;opacity:0;transition:opacity .5s ease .15s}
+.branch-glow.open{opacity:1}
+.tree-children-col{display:flex;flex-direction:column;gap:20px}
+.tree-child-row{display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .5s,transform .5s cubic-bezier(.34,1.56,.64,1);transform:translateX(-20px) scale(.9)}
+.tree-child-row.open{opacity:1;pointer-events:auto;transform:translateX(0) scale(1)}
+.tree-child-row:nth-child(1).open{transition-delay:.35s}
+.tree-child-row:nth-child(2).open{transition-delay:.5s}
+.tree-child-node{display:flex;align-items:center;gap:10px;padding:12px 24px;background:var(--surface);border:2px solid oklch(92% 0.02 55);border-radius:12px;font-family:var(--font-sacred);font-size:clamp(13px,1.4vw,16px);font-weight:600;color:var(--fg);white-space:nowrap;transition:all .3s;box-shadow:0 2px 8px oklch(0 0 0 / 0.03)}
+.tree-child-node:hover{border-color:var(--accent);box-shadow:0 4px 20px oklch(58% 0.14 50 / 0.15);transform:translateY(-2px)}
+
+/* Responsive */
+@media(max-width:768px){.nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);flex-direction:column;padding:12px 20px;gap:4px}.nav-links.open{display:flex}.nav-toggle{display:block}.grid-2,.grid-3{grid-template-columns:1fr}footer .container{grid-template-columns:1fr;gap:24px}.hero{min-height:70vh}.flowtree{flex-direction:column;gap:8px}.tree-svg-wrap{width:80px;height:60px}}
+@media(max-width:480px){.feature-grid{grid-template-columns:1fr}.hero{min-height:65vh;padding-top:calc(64px + 40px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}[data-animate]{opacity:1;transform:none}.divine-particles{display:none}}
 </style>
+
+<!-- Non-critical CSS deferred -->
+<link rel="stylesheet" href="css/theme.css?v=1.2.0" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/divine.css?v=1.2.0" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="css/theme.css?v=1.2.0"><link rel="stylesheet" href="css/divine.css?v=1.2.0"></noscript>
 </head>
 <body>
 
+<!-- Loading Screen -->
+<div class="loader" id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Sai Ram</div>
+</div>
+
+<!-- Cursor Glow -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
 <!-- Nav -->
-<nav>
+<nav id="mainNav">
   <div class="container">
     <a href="index.html" class="nav-brand">
-      <img src="logo.jpg" alt="SSPK" class="nav-logo-img">
+      <img src="logo.jpg" alt="SSPK" class="nav-logo-img" width="40" height="40" loading="eager">
       SSPK
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
@@ -250,96 +214,104 @@
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-content">
-    <span class="hero-badge neon-text">&#x1F64F; Serving with Love</span>
+  <div class="hero-content" data-animate="scale-in">
+    <div class="lotus-wrap" style="margin-bottom:20px">
+      <div class="lotus-p"></div><div class="lotus-p"></div><div class="lotus-p"></div><div class="lotus-p"></div>
+      <div class="lotus-p"></div><div class="lotus-p"></div><div class="lotus-p"></div><div class="lotus-p"></div>
+    </div>
+    <span class="hero-badge">&#x1F64F; Serving with Love</span>
     <h1>Sathya Sai Prema Kuterram</h1>
     <p>A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba — inspiring hearts through seva, devotion, and community.</p>
     <div class="hero-actions">
-      <a href="about.html" class="btn btn-primary neon-glow">Learn More</a>
-      <a href="dashboard.html" class="btn btn-outline">Support Our Mission</a>
+      <a href="about.html" class="btn btn-primary ripple magnetic-btn">Learn More</a>
+      <a href="dashboard.html" class="btn btn-outline ripple magnetic-btn">Support Our Mission</a>
     </div>
   </div>
 </section>
 
-<!-- Flow Tree — SVG Branch Animation -->
-<section class="section flowtree-section" style="padding-top:20px;padding-bottom:20px;">
+<!-- Flow Tree -->
+<section class="section flowtree-section" style="padding:20px 0">
   <div class="container">
     <div class="flowtree" id="flowtreeRoot">
-      <!-- Root node -->
-      <div class="tree-root neon-glow" id="treeRootNode">
-        <span style="font-size:24px;">&#x1F64F;</span>
-        <span>Sri Sai Prema Kuteeram <span style="font-size: 14px; font-weight: 500; opacity: 0.75; margin-left: 4px;">(click here)</span></span>
+      <div class="tree-root" id="treeRootNode">
+        <span style="font-size:22px">&#x1F64F;</span>
+        <span>Sri Sai Prema Kuteeram <span style="font-size:12px;font-weight:500;opacity:.7;margin-left:4px">(click here)</span></span>
         <span class="tree-arrow" id="treeArrow">&#x25BC;</span>
       </div>
-
-      <!-- SVG branch connector — draws 2 diagonal branches from root -->
       <div class="tree-svg-wrap">
-        <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Glow underneath branches (opacity fade only) -->
-          <path class="branch-glow" id="branchGlow1" d="M 0 80 Q 60 80, 155 35" stroke-linecap="round" />
-          <path class="branch-glow" id="branchGlow2" d="M 0 80 Q 60 80, 155 125" stroke-linecap="round" />
-          <!-- Main branches — curved Y-split, pathLength=1 for perfect draw -->
-          <path class="branch-path" id="branchPath1" pathLength="1"
-                d="M 0 80 Q 60 80, 155 35"
-                stroke="var(--accent)" stroke-width="3" stroke-linecap="round" />
-          <path class="branch-path" id="branchPath2" pathLength="1"
-                d="M 0 80 Q 60 80, 155 125"
-                stroke="var(--accent)" stroke-width="3" stroke-linecap="round" />
-          <!-- Joint dots — solid + glow ring -->
-          <circle class="branch-dot" id="dot0" cx="0" cy="80" r="5" />
-          <circle class="branch-dot" id="dot0glow" cx="0" cy="80" r="8" fill="none"
-                  stroke="var(--accent)" stroke-width="2" opacity="0.4" />
-          <circle class="branch-dot" id="dot1" cx="155" cy="35" r="4" />
-          <circle class="branch-dot" id="dot1glow" cx="155" cy="35" r="7" fill="none"
-                  stroke="var(--accent)" stroke-width="2" opacity="0.4" />
-          <circle class="branch-dot" id="dot2" cx="155" cy="125" r="4" />
-          <circle class="branch-dot" id="dot2glow" cx="155" cy="125" r="7" fill="none"
-                  stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+        <svg viewBox="0 0 160 160" fill="none">
+          <path class="branch-glow" id="branchGlow1" d="M 0 80 Q 60 80, 155 35" stroke-linecap="round"/>
+          <path class="branch-glow" id="branchGlow2" d="M 0 80 Q 60 80, 155 125" stroke-linecap="round"/>
+          <path class="branch-path" id="branchPath1" pathLength="1" d="M 0 80 Q 60 80, 155 35"/>
+          <path class="branch-path" id="branchPath2" pathLength="1" d="M 0 80 Q 60 80, 155 125"/>
+          <circle class="branch-dot" id="dot0" cx="0" cy="80" r="5"/>
+          <circle class="branch-dot" id="dot1" cx="155" cy="35" r="4"/>
+          <circle class="branch-dot" id="dot2" cx="155" cy="125" r="4"/>
         </svg>
       </div>
-
-      <!-- Children column -->
       <div class="tree-children-col" id="treeChildren">
         <div class="tree-child-row" id="childRow1">
-          <div class="tree-child-node">
-            <span class="icon">&#x1F33F;</span>
-            <span>Sri Sai Brindhavan</span>
-          </div>
+          <div class="tree-child-node"><span style="font-size:20px">&#x1F33F;</span><span>Sri Sai Brindhavan</span></div>
         </div>
         <div class="tree-child-row" id="childRow2">
-          <div class="tree-child-node">
-            <span class="icon">&#x1F3E1;</span>
-            <span>Sri Kanchi Prema Illam</span>
-          </div>
+          <div class="tree-child-node"><span style="font-size:20px">&#x1F3E1;</span><span>Sri Kanchi Prema Illam</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Mission highlights -->
+<!-- Mission Stats Counter -->
+<section class="section" style="padding:40px 0">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center">
+      <div data-animate="fade-up">
+        <div class="sacred-orb" style="width:60px;height:60px;margin:0 auto 12px"></div>
+        <div class="counter-value" style="font-size:36px;font-weight:700;color:var(--divine-saffron);font-family:var(--font-sacred)" data-count="12">0</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Trustees</div>
+      </div>
+      <div data-animate="fade-up">
+        <div class="sacred-orb" style="width:60px;height:60px;margin:0 auto 12px"></div>
+        <div class="counter-value" style="font-size:36px;font-weight:700;color:var(--divine-saffron);font-family:var(--font-sacred)" data-count="50">0</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Seva Activities</div>
+      </div>
+      <div data-animate="fade-up">
+        <div class="sacred-orb" style="width:60px;height:60px;margin:0 auto 12px"></div>
+        <div class="counter-value" style="font-size:36px;font-weight:700;color:var(--divine-saffron);font-family:var(--font-sacred)" data-count="100">0</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Events Yearly</div>
+      </div>
+      <div data-animate="fade-up">
+        <div class="sacred-orb" style="width:60px;height:60px;margin:0 auto 12px"></div>
+        <div class="counter-value" style="font-size:36px;font-weight:700;color:var(--divine-saffron);font-family:var(--font-sacred)" data-count="500">0</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em">Devotees Served</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission -->
 <section class="section">
   <div class="container">
-    <h2 class="section-title animate-on-scroll">Our Mission</h2>
-    <div class="section-divider"></div>
-    <p class="section-subtitle animate-on-scroll">Guided by the principle "Love All, Serve All" — building a community of compassion.</p>
+    <h2 class="section-title" data-animate="fade-up">Our Mission</h2>
+    <div class="section-divider" data-animate="fade-up"></div>
+    <p class="section-subtitle" data-animate="fade-up">Guided by the principle "Love All, Serve All" — building a community of compassion.</p>
     <div class="feature-grid">
-      <div class="card feature-card animate-on-scroll">
+      <div class="card feature-card" data-animate="fade-up">
         <div class="feature-icon">&#x2764;&#xFE0F;</div>
         <h3 class="card-title">Seva</h3>
         <p class="card-text">Selfless service through food drives, health camps, and educational support.</p>
       </div>
-      <div class="card feature-card animate-on-scroll">
+      <div class="card feature-card" data-animate="fade-up">
         <div class="feature-icon">&#x1F64F;</div>
         <h3 class="card-title">Spiritual Growth</h3>
         <p class="card-text">Weekly bhajans, study circles, and spiritual retreats following Sai teachings.</p>
       </div>
-      <div class="card feature-card animate-on-scroll">
+      <div class="card feature-card" data-animate="fade-up">
         <div class="feature-icon">&#x1F30D;</div>
         <h3 class="card-title">Community</h3>
         <p class="card-text">A warm, inclusive space for devotees and seekers to connect and grow together.</p>
       </div>
-      <div class="card feature-card animate-on-scroll">
+      <div class="card feature-card" data-animate="fade-up">
         <div class="feature-icon">&#x1F4DA;</div>
         <h3 class="card-title">Education</h3>
         <p class="card-text">Value-based education for children and youth, nurturing character and compassion.</p>
@@ -348,33 +320,24 @@
   </div>
 </section>
 
-<!-- Featured previews -->
+<!-- Explore -->
 <section class="section section-alt">
   <div class="container">
-    <h2 class="section-title animate-on-scroll">Explore</h2>
-    <div class="section-divider"></div>
-    <p class="section-subtitle animate-on-scroll">Discover more about our activities and how you can be part of the mission.</p>
+    <h2 class="section-title" data-animate="fade-up">Explore</h2>
+    <div class="section-divider" data-animate="fade-up"></div>
+    <p class="section-subtitle" data-animate="fade-up">Discover more about our activities and how you can be part of the mission.</p>
     <div class="grid-3">
-      <a href="gallery.html" class="card" style="text-decoration:none;color:inherit;" class="animate-on-scroll">
-        <div style="height:200px;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px;color:white;">&#x1F5BC;&#xFE0F;</div>
-        <div class="card-body">
-          <h3 class="card-title">Gallery</h3>
-          <p class="card-text">Moments from our events, seva activities, and community gatherings.</p>
-        </div>
+      <a href="gallery.html" class="card" style="text-decoration:none;color:inherit" data-animate="fade-up">
+        <div style="height:180px;background:linear-gradient(135deg,oklch(95% 0.03 85),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px">&#x1F5BC;&#xFE0F;</div>
+        <div class="card-body" style="padding:20px"><h3 class="card-title">Gallery</h3><p class="card-text">Moments from our events, seva activities, and community gatherings.</p></div>
       </a>
-      <a href="events.html" class="card" style="text-decoration:none;color:inherit;" class="animate-on-scroll">
-        <div style="height:200px;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px;color:white;">&#x1F4C5;</div>
-        <div class="card-body">
-          <h3 class="card-title">Events</h3>
-          <p class="card-text">Upcoming bhajans, celebrations, and community programs.</p>
-        </div>
+      <a href="events.html" class="card" style="text-decoration:none;color:inherit" data-animate="fade-up">
+        <div style="height:180px;background:linear-gradient(135deg,oklch(95% 0.03 85),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px">&#x1F4C5;</div>
+        <div class="card-body" style="padding:20px"><h3 class="card-title">Events</h3><p class="card-text">Upcoming bhajans, celebrations, and community programs.</p></div>
       </a>
-      <a href="dashboard.html" class="card" style="text-decoration:none;color:inherit;" class="animate-on-scroll">
-        <div style="height:200px;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px;color:white;">&#x1F4B8;</div>
-        <div class="card-body">
-          <h3 class="card-title">Support Us</h3>
-          <p class="card-text">Your contributions help us sustain and grow our service initiatives.</p>
-        </div>
+      <a href="dashboard.html" class="card" style="text-decoration:none;color:inherit" data-animate="fade-up">
+        <div style="height:180px;background:linear-gradient(135deg,oklch(95% 0.03 85),var(--accent));display:flex;align-items:center;justify-content:center;font-size:48px">&#x1F4B8;</div>
+        <div class="card-body" style="padding:20px"><h3 class="card-title">Support Us</h3><p class="card-text">Your contributions help us sustain and grow our service initiatives.</p></div>
       </a>
     </div>
   </div>
@@ -389,93 +352,155 @@
     </div>
     <div>
       <h4>Pages</h4>
-      <a href="index.html">Home</a><br>
-      <a href="about.html">About</a><br>
-      <a href="gallery.html">Gallery</a><br>
-      <a href="events.html">Events</a><br>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="index.html">Home</a><br><a href="about.html">About</a><br><a href="gallery.html">Gallery</a><br><a href="events.html">Events</a><br><a href="dashboard.html">Dashboard</a>
     </div>
     <div>
       <h4>Activities</h4>
-      <a href="events.html">Bhajans</a><br>
-      <a href="events.html">Seva</a><br>
-      <a href="events.html">Study Circle</a><br>
-      <a href="gallery.html">Gallery</a>
+      <a href="events.html">Bhajans</a><br><a href="events.html">Seva</a><br><a href="events.html">Study Circle</a><br><a href="gallery.html">Gallery</a>
     </div>
     <div>
       <h4>Contact</h4>
       <p>Email: info@sathyasaipremakuterrram.org</p>
       <p>Phone: +91-XXXXXXXXXX</p>
     </div>
-    <div class="footer-bottom">
-      &copy; 2026 Sathya Sai Prema Kuterram. All rights reserved.
-    </div>
+    <div class="footer-bottom">&copy; 2026 Sathya Sai Prema Kuterram. All rights reserved.</div>
   </div>
 </footer>
 
-<script src="js/main.js?v=1.1.0"></script>
-<script>
-// Flow tree toggle — SVG branch draw animation with pathLength=1
-(function() {
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#9650;</button>
+
+<!-- JS — single deferred bundle -->
+<script src="js/main.js?v=1.2.0" defer></script>
+<script defer>
+// Inline critical animations — runs after DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Loader dismiss
+  var loader = document.getElementById('loader');
+  if (loader) setTimeout(function() { loader.classList.add('done'); }, 400);
+
+  // Nav toggle
+  var toggle = document.getElementById('navToggle');
+  var navLinks = document.getElementById('navLinks');
+  if (toggle && navLinks) {
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      navLinks.classList.toggle('open');
+    });
+    document.addEventListener('click', function(e) {
+      if (!navLinks.contains(e.target) && !toggle.contains(e.target)) navLinks.classList.remove('open');
+    });
+  }
+
+  // Nav scroll shadow
+  var nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', function() {
+    if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Cursor glow
+  var glow = document.getElementById('cursorGlow');
+  if (glow && !('ontouchstart' in window)) {
+    document.addEventListener('mousemove', function(e) {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+    });
+  }
+
+  // Back to top
+  var btt = document.getElementById('backToTop');
+  if (btt) {
+    btt.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    window.addEventListener('scroll', function() { btt.classList.toggle('visible', window.scrollY > 400); });
+  }
+
+  // Scroll reveal
+  var anims = document.querySelectorAll('[data-animate]');
+  if (anims.length) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (en.isIntersecting) { en.target.classList.add('in-view'); obs.unobserve(en.target); }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    anims.forEach(function(el) { obs.observe(el); });
+  }
+
+  // Counter animation
+  var counters = document.querySelectorAll('[data-count]');
+  if (counters.length) {
+    var cObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (en.isIntersecting) {
+          var el = en.target;
+          var target = parseInt(el.getAttribute('data-count'), 10);
+          var dur = 2000, start = null;
+          el.classList.add('counting');
+          function step(ts) {
+            if (!start) start = ts;
+            var p = Math.min((ts - start) / dur, 1);
+            el.textContent = Math.floor((1 - Math.pow(1 - p, 3)) * target).toLocaleString();
+            if (p < 1) requestAnimationFrame(step);
+            else { el.textContent = target.toLocaleString(); el.classList.remove('counting'); }
+          }
+          requestAnimationFrame(step);
+          cObs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(function(c) { cObs.observe(c); });
+  }
+
+  // Ripple on buttons
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.btn, .ripple');
+    if (!btn) return;
+    var r = btn.getBoundingClientRect();
+    var w = document.createElement('span');
+    w.className = 'ripple-wave';
+    w.style.left = (e.clientX - r.left) + 'px';
+    w.style.top = (e.clientY - r.top) + 'px';
+    w.style.width = w.style.height = Math.max(r.width, r.height) + 'px';
+    btn.appendChild(w);
+    setTimeout(function() { w.remove(); }, 500);
+  });
+
+  // Flow tree toggle
   var rootNode = document.getElementById('treeRootNode');
-  var paths = [
-    document.getElementById('branchPath1'),
-    document.getElementById('branchPath2')
-  ];
-  var glows = [
-    document.getElementById('branchGlow1'),
-    document.getElementById('branchGlow2')
-  ];
-  var dots = [
-    document.getElementById('dot0'),
-    document.getElementById('dot0glow'),
-    document.getElementById('dot1'),
-    document.getElementById('dot1glow'),
-    document.getElementById('dot2'),
-    document.getElementById('dot2glow')
-  ];
-  var children = [
-    document.getElementById('childRow1'),
-    document.getElementById('childRow2')
-  ];
+  var paths = [document.getElementById('branchPath1'), document.getElementById('branchPath2')];
+  var dots = [document.getElementById('dot0'), document.getElementById('dot1'), document.getElementById('dot2')];
+  var children = [document.getElementById('childRow1'), document.getElementById('childRow2')];
   var arrow = document.getElementById('treeArrow');
   var isOpen = false;
-
   if (rootNode) {
     rootNode.addEventListener('click', function(e) {
       e.stopPropagation();
       isOpen = !isOpen;
-
       paths.forEach(function(p) { if (p) p.classList.toggle('open', isOpen); });
-      glows.forEach(function(g) { if (g) g.classList.toggle('open', isOpen); });
       dots.forEach(function(d) { if (d) d.classList.toggle('open', isOpen); });
       children.forEach(function(c, i) {
-        if (c) {
-          c.style.transitionDelay = isOpen ? (0.35 + i * 0.18) + 's' : '0s';
-          c.classList.toggle('open', isOpen);
-        }
+        if (c) { c.style.transitionDelay = isOpen ? (0.35 + i * 0.15) + 's' : '0s'; c.classList.toggle('open', isOpen); }
       });
       if (arrow) arrow.classList.toggle('open', isOpen);
     });
   }
-})();
 
-// Scroll-triggered entrance animations
-(function() {
-  var els = document.querySelectorAll('.animate-on-scroll');
-  if (!els.length) return;
-
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-
-  els.forEach(function(el) { observer.observe(el); });
-})();
+  // Floating particles
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var pc = document.createElement('div');
+    pc.className = 'divine-particles';
+    document.body.appendChild(pc);
+    for (var i = 0; i < 12; i++) {
+      var p = document.createElement('div');
+      p.className = 'divine-particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (8 + Math.random() * 12) + 's';
+      p.style.animationDelay = Math.random() * 8 + 's';
+      p.style.width = p.style.height = (3 + Math.random() * 4) + 'px';
+      pc.appendChild(p);
+    }
+  }
+});
 </script>
 </body>
 </html>
