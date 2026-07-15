@@ -4,7 +4,7 @@
 
 # 🙏 Sri Sai Dharma Samrakshana Prema Kuteeram
 
-### *"Love All, Serve All"*
+### *"SELFLESS SERVICE , SELFLESS LOVE"*
 
 <br>
 
