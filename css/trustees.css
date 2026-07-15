@@ -1,0 +1,630 @@
+/* =============================================================
+   TRUSTEES TREE — Animated Dropdown Board of Trustees
+   Sri Sai Dharma Samrakshana Prema Kuteeram
+   All rights reserved.
+   ============================================================= */
+
+/* ── Trustee Tree Container ────────────────────────────────── */
+.trustee-tree {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  padding-left: 40px;
+}
+
+.trustee-tree::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg,
+    var(--divine-gold) 0%,
+    var(--divine-saffron) 40%,
+    var(--divine-maroon) 100%);
+  border-radius: 3px;
+  box-shadow: 0 0 12px oklch(72% 0.14 85 / 0.3);
+}
+
+/* ── Settlor Root Node ─────────────────────────────────────── */
+.settlor-node {
+  position: relative;
+  margin-bottom: 48px;
+  animation: fadeScaleIn 0.6s ease-out both;
+}
+
+.settlor-card {
+  background: linear-gradient(135deg,
+    oklch(35% 0.12 15) 0%,
+    oklch(30% 0.10 20) 100%);
+  color: #fff;
+  padding: 28px 36px;
+  border-radius: 16px;
+  border: 2px solid oklch(72% 0.14 85 / 0.4);
+  box-shadow:
+    0 8px 32px oklch(35% 0.12 15 / 0.3),
+    0 0 24px oklch(72% 0.14 85 / 0.15),
+    inset 0 1px 0 oklch(100% 0 0 / 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.settlor-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    oklch(72% 0.14 85 / 0.08) 60deg,
+    transparent 120deg
+  );
+  animation: sacredSpin 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sacredSpin {
+  to { transform: rotate(360deg); }
+}
+
+.settlor-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow:
+    0 12px 48px oklch(35% 0.12 15 / 0.4),
+    0 0 40px oklch(72% 0.14 85 / 0.25);
+}
+
+.settlor-card .role-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--divine-gold), var(--divine-saffron));
+  color: var(--divine-maroon);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-family: var(--font-devotion);
+}
+
+.settlor-card h3 {
+  font-family: var(--font-sacred);
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.settlor-card .trust-info {
+  font-size: 14px;
+  opacity: 0.85;
+  line-height: 1.6;
+  font-family: var(--font-devotion);
+}
+
+.settlor-card .trust-info strong {
+  color: var(--divine-gold);
+}
+
+/* ── Connecting Dot on Tree Line ───────────────────────────── */
+.trustee-node::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 28px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--divine-gold);
+  border: 3px solid var(--divine-ivory);
+  box-shadow: 0 0 10px oklch(72% 0.14 85 / 0.4);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.trustee-node:hover::before {
+  background: var(--divine-saffron);
+  box-shadow: 0 0 16px oklch(65% 0.17 55 / 0.5);
+  transform: scale(1.3);
+}
+
+/* ── Trustee Node ──────────────────────────────────────────── */
+.trustee-node {
+  position: relative;
+  margin-bottom: 16px;
+  animation: fadeSlideUp 0.5s ease-out both;
+}
+
+.trustee-node:nth-child(1)  { animation-delay: 0.1s; }
+.trustee-node:nth-child(2)  { animation-delay: 0.15s; }
+.trustee-node:nth-child(3)  { animation-delay: 0.2s; }
+.trustee-node:nth-child(4)  { animation-delay: 0.25s; }
+.trustee-node:nth-child(5)  { animation-delay: 0.3s; }
+.trustee-node:nth-child(6)  { animation-delay: 0.35s; }
+.trustee-node:nth-child(7)  { animation-delay: 0.4s; }
+.trustee-node:nth-child(8)  { animation-delay: 0.45s; }
+.trustee-node:nth-child(9)  { animation-delay: 0.5s; }
+.trustee-node:nth-child(10) { animation-delay: 0.55s; }
+.trustee-node:nth-child(11) { animation-delay: 0.6s; }
+.trustee-node:nth-child(12) { animation-delay: 0.65s; }
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Trustee Card (Collapsible) ────────────────────────────── */
+.trustee-card {
+  background: linear-gradient(135deg,
+    oklch(100% 0.003 80) 0%,
+    oklch(98% 0.008 75) 100%);
+  border: 1.5px solid oklch(90% 0.02 70);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 12px oklch(0 0 0 / 0.03);
+}
+
+.trustee-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    var(--divine-gold),
+    var(--divine-saffron),
+    var(--divine-maroon));
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.trustee-card:hover {
+  border-color: oklch(72% 0.14 85 / 0.25);
+  box-shadow:
+    0 6px 24px oklch(72% 0.14 85 / 0.1),
+    0 0 0 1px oklch(72% 0.14 85 / 0.1);
+  transform: translateX(4px);
+}
+
+.trustee-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Summary (Header) Row ──────────────────────────────────── */
+.trustee-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s;
+  position: relative;
+}
+
+.trustee-summary:hover {
+  background: oklch(96% 0.02 80);
+}
+
+.trustee-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg,
+    oklch(92% 0.04 80),
+    oklch(88% 0.06 75));
+  color: var(--divine-maroon);
+  font-family: var(--font-sacred);
+  font-size: 15px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.trustee-card:hover .trustee-number {
+  background: linear-gradient(135deg, var(--divine-gold), var(--divine-saffron));
+  color: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px oklch(72% 0.14 85 / 0.3);
+}
+
+.trustee-name-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.trustee-name-area h4 {
+  font-family: var(--font-sacred);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0 0 2px;
+  letter-spacing: 0.01em;
+  transition: color 0.3s;
+}
+
+.trustee-card:hover .trustee-name-area h4 {
+  color: var(--divine-maroon);
+}
+
+.trustee-name-area .role-tag {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font-devotion);
+  font-weight: 600;
+}
+
+.trustee-arrow {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: oklch(95% 0.02 75);
+  color: var(--divine-maroon);
+  font-size: 12px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.trustee-card.open .trustee-arrow {
+  background: var(--divine-maroon);
+  color: #fff;
+  transform: rotate(180deg);
+  box-shadow: 0 2px 8px oklch(35% 0.12 15 / 0.3);
+}
+
+/* ── Detail Panel ──────────────────────────────────────────── */
+.trustee-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.35s ease;
+}
+
+.trustee-card.open .trustee-detail {
+  max-height: 600px;
+}
+
+.trustee-detail-inner {
+  padding: 0 24px 20px;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.35s ease 0.1s;
+}
+
+.trustee-card.open .trustee-detail-inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Activity Pill Tags ────────────────────────────────────── */
+.activity-group {
+  margin-bottom: 14px;
+}
+
+.activity-group:last-child {
+  margin-bottom: 0;
+}
+
+.activity-label {
+  font-family: var(--font-sacred);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--divine-maroon);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.activity-label .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activity-label.spiritual .dot { background: var(--divine-gold); }
+.activity-label.seva .dot { background: var(--divine-sacred); }
+.activity-label.education .dot { background: var(--divine-saffron); }
+.activity-label.communications .dot { background: oklch(55% 0.12 250); }
+.activity-label.publications .dot { background: oklch(55% 0.15 300); }
+.activity-label.administration .dot { background: var(--divine-crimson); }
+
+.activity-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.activity-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: var(--font-devotion);
+  font-weight: 600;
+  border: 1px solid;
+  transition: all 0.25s ease;
+}
+
+.activity-pill:hover {
+  transform: translateY(-1px) scale(1.03);
+}
+
+.activity-pill.spiritual {
+  background: oklch(96% 0.03 85);
+  color: oklch(40% 0.12 85);
+  border-color: oklch(72% 0.14 85 / 0.2);
+}
+
+.activity-pill.seva {
+  background: oklch(95% 0.03 145);
+  color: oklch(35% 0.12 145);
+  border-color: oklch(50% 0.15 145 / 0.2);
+}
+
+.activity-pill.education {
+  background: oklch(96% 0.03 55);
+  color: oklch(40% 0.14 55);
+  border-color: oklch(65% 0.17 55 / 0.2);
+}
+
+.activity-pill.communications {
+  background: oklch(95% 0.03 250);
+  color: oklch(40% 0.12 250);
+  border-color: oklch(55% 0.12 250 / 0.2);
+}
+
+.activity-pill.publications {
+  background: oklch(95% 0.03 300);
+  color: oklch(40% 0.15 300);
+  border-color: oklch(55% 0.15 300 / 0.2);
+}
+
+.activity-pill.administration {
+  background: oklch(95% 0.03 30);
+  color: oklch(40% 0.15 30);
+  border-color: oklch(52% 0.18 30 / 0.2);
+}
+
+/* ── With-Partner Tag ──────────────────────────────────────── */
+.with-partner {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-devotion);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.with-partner strong {
+  color: var(--divine-maroon);
+  font-style: normal;
+}
+
+/* ── Stats Bar ─────────────────────────────────────────────── */
+.trustee-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg,
+    oklch(100% 0.003 80),
+    oklch(98% 0.008 75));
+  border: 1px solid oklch(90% 0.02 70);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 16px oklch(72% 0.14 85 / 0.1);
+  border-color: oklch(72% 0.14 85 / 0.2);
+}
+
+.stat-number {
+  font-family: var(--font-sacred);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--divine-saffron);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font-devotion);
+  font-weight: 600;
+}
+
+/* ── Quick-Expand All Toggle ───────────────────────────────── */
+.expand-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg,
+    oklch(96% 0.03 85),
+    oklch(93% 0.04 80));
+  border: 1.5px solid oklch(72% 0.14 85 / 0.2);
+  border-radius: 10px;
+  color: var(--divine-maroon);
+  font-family: var(--font-devotion);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 32px;
+}
+
+.expand-toggle:hover {
+  background: linear-gradient(135deg, var(--divine-gold), var(--divine-saffron));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 16px oklch(65% 0.17 55 / 0.25);
+  transform: translateY(-2px);
+}
+
+.expand-toggle .icon {
+  transition: transform 0.3s ease;
+  font-size: 16px;
+}
+
+.expand-toggle.all-open .icon {
+  transform: rotate(180deg);
+}
+
+/* ── Trust Deed Reference Footer ───────────────────────────── */
+.deed-ref {
+  text-align: center;
+  padding: 32px 20px;
+  margin-top: 48px;
+  border-top: 1px solid oklch(90% 0.02 70);
+}
+
+.deed-ref p {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: var(--font-devotion);
+  line-height: 1.7;
+}
+
+.deed-ref strong {
+  color: var(--divine-maroon);
+}
+
+/* ── Page Header Override ──────────────────────────────────── */
+.page-header.trustees-header {
+  background: linear-gradient(135deg,
+    oklch(35% 0.12 15) 0%,
+    oklch(40% 0.10 25) 50%,
+    oklch(35% 0.12 15) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header.trustees-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg,
+    oklch(72% 0.14 85 / 0.06) 90deg,
+    transparent 180deg
+  );
+  animation: sacredSpin 12s linear infinite;
+  pointer-events: none;
+}
+
+.page-header.trustees-header h1 {
+  color: #fff;
+  text-shadow: 0 2px 8px oklch(0 0 0 / 0.2);
+  position: relative;
+}
+
+.page-header.trustees-header p {
+  color: oklch(90% 0.04 80);
+  position: relative;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .trustee-tree {
+    padding-left: 28px;
+  }
+
+  .trustee-tree::before {
+    left: 10px;
+  }
+
+  .trustee-node::before {
+    left: -22px;
+    width: 10px;
+    height: 10px;
+  }
+
+  .trustee-summary {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .trustee-number {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .trustee-name-area h4 {
+    font-size: 14px;
+  }
+
+  .trustee-detail-inner {
+    padding: 0 16px 16px;
+  }
+
+  .settlor-card {
+    padding: 20px 24px;
+  }
+
+  .trustee-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .trustee-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-pills {
+    gap: 4px;
+  }
+
+  .activity-pill {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+}

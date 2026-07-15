@@ -1,0 +1,84 @@
+# Sri Sai Dharma Samrakshana Prema Kuteeram
+
+> A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba and Kanchi Maha Periyava. Love All, Serve All.
+
+## About
+
+Sri Sai Dharma Samrakshana Prema Kuteeram is a Public Charitable Trust registered at Melakarur, Karur (Document No. 51/2026, dated 02/07/2026). The trust is founded and managed by Shri S. Govindaraj, with 12 Board of Trustees overseeing spiritual, seva, education, communications, publications, and administrative activities.
+
+## Trust Details
+
+- **Full Name:** Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust
+- **Registration:** Melakarur, Karur — Document No. 51/2026, dated 02/07/2026
+- **Settlor & Managing Trustee:** Shri S. Govindaraj
+- **Registered Office:** No.104, Mettu Street, Karur – 639001, Tamil Nadu, India
+
+## Pages
+
+- **Home:** index.html — Mission overview with animated flow tree of trustees and activities
+- **About:** about.html — Trust background, philosophy, and guiding principles
+- **Trustees:** trustees.html — Interactive tree view of all 12 Board of Trustees and their responsibilities
+- **Gallery:** gallery.html — Event and seva photo documentation
+- **Events:** events.html — Bhajans, seva, study circle calendar and event bookings
+- **Dashboard:** dashboard.html — Member portal with membership card, daily blessings, and donations
+- **Login / Signup / Reset:** login.html / signup.html / reset-password.html — Authentication pages
+
+## Board of Trustees (12 Members)
+
+1. **Sri Sai Prakash** — Spiritual Activities (Guru Purnima, Ganapathi Homam, Gayatri Homam, Sai Jayanthi, Rudra Japam, Monthly Amavasya Tarpanam, Annual Thithi/Shraddha) & Seva (Grocery aid, Temple support, Veda students, Diwali clothing)
+2. **Sri Sathyamoorthy** — Spiritual Activities (Rathakalpa Pooja, Sathyanarayana Pooja, Navami Jayanthis, Karthigai Deepam, Sankaranthi, Maha Periyava & Sai Jayanthi) & Communications (Website, Social media, Digital comms, Media relations)
+3. **Dr. Sri Chandrasekaran** — Spiritual (Sannyastha Mahalayam, Aradhanas), Seva (Family welfare, Veda school, Old-age home, Temple service, Tree planting), Education (Career guidance, Health programs)
+4. **Sri Hariharan** — Spiritual (Aradhana Mahotsavams), Seva (Old-age home, Temple service), Publications (Deivathin Kural, Maha Periyava teachings, Audio/Video releases)
+5. **Sri Prem Sai** — Spiritual (Nagara Sankeerthanam, Special bhajans, Narayana Seva), Seva (Veda school, Old-age home), Education (Satsangs, Spiritual classes)
+6. **Sri Amarnath** — Spiritual Activities (Nagara Sankeerthanam, Special bhajans with Sri Prem Sai)
+7. **Mrs. Sridevi Sairam** — Education (Satsangs with Sri Prem Sai & Sri Darshan Sairam)
+8. **Dr. Srividya Sairam** — Education (Spiritual classes with Sri Prem Sai)
+9. **Sri Sathyanarayanan Sairam** — Education & Awareness (Career guidance, Health/hygiene programs with Dr. Chandrasekaran)
+10. **Mrs. Nithya Hariharan** — Spiritual Publications (Deivathin Kural, Maha Periyava teachings, Audio/Video/E-publications with Sri Hariharan)
+11. **Sri Prasad Sairam** — Administration (Fundraising, Donor coordination, Income-expenditure accounts, Financial management)
+12. **Sri Darshan Sairam** — Education (Satsangs) & Communications (Website, Social media, Digital comms, Graphic design, Trust publications with Sri Sathyamoorthy)
+
+## Trust Objects
+
+- Education aid for poor children
+- Veda training and scholarships
+- Poor feeding (Anna Dana)
+- Orphanages and old-age homes
+- Gosamrakshana (cow protection / Goshalas)
+- Veda Patasalas
+- Temple renovation and maintenance
+- Medical assistance
+- Yoga and wellness programs
+- Other charitable activities (non-profit, service-motive only, confined to India)
+
+## Spiritual Lineage
+
+The trust draws inspiration from:
+- **Sri Sathya Sai Baba** — Universal love, selfless service, education values
+- **Kanchi Maha Periyava (Sri Chandrashearendra Saraswati)** — Sanatana Dharma, Vedic traditions
+
+## Guiding Principles
+
+- **Love All, Serve All** — Core philosophy
+- Sarva Loka Sukhino Bhavantu — May all beings everywhere be happy and free
+- Non-profit, service-motive activities only
+- Confined to operations within India
+
+## Tech Stack
+
+- Frontend: Static HTML, CSS, JavaScript, Tailwind CSS
+- Backend: Supabase (Auth, Database, Realtime)
+- Payments: Razorpay (Donations, Memberships)
+- Deployment: Vercel (Serverless Functions, Routing)
+- Automation: Telegram Bot, Vercel Serverless APIs
+
+## Contact
+
+- **Website:** https://saidharmasamrakshanapremakuteeram.qzz.io/
+- **Email:** info@sathyasaipremakuterrram.org
+- **Registered Office:** No.104, Mettu Street, Karur – 639001
+
+## License
+
+All rights are exclusively reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust.
+Unauthorized reproduction, modification, distribution, or use is strictly prohibited.
