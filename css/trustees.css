@@ -561,13 +561,76 @@
 
 .page-header.trustees-header h1 {
   color: #fff;
-  text-shadow: 0 2px 8px oklch(0 0 0 / 0.2);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
   position: relative;
 }
 
 .page-header.trustees-header p {
   color: oklch(90% 0.04 80);
   position: relative;
+}
+
+/* ── Trust Header Info Card ────────────────────────────────── */
+.trust-header-card {
+  margin-top: 24px;
+  padding: 20px 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  position: relative;
+  animation: fadeScaleIn 0.6s ease-out 0.3s both;
+}
+
+.trust-header-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--divine-gold), transparent);
+  border-radius: 2px;
+}
+
+.trust-header-name {
+  font-family: var(--font-sacred);
+  font-size: clamp(16px, 2.5vw, 22px);
+  color: #fff !important;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.trust-header-reg {
+  font-size: 13px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  margin: 0 0 6px !important;
+  line-height: 1.6;
+  font-family: var(--font-devotion);
+}
+
+.trust-header-settlor {
+  font-size: 13px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin: 6px 0 !important;
+  font-family: var(--font-devotion);
+}
+
+.trust-header-settlor strong {
+  color: var(--divine-gold);
+}
+
+.trust-header-office {
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin: 4px 0 0 !important;
+  font-family: var(--font-devotion);
 }
 
 /* ── Responsive ────────────────────────────────────────────── */
