@@ -105,7 +105,7 @@ footer{background:linear-gradient(180deg,oklch(18% 0.015 300),oklch(12% 0.01 300
 footer::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--divine-gold),var(--divine-saffron),var(--divine-gold),transparent)}
 footer .container{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
 footer h4{font-family:var(--font-sacred);color:#fff;margin-bottom:16px;font-size:13px;letter-spacing:.03em;text-transform:uppercase;font-weight:700}
-footer p,facre a{font-size:14px;color:oklch(70% 0.01 80);line-height:2}
+footer p,footer a{font-size:14px;color:oklch(70% 0.01 80);line-height:2}
 footer a:hover{color:#fff;text-decoration:none}
 .footer-brand{font-family:var(--font-sacred);font-size:16px;color:#fff !important;margin-bottom:8px;letter-spacing:.02em;font-weight:700}
 .footer-bottom{grid-column:1/-1;border-top:1px solid oklch(35% 0.01 70);padding-top:20px;margin-top:20px;text-align:center;font-size:13px;color:oklch(60% 0.01 80)}
@@ -375,7 +375,7 @@ footer a:hover{color:#fff;text-decoration:none}
     </div>
     <div>
       <h4>Contact</h4>
-      <p>Email: info@sathyasaipremakuterrram.org</p>
+      <p>Email: info@sathyasaipremakuterram.org</p>
       <p>Phone: +91-XXXXXXXXXX</p>
     </div>
     <div class="footer-bottom">&copy; 2026 Sathya Sai Prema Kuterram. All rights reserved.</div>
@@ -383,104 +383,13 @@ footer a:hover{color:#fff;text-decoration:none}
 </footer>
 
 <!-- Back to Top -->
-<button class="back-to-top" id="backToTop" aria-label="Back to top">&#9650;</button>
-
 <!-- JS — single deferred bundle -->
 <script src="js/main.js?v=1.2.0" defer></script>
 <script defer>
-// Inline critical animations — runs after DOM ready
 document.addEventListener('DOMContentLoaded', function() {
-
-  // Loader dismiss
   var loader = document.getElementById('loader');
   if (loader) setTimeout(function() { loader.classList.add('done'); }, 400);
 
-  // Nav toggle
-  var toggle = document.getElementById('navToggle');
-  var navLinks = document.getElementById('navLinks');
-  if (toggle && navLinks) {
-    toggle.addEventListener('click', function(e) {
-      e.stopPropagation();
-      navLinks.classList.toggle('open');
-    });
-    document.addEventListener('click', function(e) {
-      if (!navLinks.contains(e.target) && !toggle.contains(e.target)) navLinks.classList.remove('open');
-    });
-  }
-
-  // Nav scroll shadow
-  var nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', function() {
-    if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
-  });
-
-  // Cursor glow
-  var glow = document.getElementById('cursorGlow');
-  if (glow && !('ontouchstart' in window)) {
-    document.addEventListener('mousemove', function(e) {
-      glow.style.left = e.clientX + 'px';
-      glow.style.top = e.clientY + 'px';
-    });
-  }
-
-  // Back to top
-  var btt = document.getElementById('backToTop');
-  if (btt) {
-    btt.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    window.addEventListener('scroll', function() { btt.classList.toggle('visible', window.scrollY > 400); });
-  }
-
-  // Scroll reveal
-  var anims = document.querySelectorAll('[data-animate]');
-  if (anims.length) {
-    var obs = new IntersectionObserver(function(entries) {
-      entries.forEach(function(en) {
-        if (en.isIntersecting) { en.target.classList.add('in-view'); obs.unobserve(en.target); }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    anims.forEach(function(el) { obs.observe(el); });
-  }
-
-  // Counter animation
-  var counters = document.querySelectorAll('[data-count]');
-  if (counters.length) {
-    var cObs = new IntersectionObserver(function(entries) {
-      entries.forEach(function(en) {
-        if (en.isIntersecting) {
-          var el = en.target;
-          var target = parseInt(el.getAttribute('data-count'), 10);
-          var dur = 2000, start = null;
-          el.classList.add('counting');
-          function step(ts) {
-            if (!start) start = ts;
-            var p = Math.min((ts - start) / dur, 1);
-            el.textContent = Math.floor((1 - Math.pow(1 - p, 3)) * target).toLocaleString();
-            if (p < 1) requestAnimationFrame(step);
-            else { el.textContent = target.toLocaleString(); el.classList.remove('counting'); }
-          }
-          requestAnimationFrame(step);
-          cObs.unobserve(el);
-        }
-      });
-    }, { threshold: 0.5 });
-    counters.forEach(function(c) { cObs.observe(c); });
-  }
-
-  // Ripple on buttons
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.btn, .ripple');
-    if (!btn) return;
-    var r = btn.getBoundingClientRect();
-    var w = document.createElement('span');
-    w.className = 'ripple-wave';
-    w.style.left = (e.clientX - r.left) + 'px';
-    w.style.top = (e.clientY - r.top) + 'px';
-    w.style.width = w.style.height = Math.max(r.width, r.height) + 'px';
-    btn.appendChild(w);
-    setTimeout(function() { w.remove(); }, 500);
-  });
-
-  // Flow tree toggle
   var rootNode = document.getElementById('treeRootNode');
   var paths = [document.getElementById('branchPath1'), document.getElementById('branchPath2')];
   var dots = [document.getElementById('dot0'), document.getElementById('dot1'), document.getElementById('dot2')];
@@ -498,22 +407,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       if (arrow) arrow.classList.toggle('open', isOpen);
     });
-  }
-
-  // Floating particles
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    var pc = document.createElement('div');
-    pc.className = 'divine-particles';
-    document.body.appendChild(pc);
-    for (var i = 0; i < 12; i++) {
-      var p = document.createElement('div');
-      p.className = 'divine-particle';
-      p.style.left = Math.random() * 100 + '%';
-      p.style.animationDuration = (8 + Math.random() * 12) + 's';
-      p.style.animationDelay = Math.random() * 8 + 's';
-      p.style.width = p.style.height = (3 + Math.random() * 4) + 'px';
-      pc.appendChild(p);
-    }
   }
 });
 </script>

@@ -1,4 +1,8 @@
 {
+  "name": "ssdpk-orgin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sri Sai Dharma Samrakshana Prema Kuteeram — Spiritual trust website",
   "dependencies": {
     "@vercel/analytics": "^2.0.1"
   }

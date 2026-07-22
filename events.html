@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events — Sathya Sai Prema Kuterram</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -573,7 +574,7 @@
     </div>
     <div>
       <h4>Contact</h4>
-      <p>Email: info@sathyasaipremakuterrram.org</p>
+      <p>Email: info@sathyasaipremakuterram.org</p>
       <p>Phone: +91-XXXXXXXXXX</p>
     </div>
     <div class="footer-bottom">
@@ -593,9 +594,10 @@
   var EVENTS_DB = [];
 
 
-  // Starting at May 2026 (current month)
-  var currentYear = 2026;
-  var currentMonth = 4; // 0-indexed, so 4 is May
+  // Start at current month
+  var now = new Date();
+  var currentYear = now.getFullYear();
+  var currentMonth = now.getMonth();
 
   var calendarMonthYear = document.getElementById('calendarMonthYear');
   var calendarGridDays = document.getElementById('calendarGridDays');
@@ -902,7 +904,7 @@
         brochureHtml = 
           '<div style="margin: 20px 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">' +
             '<div style="background: var(--accent-light); padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-dark); border-bottom: 1px solid var(--border);">Event Brochure / Flyer</div>' +
-            '<a href="' + brochureUrl + '" target="_blank" title="Click to view full size">' +
+            '<a href="' + brochureUrl + '" target="_blank" rel="noopener noreferrer" title="Click to view full size">' +
               '<img src="' + brochureUrl + '" style="width: 100%; height: auto; display: block;" alt="Event Brochure">' +
             '</a>' +
           '</div>';
@@ -954,7 +956,7 @@
           var photoSection = document.getElementById('eventPhotos_' + evt.id);
           if (photoSection) {
             var tgLink = 'https://t.me/ssdspk_bot?start=event_' + evt.id;
-            var tgButtonHtml = '<div style="margin-top: 15px; margin-bottom: 25px;"><a href="' + tgLink + '" target="_blank" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; background-color: #24A1DE; border: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> View Full Gallery on Telegram</a></div>';
+            var tgButtonHtml = '<div style="margin-top: 15px; margin-bottom: 25px;"><a href="' + tgLink + '" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; background-color: #24A1DE; border: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> View Full Gallery on Telegram</a></div>';
             
             if (photos && photos.length > 0) {
               let icon = '📂';
@@ -1034,7 +1036,7 @@
         brochureHtml = 
           '<div style="margin: 20px 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">' +
             '<div style="background: var(--accent-light); padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-dark); border-bottom: 1px solid var(--border);">Event Brochure / Flyer</div>' +
-            '<a href="' + brochureUrl + '" target="_blank" title="Click to view full size">' +
+            '<a href="' + brochureUrl + '" target="_blank" rel="noopener noreferrer" title="Click to view full size">' +
               '<img src="' + brochureUrl + '" style="width: 100%; height: auto; display: block;" alt="Event Brochure">' +
             '</a>' +
           '</div>';
@@ -1086,7 +1088,7 @@
           var photoSection = document.getElementById('modalPhotos_' + evt.id);
           if (photoSection) {
             var tgLink = 'https://t.me/ssdspk_bot?start=event_' + evt.id;
-            var tgButtonHtml = '<div style="margin-top: 15px; margin-bottom: 25px;"><a href="' + tgLink + '" target="_blank" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; background-color: #24A1DE; border: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> View Full Gallery on Telegram</a></div>';
+            var tgButtonHtml = '<div style="margin-top: 15px; margin-bottom: 25px;"><a href="' + tgLink + '" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; background-color: #24A1DE; border: none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> View Full Gallery on Telegram</a></div>';
             
             if (photos && photos.length > 0) {
               let icon = '📂';
