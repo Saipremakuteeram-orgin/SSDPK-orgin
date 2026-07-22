@@ -28,6 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="chatbot-close" id="chatbotClose">&times;</button>
       </div>
 
+      <!-- Header Banner Image — Replace src with your image -->
+      <div class="chatbot-banner" id="chatbotBanner">
+        <img src="images/chatbot-header.jpg" alt="Sai AI Assistant" class="chatbot-banner-img" onerror="this.parentElement.style.display='none'">
+        <div class="chatbot-banner-overlay">
+          <div class="chatbot-banner-text">How can I help you today?</div>
+        </div>
+      </div>
+
       <!-- Key Setup (Only shown if key is missing) -->
       <div class="chat-key-setup" id="chatKeySetup">
         <p style="font-size:14px; margin-bottom:8px;"><strong>Local Simulation Mode</strong></p>

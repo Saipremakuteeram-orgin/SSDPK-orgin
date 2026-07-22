@@ -146,6 +146,50 @@
   pointer-events: auto;
 }
 
+/* Header Banner Image */
+.chatbot-banner {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.chatbot-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.chatbot-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px;
+}
+.chatbot-banner-text {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  animation: bannerFadeIn 0.8s ease 0.3s both;
+}
+@keyframes bannerFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .chatbot-banner {
+    height: 80px;
+  }
+  .chatbot-banner-text {
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 480px) {
   .chatbot-window {
     width: calc(100vw - 32px);
