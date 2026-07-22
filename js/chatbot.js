@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <!-- Header Banner Image — Replace src with your image -->
       <div class="chatbot-banner" id="chatbotBanner">
-        <img src="images/chatbot-header.jpg" alt="Sai AI Assistant" class="chatbot-banner-img" onerror="this.parentElement.style.display='none'">
+        <img src="image_for_quote/for -chat-header.png" alt="Sai AI Assistant" class="chatbot-banner-img" onerror="this.parentElement.style.display='none'">
         <div class="chatbot-banner-overlay">
           <div class="chatbot-banner-text">How can I help you today?</div>
         </div>
