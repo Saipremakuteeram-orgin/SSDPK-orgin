@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="chatbot-notify-progress" id="chatbotNotifyProgress" style="width: 0%;"></div>
         <div class="chatbot-notify-content">
           <span class="chatbot-notify-text" id="chatbotNotifyText">Token Usage: 0%</span>
-          <span class="chatbot-notify-renew" id="chatbotNotifyRenew">Renew: Stable</span>
+          <span class="chatbot-notify-renew" id="chatbotNotifyRenew">Stable</span>
         </div>
       </div>
 
@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const messagesArea = document.getElementById('chatbotMessages');
   const form = document.getElementById('chatbotForm');
   const input = document.getElementById('chatInput');
+  const submitBtn = document.getElementById('chatSubmitBtn');
   const saveKeyBtn = document.getElementById('saveKeyBtn');
   const keyInput = document.getElementById('geminiKeyInput');
 
@@ -100,7 +101,6 @@ CRITICAL RULES:
 
   // Try to load Gemini API key dynamically from local config endpoint or local .env if available
   async function loadLocalApiKey() {
-    // 1. Try safe local config endpoint first
     try {
       const response = await fetch('/api/config');
       if (response.ok) {
@@ -118,7 +118,6 @@ CRITICAL RULES:
 
     if (apiKey) return;
 
-    // 2. Fall back to raw .env file parsing (for simple python -m http.server setups)
     try {
       const response = await fetch('/.env');
       if (response.ok) {
@@ -158,9 +157,12 @@ CRITICAL RULES:
     }
   });
 
-  // Rate Limit / Token Constants
-  const TOKEN_BUDGET = 50000; // Cumulative token limit before rule trigger
-  const RPM_LIMIT = 15; // Requests Per Minute limit
+  // ══════════════════════════════════════════════════════════════
+  // RATE LIMITING & TOKEN BUDGET CONSTANTS
+  // ══════════════════════════════════════════════════════════════
+  const TOKEN_BUDGET = 50000;
+  const RPM_LIMIT = 15;
+  const WINDOW_MS = 60000; // 1 minute sliding window
   
   // DOM Elements for notification
   const notifyBar = document.getElementById('chatbotNotifyBar');
@@ -168,11 +170,78 @@ CRITICAL RULES:
   const notifyText = document.getElementById('chatbotNotifyText');
   const notifyRenew = document.getElementById('chatbotNotifyRenew');
 
-  // Load/initialize token state
+  // Load/initialize token state with daily reset
+  let lastResetDate = localStorage.getItem('sspk_chatbot_last_reset') || '';
+  const today = new Date().toISOString().slice(0, 10);
+  if (lastResetDate !== today) {
+    localStorage.setItem('sspk_chatbot_token_count', '0');
+    localStorage.setItem('sspk_chatbot_request_times', '[]');
+    localStorage.setItem('sspk_chatbot_last_reset', today);
+  }
+
   let cumulativeTokens = parseInt(localStorage.getItem('sspk_chatbot_token_count')) || 0;
   let requestTimestamps = JSON.parse(localStorage.getItem('sspk_chatbot_request_times')) || [];
-  let reportTriggered = sessionStorage.getItem('sspk_report_triggered') === 'true';
+  let cooldownTimer = null;
 
+  // ══════════════════════════════════════════════════════════════
+  // INPUT ENABLE/DISABLE HELPERS
+  // ══════════════════════════════════════════════════════════════
+  function setInputEnabled(enabled) {
+    input.disabled = !enabled;
+    submitBtn.disabled = !enabled;
+    if (enabled) {
+      input.placeholder = 'Ask a question...';
+      input.style.opacity = '1';
+      submitBtn.style.opacity = '1';
+    } else {
+      input.style.opacity = '0.5';
+      submitBtn.style.opacity = '0.5';
+    }
+  }
+
+  function startCooldown(seconds) {
+    if (cooldownTimer) clearInterval(cooldownTimer);
+    setInputEnabled(false);
+    input.placeholder = 'Rate limited — please wait ' + seconds + 's...';
+
+    cooldownTimer = setInterval(() => {
+      seconds--;
+      if (seconds <= 0) {
+        clearInterval(cooldownTimer);
+        cooldownTimer = null;
+        setInputEnabled(true);
+      } else {
+        input.placeholder = 'Rate limited — please wait ' + seconds + 's...';
+      }
+    }, 1000);
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // RATE LIMIT CHECK FUNCTIONS
+  // ══════════════════════════════════════════════════════════════
+  function cleanTimestamps() {
+    const now = Date.now();
+    requestTimestamps = requestTimestamps.filter(t => now - t < WINDOW_MS);
+    localStorage.setItem('sspk_chatbot_request_times', JSON.stringify(requestTimestamps));
+  }
+
+  function getRateLimitResetMs() {
+    if (requestTimestamps.length === 0) return 0;
+    return Math.max(0, requestTimestamps[0] + WINDOW_MS - Date.now());
+  }
+
+  function isTokenBudgetExhausted() {
+    return cumulativeTokens >= TOKEN_BUDGET;
+  }
+
+  function isRateLimited() {
+    cleanTimestamps();
+    return requestTimestamps.length >= RPM_LIMIT;
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // NOTIFICATION BAR UI UPDATE
+  // ══════════════════════════════════════════════════════════════
   function updateTokenUI() {
     if (!apiKey) {
       notifyBar.classList.add('hidden');
@@ -180,100 +249,99 @@ CRITICAL RULES:
     }
     notifyBar.classList.remove('hidden');
     
-    // Clean old timestamps (> 60s)
-    const now = Date.now();
-    requestTimestamps = requestTimestamps.filter(t => now - t < 60000);
-    localStorage.setItem('sspk_chatbot_request_times', JSON.stringify(requestTimestamps));
+    cleanTimestamps();
 
-    // Calculate percentage
+    // Calculate token percentage
     const percent = Math.min(100, Math.round((cumulativeTokens / TOKEN_BUDGET) * 100));
     notifyProgress.style.width = percent + '%';
-    notifyText.textContent = `Tokens: ${percent}% (${cumulativeTokens}/${TOKEN_BUDGET})`;
-    
-    // Colors & Animations based on limit
-    if (percent >= 90) {
-      notifyBar.classList.add('danger-alert');
-      notifyText.textContent = `⚠️ 90% reached! Executing report...`;
-      if (!reportTriggered) {
-        reportTriggered = true;
-        sessionStorage.setItem('sspk_report_triggered', 'true');
-        triggerAutoReport();
-      }
+
+    // Token budget status
+    if (isTokenBudgetExhausted()) {
+      notifyBar.className = 'chatbot-notify-bar danger-alert';
+      notifyText.textContent = 'Usage limit reached. Resets tomorrow.';
+      notifyRenew.textContent = 'Offline';
+      setInputEnabled(false);
+      input.placeholder = 'Daily usage limit reached. Resets tomorrow.';
+      return;
+    }
+
+    // RPM status
+    if (isRateLimited()) {
+      const resetMs = getRateLimitResetMs();
+      const resetSec = Math.ceil(resetMs / 1000);
+      notifyBar.className = 'chatbot-notify-bar warning-alert';
+      notifyText.textContent = 'Rate limit: ' + requestTimestamps.length + '/' + RPM_LIMIT + ' req/min';
+      notifyRenew.textContent = 'Renew in: ' + resetSec + 's';
+      if (!cooldownTimer) startCooldown(resetSec);
     } else if (percent >= 75) {
-      notifyBar.classList.add('warning-alert');
-      notifyBar.classList.remove('danger-alert');
+      notifyBar.className = 'chatbot-notify-bar warning-alert';
+      notifyText.textContent = 'Tokens: ' + percent + '% (' + cumulativeTokens + '/' + TOKEN_BUDGET + ')';
+      notifyRenew.textContent = RPM_LIMIT - requestTimestamps.length + '/' + RPM_LIMIT + ' req left';
     } else {
-      notifyBar.classList.remove('warning-alert', 'danger-alert');
-    }
-
-    // RPM Renew countdown
-    if (requestTimestamps.length > 0) {
-      const oldest = requestTimestamps[0];
-      const remaining = Math.max(0, Math.ceil((oldest + 60000 - now) / 1000));
-      if (remaining > 0) {
-        notifyRenew.textContent = `Renew in: ${remaining}s`;
-      } else {
-        notifyRenew.textContent = `Stable`;
-      }
-    } else {
-      notifyRenew.textContent = `Stable`;
-    }
-  }
-
-  async function triggerAutoReport() {
-    try {
-      console.log('Sending request to /api/run-report (90% limit reached)...');
-      const res = await fetch('/api/run-report', { method: 'POST' });
-      if (res.ok) {
-        console.log('Auto-report successfully executed!');
-      } else {
-        console.error('Failed to run auto-report on dev server.');
-      }
-    } catch (e) {
-      console.error('Error triggering auto-report:', e);
+      notifyBar.className = 'chatbot-notify-bar';
+      notifyText.textContent = 'Tokens: ' + percent + '% (' + cumulativeTokens + '/' + TOKEN_BUDGET + ')';
+      notifyRenew.textContent = RPM_LIMIT - requestTimestamps.length + '/' + RPM_LIMIT + ' req left';
     }
   }
 
   // Set interval to update UI countdowns
   setInterval(updateTokenUI, 1000);
-
-  // Initialize UI on load
   updateTokenUI();
 
-  // Chat Logic
+  // ══════════════════════════════════════════════════════════════
+  // CLIENT-SIDE TOPIC FILTER
+  // ══════════════════════════════════════════════════════════════
+  const ALLOWED_KEYWORDS = [
+    'trust', 'sspk', 'sathya sai', 'prema kuteeram', 'prema kuterram',
+    'kuteeram', 'kuterram', 'dharma', 'samrakshana', 'seva', 'bhajan',
+    'bhajans', 'homam', 'pooja', 'archaka', 'veda', 'guru purnima',
+    'sai jayanthi', 'ram navami', 'karthigai', 'deepam', 'diwali',
+    'medical camp', 'event', 'events', 'register', 'registration',
+    'gallery', 'photo', 'photos', 'image', 'images', 'video', 'videos',
+    'donate', 'donation', 'donations', 'dashboard', 'profile',
+    'about', 'mission', 'vision', 'trustee', 'trustees', 'board',
+    'govindaraj', 'sai prakash', 'sathyamoorthy', 'chandrasekaran',
+    'hariharan', 'prem sai', 'amarnath', 'sridevi', 'srividya',
+    'sathyanarayanan', 'nithya', 'prasad', 'darshan',
+    'karur', 'melakarur', 'contact', 'email', 'phone', 'address',
+    'website', 'page', 'navigate', 'login', 'sign up', 'sign in',
+    'password', 'account', 'weekly', 'monthly', 'annual', 'daily',
+    'schedule', 'date', 'time', 'location', 'venue', 'programme',
+    'spiritual', 'education', 'awareness', 'publications', 'social media',
+    'facebook', 'instagram', 'youtube', 'telegram', 'whatsapp',
+    'career', 'hygiene', 'clothing', 'food', 'grocery', 'health',
+    'old-age', 'temple', 'planting', 'tree', 'community', 'children',
+    'youth', 'student', 'students', 'family', 'welfare', 'support',
+    'help', 'info', 'information', 'detail', 'details', 'learn',
+    'what', 'when', 'where', 'who', 'how', 'which', 'tell'
+  ];
+
+  // ══════════════════════════════════════════════════════════════
+  // CHAT SUBMIT HANDLER
+  // ══════════════════════════════════════════════════════════════
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text || !apiKey) return;
 
-    // Client-side topic filter — block off-topic queries before hitting the API
-    const ALLOWED_KEYWORDS = [
-      'trust', 'sspk', 'sathya sai', 'prema kuteeram', 'prema kuterram',
-      'kuteeram', 'kuterram', 'dharma', 'samrakshana', 'seva', 'bhajan',
-      'bhajans', 'homam', 'pooja', 'archaka', 'veda', 'guru purnima',
-      'sai jayanthi', 'ram navami', 'karthigai', 'deepam', 'diwali',
-      'medical camp', 'event', 'events', 'register', 'registration',
-      'gallery', 'photo', 'photos', 'image', 'images', 'video', 'videos',
-      'donate', 'donation', 'donations', 'dashboard', 'profile',
-      'about', 'mission', 'vision', 'trustee', 'trustees', 'board',
-      'govindaraj', 'sai prakash', 'sathyamoorthy', 'chandrasekaran',
-      'hariharan', 'prem sai', 'amarnath', 'sridevi', 'srividya',
-      'sathyanarayanan', 'nithya', 'prasad', 'darshan',
-      'karur', 'melakarur', 'contact', 'email', 'phone', 'address',
-      'website', 'page', 'navigate', 'login', 'sign up', 'sign in',
-      'password', 'account', 'weekly', 'monthly', 'annual', 'daily',
-      'schedule', 'date', 'time', 'location', 'venue', 'programme',
-      'spiritual', 'education', 'awareness', 'publications', 'social media',
-      'facebook', 'instagram', 'youtube', 'telegram', 'whatsapp',
-      'career', 'hygiene', 'clothing', 'food', 'grocery', 'health',
-      'old-age', 'temple', 'planting', 'tree', 'community', 'children',
-      'youth', 'student', 'students', 'family', 'welfare', 'support',
-      'help', 'info', 'information', 'detail', 'details', 'learn',
-      'what', 'when', 'where', 'who', 'how', 'which', 'tell'
-    ];
+    // Guard 1: Token budget hard cutoff
+    if (isTokenBudgetExhausted()) {
+      appendMessage('bot', 'You have reached the daily usage limit. Your token quota will reset tomorrow. Thank you for your patience.');
+      return;
+    }
+
+    // Guard 2: RPM hard cutoff
+    cleanTimestamps();
+    if (isRateLimited()) {
+      const resetSec = Math.ceil(getRateLimitResetMs() / 1000);
+      appendMessage('bot', 'You have reached the request rate limit (' + RPM_LIMIT + ' requests per minute). Please wait ' + resetSec + ' seconds before trying again.');
+      if (!cooldownTimer) startCooldown(resetSec);
+      return;
+    }
+
+    // Guard 3: Client-side topic filter
     const lowerText = text.toLowerCase();
     const isOnTopic = ALLOWED_KEYWORDS.some(kw => lowerText.includes(kw));
-
     if (!isOnTopic) {
       appendMessage('bot', "I'm sorry, but I can only assist with questions related to Sri Sai Dharma Samrakshana Prema Kuteeram and its activities. Please feel free to ask about our trust, events, or services.");
       return;
@@ -292,12 +360,12 @@ CRITICAL RULES:
     const typingId = showTyping();
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{
-            parts: [{ text: `SYSTEM CONTEXT: ${pageContext}\n\nUSER QUESTION: ${text}` }]
+            parts: [{ text: 'SYSTEM CONTEXT: ' + pageContext + '\n\nUSER QUESTION: ' + text }]
           }]
         })
       });
@@ -335,7 +403,7 @@ CRITICAL RULES:
 
   function appendMessage(role, text) {
     const div = document.createElement('div');
-    div.className = `chat-msg ${role}`;
+    div.className = 'chat-msg ' + role;
     
     // Simple markdown parsing for bold text if gemini returns it
     let htmlText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');

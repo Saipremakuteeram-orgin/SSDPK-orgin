@@ -20,7 +20,8 @@ client_secret.json.enc
 *.jks
 
 # ── Server & Backend Source (CONFIDENTIAL) ───────────────────
-api/
+api/*
+!api/config.js
 bot.py
 dev_server.py
 decrypt_secret.py
