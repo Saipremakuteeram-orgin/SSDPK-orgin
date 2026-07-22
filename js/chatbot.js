@@ -3,8 +3,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Inject Chatbot HTML with Token Notification Bar
   const chatbotHTML = `
-    <div class="chatbot-fab" id="chatbotFab" title="Ask Sai AI">
-      &#x2728;
+    <div class="chatbot-fab-wrapper">
+      <div class="chatbot-notification" id="chatbotNotification">
+        <span class="chatbot-notification-text">Need help? Ask me anything!</span>
+        <div class="chatbot-notification-arrow"></div>
+      </div>
+      <div class="chatbot-fab" id="chatbotFab" title="Ask Sai AI">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="8" cy="10" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="16" cy="10" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="chatbot-fab-pulse"></span>
+      </div>
     </div>
     
     <div class="chatbot-window" id="chatbotWindow">
@@ -46,10 +58,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.body.insertAdjacentHTML('beforeend', chatbotHTML);
 
+  // Auto-dismiss notification after delay
+  const notifEl = document.getElementById('chatbotNotification');
+  if (notifEl) {
+    notifEl.classList.add('auto-dismiss');
+    notifEl.addEventListener('click', () => {
+      notifEl.classList.add('dismissed');
+    });
+  }
+
   // Elements
   const fab = document.getElementById('chatbotFab');
   const win = document.getElementById('chatbotWindow');
   const closeBtn = document.getElementById('chatbotClose');
+  const notification = document.getElementById('chatbotNotification');
   const keySetup = document.getElementById('chatKeySetup');
   const messagesArea = document.getElementById('chatbotMessages');
   const form = document.getElementById('chatbotForm');
@@ -142,7 +164,10 @@ CRITICAL RULES:
   loadLocalApiKey();
 
   // Toggle Window
-  fab.addEventListener('click', () => win.classList.add('active'));
+  fab.addEventListener('click', () => {
+    win.classList.add('active');
+    if (notification) notification.classList.add('dismissed');
+  });
   closeBtn.addEventListener('click', () => win.classList.remove('active'));
 
   // Save Key
