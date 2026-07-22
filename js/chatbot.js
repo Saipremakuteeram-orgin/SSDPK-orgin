@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="chatbot-messages hidden" id="chatbotMessages">
-        <div class="chat-msg bot">Sai Ram! How can I help you regarding our events, gallery, or trust activities today?</div>
+        <div class="chat-msg bot">Sai Ram! I'm Sai AI, your assistant for the Sri Sai Dharma Samrakshana Prema Kuteeram website. I can help you with information about our trust, events, activities, and services. How may I assist you today?</div>
       </div>
 
       <!-- Token Notification Bar -->
@@ -58,11 +58,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const keyInput = document.getElementById('geminiKeyInput');
 
   // Page Context Detection
-  let pageContext = "You are an AI assistant for the Sathya Sai Trust website.";
+  let pageContext = `You are "Sai AI", a dedicated assistant for the Sri Sai Dharma Samrakshana Prema Kuteeram (SSPK) website. You are STRICTLY limited to answering questions ONLY about the following topics:
+
+1. The trust — its mission, vision, founding, registration (Reg. No. 51/2026, Melakarur, Karur), Settlor & Managing Trustee Shri S. Govindaraj, and the 12 Board of Trustees.
+2. Trust activities — Spiritual (Guru Purnima, Ganapathi Homam, Gayatri Homam, Sai Jayanthi, Rudra Japam, monthly Amavasya Tarpanam, annual Thithi/Shraddha, Rathakalpa Pooja, Sathyanarayana Pooja, Rama Navami, Karthigai Deepam, etc.), Seva (Grocery Aid, Temple Archakas/Gurus Support, Veda Students Support, Diwali Clothing, Family Welfare Aid, Old-Age Home, Temple Service, Tree Planting, Monthly Brindhavan Pooja, Narayana Seva), Education & Awareness (Career Guidance, Health & Hygiene Programs, Satsangs, Spiritual Classes), and Publications (Deivathin Kural, Maha Periyava Teachings, Audio/Video Releases).
+3. Events — upcoming and past events, event registration, event dates, bhajans, medical camps, and seva activities.
+4. The website itself — how to navigate pages, use the gallery, register for events, donate via the dashboard, and contact the trust.
+5. How to reach the trust — email: info@sathyasaipremakuterram.org, registered office: No.104, Mettu Street, Karur - 639001.
+
+CRITICAL RULES:
+- NEVER answer questions unrelated to the trust, its activities, or this website.
+- NEVER provide general knowledge, trivia, coding help, opinions, or any external information.
+- NEVER engage in casual conversation, roleplay, or hypothetical discussions.
+- If a user asks anything outside the scope above, respond EXACTLY: "I'm sorry, but I can only assist with questions related to Sri Sai Dharma Samrakshana Prema Kuteeram and its activities. Please feel free to ask about our trust, events, or services."
+- Always respond in a warm, respectful, and helpful tone consistent with the trust's values.`;
+
   if (window.location.pathname.includes('events')) {
     pageContext += " The user is currently on the Events page. We have upcoming Bhajans, Medical Camps, and Seva activities. Guide them on how to register or find dates.";
   } else if (window.location.pathname.includes('gallery')) {
     pageContext += " The user is currently on the Gallery page. Explain our past Seva and community activities.";
+  } else if (window.location.pathname.includes('dashboard')) {
+    pageContext += " The user is currently on the Dashboard page. Guide them on how to donate, view their profile, or manage their account.";
+  } else if (window.location.pathname.includes('trustees')) {
+    pageContext += " The user is currently on the Trustees page. Provide information about the Board of Trustees, their roles, and activities.";
   }
 
   // Check for saved API key
@@ -227,6 +245,39 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text || !apiKey) return;
+
+    // Client-side topic filter — block off-topic queries before hitting the API
+    const ALLOWED_KEYWORDS = [
+      'trust', 'sspk', 'sathya sai', 'prema kuteeram', 'prema kuterram',
+      'kuteeram', 'kuterram', 'dharma', 'samrakshana', 'seva', 'bhajan',
+      'bhajans', 'homam', 'pooja', 'archaka', 'veda', 'guru purnima',
+      'sai jayanthi', 'ram navami', 'karthigai', 'deepam', 'diwali',
+      'medical camp', 'event', 'events', 'register', 'registration',
+      'gallery', 'photo', 'photos', 'image', 'images', 'video', 'videos',
+      'donate', 'donation', 'donations', 'dashboard', 'profile',
+      'about', 'mission', 'vision', 'trustee', 'trustees', 'board',
+      'govindaraj', 'sai prakash', 'sathyamoorthy', 'chandrasekaran',
+      'hariharan', 'prem sai', 'amarnath', 'sridevi', 'srividya',
+      'sathyanarayanan', 'nithya', 'prasad', 'darshan',
+      'karur', 'melakarur', 'contact', 'email', 'phone', 'address',
+      'website', 'page', 'navigate', 'login', 'sign up', 'sign in',
+      'password', 'account', 'weekly', 'monthly', 'annual', 'daily',
+      'schedule', 'date', 'time', 'location', 'venue', 'programme',
+      'spiritual', 'education', 'awareness', 'publications', 'social media',
+      'facebook', 'instagram', 'youtube', 'telegram', 'whatsapp',
+      'career', 'hygiene', 'clothing', 'food', 'grocery', 'health',
+      'old-age', 'temple', 'planting', 'tree', 'community', 'children',
+      'youth', 'student', 'students', 'family', 'welfare', 'support',
+      'help', 'info', 'information', 'detail', 'details', 'learn',
+      'what', 'when', 'where', 'who', 'how', 'which', 'tell'
+    ];
+    const lowerText = text.toLowerCase();
+    const isOnTopic = ALLOWED_KEYWORDS.some(kw => lowerText.includes(kw));
+
+    if (!isOnTopic) {
+      appendMessage('bot', "I'm sorry, but I can only assist with questions related to Sri Sai Dharma Samrakshana Prema Kuteeram and its activities. Please feel free to ask about our trust, events, or services.");
+      return;
+    }
 
     // Track request timestamp
     const now = Date.now();
