@@ -34,6 +34,7 @@
       var linksHtml = '';
       linksHtml += '<a href="index.html">Home</a>';
       linksHtml += '<a href="about.html">About</a>';
+      linksHtml += '<a href="trustees.html">Trustees</a>';
       linksHtml += '<a href="gallery.html">Gallery</a>';
       linksHtml += '<a href="events.html">Events</a>';
       
