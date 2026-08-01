@@ -190,24 +190,19 @@ A translate widget (text input + button) that can be placed on any page. When th
 - Free tier: 10,000 chars/day, no API key required
 - Fallback: If the API fails, display the original text with a "Translation unavailable" message
 
-## Vercel Config Update
+## Script Loading
 
-Add a rewrite rule in `vercel.json` so that `/i18n/*.json` requests are served as static files:
+`i18n.js` is loaded in the `<head>` of every HTML page (before other JS files) so translations are applied before the DOM renders. Add this to all HTML pages:
 
-```json
-{
-  "cleanUrls": true,
-  "framework": null,
-  "rewrites": [
-    {
-      "source": "/api/config",
-      "destination": "/api/config.js"
-    }
-  ]
-}
+```html
+<script src="js/i18n.js"></script>
 ```
 
-No rewrite needed — Vercel serves static files from the root by default. The `i18n/` directory will be served as static assets.
+The existing `<script src="js/main.js">` and other script tags remain unchanged.
+
+## Vercel Config
+
+No changes needed to `vercel.json`. Vercel serves static files from the root by default, so the `i18n/` directory will be served as static assets automatically.
 
 ## CSS for Language Switcher
 
