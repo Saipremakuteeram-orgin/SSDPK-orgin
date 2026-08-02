@@ -54,11 +54,85 @@
     // Initialize user input translation widget if present
     initUserTranslationWidget();
 
-    // Update chatbot messages
-    updateChatbotMessages();
+  // Language switcher styling
+  const style = document.createElement('style');
+  style.textContent = `
+    .language-switcher {
+      position: absolute;
+      right: 80px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    
+    .language-switcher:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+    
+    .lang-select {
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      appearance: none;
+      outline: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill=\"%23a1a1a1\" height=\"20\" width=\"20\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 12px;
+      min-width: 120px;
+    }
+    
+    .lang-select option {
+      background: var(--surface);
+      color: var(--fg);
+      padding: 8px;
+    }
+    
+    .lang-select:hover, .lang-select:focus {
+      background-color: var(--accent-light);
+      color: var(--accent-dark);
+    }
+    
+    @media (max-width: 768px) {
+      .language-switcher {
+        position: static;
+        transform: none;
+        margin-top: 8px;
+        width: 100%;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      .lang-select {
+        width: 100%;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 
-    console.log('i18n initialized:', currentLang);
-  }
+  // Language switcher positioning adjustment
+  setTimeout(() => {
+    const langSwitcher = document.getElementById('langSwitcher');
+    if (langSwitcher && !document.querySelector('.language-switcher')) {
+      // Create the switcher if it doesn't exist
+      createLanguageSwitcher();
+    }
+  }, 100);
 
   // Detect user's preferred language
   function detectLanguage() {
@@ -168,11 +242,76 @@
     url.searchParams.set('lang', lang);
     history.replaceState({}, '', url);
 
-    // Update chatbot messages
-    updateChatbotMessages();
-
-    console.log('Language changed to:', lang);
-  }
+  // Language switcher styling
+  const style = document.createElement('style');
+  style.textContent = `
+    .language-switcher {
+      position: absolute;
+      right: 80px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    
+    .language-switcher:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+    
+    .lang-select {
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      appearance: none;
+      outline: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23a1a1a1" height="20" width="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 12px;
+      min-width: 120px;
+    }
+    
+    .lang-select option {
+      background: var(--surface);
+      color: var(--fg);
+      padding: 8px;
+    }
+    
+    .lang-select:hover, .lang-select:focus {
+      background-color: var(--accent-light);
+      color: var(--accent-dark);
+    }
+    
+    @media (max-width: 768px) {
+      .language-switcher {
+        position: static;
+        transform: none;
+        margin-top: 8px;
+        width: 100%;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      .lang-select {
+        width: 100%;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 
   // Create language switcher dropdown
   function createLanguageSwitcher() {
