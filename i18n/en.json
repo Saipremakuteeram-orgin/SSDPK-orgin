@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "Activities",
+    "trustees": "Trustees",
+    "gallery": "Gallery",
+    "events": "Events",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "home": {
+    "heroTitle": "Sathya Sai Prema Kuterram",
+    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
+    "learnMore": "Learn More",
+    "supportMission": "Support Our Mission"
+  },
+  "about": {
+    "pageTitle": "Our Activities",
+    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach."
+  },
+  "events": {
+    "pageTitle": "Events",
+    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs."
+  },
+  "gallery": {
+    "pageTitle": "Gallery"
+  },
+  "dashboard": {
+    "pageTitle": "Member Portal",
+    "pageSubtitle": "Access your digital membership and manage your profile."
+  },
+  "login": {
+    "pageTitle": "Sign In",
+    "pageSubtitle": "Access your digital membership and manage your profile.",
+    "welcomeBack": "Welcome Back",
+    "signInPrompt": "Sign in with your registered phone number or email.",
+    "forgotPassword": "Forgot password?",
+    "newMember": "New to the trust?",
+    "registerHere": "Register here"
+  },
+  "signup": {
+    "pageTitle": "Trust Registration",
+    "pageSubtitle": "Become a member of the Sathya Sai family.",
+    "registerTitle": "Register",
+    "registerPrompt": "Create your member profile to join the trust activities.",
+    "alreadyRegistered": "Already registered?",
+    "signIn": "Sign in"
+  },
+  "resetPassword": {
+    "pageTitle": "Set New Password",
+    "resetTitle": "Reset Password"
+  },
+  "trustees": {
+    "pageTitle": "Board of Trustees"
+  },
+  "chatbot": {
+    "welcome": "Hello! How can I help you today?",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "usageLimit": "Usage limit reached. Resets tomorrow.",
+    "offline": "Offline",
+    "rateLimit": "Rate limit",
+    "reqLeft": "req left"
+  },
+  "donation": {
+    "donateBtn": "Donate via Razorpay",
+    "openingRazorpay": "Opening Razorpay...",
+    "thankYou": "Thank you for your donation! Payment ID:",
+    "enterValidAmount": "Please enter a valid donation amount.",
+    "amountPlaceholder": "Enter amount"
+  },
+  "footer": {
+    "email": "Email: info@sathyasaipremakuterram.org",
+    "phone": "Phone: +91-XXXXXXXXXX",
+    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
+  },
+  "translate": {
+    "label": "Translate to Tamil",
+    "placeholder": "Enter text to translate...",
+    "button": "Translate",
+    "translating": "Translating..."
+  }
+}
