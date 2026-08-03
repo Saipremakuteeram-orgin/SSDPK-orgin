@@ -21,7 +21,7 @@
     "pageSubtitle": "ಆಧ್ಯಾತ್ಮಿಕ ಭಕ್ತಿ, ಅನಿವೇಶೀಯ ಸೇವೆ, ಓದಿಮೆ, ಮತ್ತು ಸಮುದಾಯ ಸೇವೆ.",
     "spiritualActivities": "ಆಧ್ಯಾತ್ಮಿಕ ಸಕ್ರಿಯತೆಗಳು",
     "sevaActivities": "ಸೇವಾ (ಸೇವೆ) ಸಕ್ರಿಯತೆಗಳು",
-    "education": "ಓದಿಮೆ ಮತ್ತು ಅವರೋಧನೆ",
+    "education": "ಓದಿಮೆ ಮತ್ತು ಜ್ಞಾನ",
     "publications": "ಪ್ರಕಾಶನಗಳು ಮತ್ತು ಸಂವಾದಗಳು",
     "ourImpact": "ನಮ್ಮ ಪ್ರಭಾವ"
   },
@@ -36,64 +36,64 @@
     "pageSubtitle": "ಭಕ್ತಿ, ಸೇವೆ, ಮತ್ತು ಸಮುದಾಯದ ಕ್ಷಣಗಳು."
   },
   "dashboard": {
-    "pageTitle": "Member Portal",
-    "pageSubtitle": "Access your digital membership and manage your profile."
+    "pageTitle": "ಸದಸ್ಯ ಪೋರ್ಟಲ್",
+    "pageSubtitle": "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಸದಸ್ಯತ್ವಕ್ಕೆ ಪ್ರವೇಶಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ."
   },
   "login": {
-    "pageTitle": "Sign In",
-    "pageSubtitle": "Access your digital membership and manage your profile.",
-    "welcomeBack": "Welcome Back",
-    "signInPrompt": "Sign in with your registered phone number or email.",
-    "forgotPassword": "Forgot password?",
-    "newMember": "New to the trust?",
-    "registerHere": "Register here",
-    "phoneEmail": "Phone Number or Email",
-    "password": "Password",
-    "loginBtn": "Login"
+    "pageTitle": "ಸೈನ್ ಇನ್",
+    "pageSubtitle": "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಸದಸ್ಯತ್ವಕ್ಕೆ ಪ್ರವೇಶಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ.",
+    "welcomeBack": "ಹಿಂತಿರಿಗೆ ಸ್ವಾಗತ",
+    "signInPrompt": "ನಿಮ್ಮ ನ registering ಫೋನ್ ನಂಬರ್ ಅಥವಾ ಇಮೇಲ್ ಅನ್ನು ಬಳಸಿ ಸೈನ್ ಇನ್ ಮಾಡಿ.",
+    "forgotPassword": "ಪಾಸ್ವರ್ಡ್ ಗೆಂದರೆ?",
+    "newMember": "ಹೊಸ ಸದಸ್ಯರು?",
+    "registerHere": "ಇಲ್ಲಿ ನಮೋದಾಗಿ",
+    "phoneEmail": "ಫೋನ್ ನಂಬರ್ ಅಥವಾ ಇಮೇಲ್",
+    "password": "ಪಾಸ್ವರ್ಡ್",
+    "loginBtn": "ಲಾಗಿನ್"
   },
   "signup": {
-    "pageTitle": "Trust Registration",
-    "pageSubtitle": "Become a member of the Sathya Sai family.",
-    "registerTitle": "Register",
-    "registerPrompt": "Create your member profile to join the trust activities.",
-    "alreadyRegistered": "Already registered?",
-    "signIn": "Sign in",
-    "registerBtn": "Register"
+    "pageTitle": "ವಿಶ್ವಾಸ ನಮೋದಾಕಾಶಿಕೆ",
+    "pageSubtitle": "ಸಾತ್ಯ ಸಾಈ ಕುಟುಂಬದ ಸದಸ್ಯರಾಗಿ ಸೇರಿ.",
+    "registerTitle": "ನಮೋದಾಕಾಶಿಕೆ",
+    "registerPrompt": "ಸದಸ್ಯ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ ಸೇರಲು",
+    "alreadyRegistered": "ಮುನ್ನೆ ನಮೋದಾದ?",
+    "signIn": "ಸೈನ್ ಇನ್",
+    "registerBtn": "ನಮೋದಾಕಾಶಿಕೆ"
   },
   "resetPassword": {
-    "pageTitle": "Set New Password",
-    "resetTitle": "Reset Password",
-    "resetSubtitle": "Enter and confirm your new password below."
+    "pageTitle": "ಹೊಸ ಪಾಸ್ವರ್ಡ್ ಸೆಟ್ ಮಾಡಿ",
+    "resetTitle": "ಪಾಸ್ವರ್ಡ್ ಮರುಹೊಂದಿಸುವಿಕೆ",
+    "resetSubtitle": "ಕೆಳಗೆ ನಿಮ್ಮ ಹೊಸ ಪಾಸ್ವರ್ಡ್ ಅನ್ನು ನಮೋದು ಮಾಡಿ ಮತ್ತು ಖಚಿತಪಡಿಸಿ."
   },
   "trustees": {
-    "pageTitle": "Board of Trustees",
-    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
+    "pageTitle": "ನಂಬಾರ ಅಕ್ಥಿ",
+    "pageSubtitle": "12 ಅನಿವೇಶೀಯ ಆತ್ಮರು ಪ್ರೀತಿ ಮತ್ತು ಸೇವೆ ಯೊಕ್ತ ಪವಿತ್ರ ಸಮಯಕ್ಕೆ ಸೇವೆ ಮಾಡುತ್ತಿದ್ದರು."
   },
   "chatbot": {
-    "welcome": "Hello! How can I help you today?",
-    "placeholder": "Type your message...",
-    "send": "Send",
-    "usageLimit": "Usage limit reached. Resets tomorrow.",
-    "offline": "Offline",
-    "rateLimit": "Rate limit",
-    "reqLeft": "req left"
+    "welcome": "ನಮಸ್ಕಾರ! ಇಂದೆ ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?",
+    "placeholder": "ನಿಮ್ಮ ಸನ್ದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ...",
+    "send": "ಕಳುಹಿಸಿ",
+    "usageLimit": "ಬಳಕೆ ಮರ್ಯಾದೆ ಸಿಕ್ಕಿತು. ನಾಳೆ ಮರುಸೆಯಿಂದ ಮುಂದೆ.",
+    "offline": "ಆಫ್ಲೈನ್",
+    "rateLimit": "ರೇಟ್ ಮರ್ಯಾದೆ",
+    "reqLeft": "req ಎಡಲಿನ"
   },
   "donation": {
-    "donateBtn": "Donate via Razorpay",
-    "openingRazorpay": "Opening Razorpay...",
-    "thankYou": "Thank you for your donation! Payment ID:",
-    "enterValidAmount": "Please enter a valid donation amount.",
-    "amountPlaceholder": "Enter amount"
+    "donateBtn": "Razorpay ಮೂಲಕ ದಾನ ಮಾಡಿ",
+    "openingRazorpay": "Razorpay ತೆರುವುತ್ತಿದೆ...",
+    "thankYou": "ನಿಮ್ಮ ದಾನಕ್ಕೆ ಧನ್ಯವಾದಗಳು!",
+    "enterValidAmount": "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ದಾನ ಪ್ರಮಾಣವನ್ನು ನಮೋದು ಮಾಡಿ.",
+    "amountPlaceholder": "ಪ್ರಮಾಣವನ್ನು ನಮೋದು ಮಾಡಿ"
   },
   "footer": {
-    "email": "Email: info@sathyasaipremakuterram.org",
-    "phone": "Phone: +91-XXXXXXXXXX",
-    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
+    "email": "ಇಮೇಲ್: info@sathyasaipremakuterram.org",
+    "phone": "ಫೋನ್: +91-XXXXXXXXXX",
+    "copyright": "ಶ್ರೀ ಸಾಈ ಧರ್ಮ ಸಮ್ರಕ್ಷಣ ಪ್ರೇಮಾ ಕುಟೀರ್ ಸಾರ್ವಜನಿಕ ಚಾರಿಟೇಬಲ್ ಟ್ರಸ್ಟ್ ನ ಎಲ್ಲಾ ಹಕ್ಕುಗಳು ಸ್ವಾಮ್ಯ."
   },
   "translate": {
-    "label": "Translate to Tamil",
-    "placeholder": "Enter text to translate...",
-    "button": "Translate",
-    "translating": "Translating..."
+    "label": "ತಮಿಳಿಗೆ ಅನುವಾದ ಮಾಡಿ",
+    "placeholder": "ಅನುವಾದ ಮಾಡಲು ಪಠ್ಯವನ್ನು ನಮೋದು ಮಾಡಿ...",
+    "button": "ಅನುವಾದ ಮಾಡಿ",
+    "translating": "ಅನುವಾದ ಮಾಡುತ್ತಿದೆ..."
   }
 }

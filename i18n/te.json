@@ -1,33 +1,33 @@
 {
   "nav": {
-    "home": "ఇంగ్లు",
-    "about": "చర్యలు",
+    "home": "ముఖ్యంగా",
+    "about": "కర్మాలు",
     "trustees": "నమ్మదికర్తలు",
     "gallery": "గ్యాలరీ",
     "events": "సంఘటనలు",
-    "dashboard": "డాష్‌బోర్డ్",
+    "dashboard": "డాష్బోర్డ్",
     "signIn": "సైన్ ఇన్",
     "signUp": "సైన్ అప్",
-    "signOut": "సైన్ ఆఉట్"
+    "signOut": "సైన్ ఔట్"
   },
   "home": {
     "heroTitle": "సాత్య సాంఈ ప్రేమా కుటీరం",
-    "heroSubtitle": "అలౌకిక సేవ, ప్రపంచ ప్రేమ, మరియు శ్రీ సాత్య సాంఈ బాబా ఉపదేశాల గురించి ఒక ఆధ్యాత్మిక సంఘం.",
+    "heroSubtitle": "అనివేశీయ సేవ, ప్రపంచ ప్రీతి, మరియు శ్రీ సాత్య సాంఈ బాబా ఉపదేశాల గురించి ఒక ఆధ్యాత్మిక సంఘం.",
     "learnMore": "మరింత తెలుసుకోండి",
-    "supportMission": "మా సమిశ్రానికి మద్దతు"
+    "supportMission": "మా సందేశానికి మద్దతు"
   },
   "about": {
-    "pageTitle": "మా చర్యలు",
-    "pageSubtitle": "ఆధ్యాత్మిక భక్తి, అలౌకిక సేవ, విద్య, మరియు సముదాయ సేవ.",
-    "spiritualActivities": "ఆధ్యాత్మిక చర్యలు",
-    "sevaActivities": "సేవా (సేవ) చర్యలు",
+    "pageTitle": "మా కర్మాలు",
+    "pageSubtitle": "ఆధ్యాత్మిక భక్తి, అనివేశీయ సేవ, విద్య, మరియు సముదాయ సేవ.",
+    "spiritualActivities": "ఆధ్యాత్మిక కర్మాలు",
+    "sevaActivities": "సేవా (సేవ) కర్మాలు",
     "education": "విద్య మరియు జ్ఞానం",
     "publications": "ప్రచురణలు మరియు సంవాదాలు",
     "ourImpact": "మా ప్రభావం"
   },
   "events": {
     "pageTitle": "సంఘటనలు",
-    "pageSubtitle": "రాబోయే భజనాలు, జరుపుకుందాలు, మరియు సముదాయ కార్యక్రమాలు.",
+    "pageSubtitle": "రాబోయే భజనలు, జరుపుకుందాలు, మరియు సముదాయ కార్యక్రమాలు.",
     "prevMonth": "మునుపటి",
     "nextMonth": "తదుపరి"
   },
@@ -36,64 +36,64 @@
     "pageSubtitle": "భక్తి, సేవ మరియు సముదాయ క్షణాలు."
   },
   "dashboard": {
-    "pageTitle": "Member Portal",
-    "pageSubtitle": "Access your digital membership and manage your profile."
+    "pageTitle": "సభ్యుడి పోర్టల్",
+    "pageSubtitle": "మీ డిజిటల్ సభ్యత్వానికి ప్రవేశం పొందండి మరియు మీ ప్రొఫైల్‌ని నిర్వహించండి."
   },
   "login": {
-    "pageTitle": "Sign In",
-    "pageSubtitle": "Access your digital membership and manage your profile.",
-    "welcomeBack": "Welcome Back",
-    "signInPrompt": "Sign in with your registered phone number or email.",
-    "forgotPassword": "Forgot password?",
-    "newMember": "New to the trust?",
-    "registerHere": "Register here",
-    "phoneEmail": "Phone Number or Email",
-    "password": "Password",
-    "loginBtn": "Login"
+    "pageTitle": "సైన్ ఇన్",
+    "pageSubtitle": "మీ డిజిటల్ సభ్యత్వానికి ప్రవేశం పొందండి మరియు మీ ప్రొఫైల్‌ని నిర్వహించండి.",
+    "welcomeBack": "తిరిగి స్వాగతం",
+    "signInPrompt": "మీ నమోదయిన ఫోన్ నెంబర్ లేదా ఇమేల్ తో సైన్ ఇన్ చేయండి.",
+    "forgotPassword": "పాస్‌వర్డ్ గురించి?",
+    "newMember": "కొత్త సభ్యుడు?",
+    "registerHere": "ఇక్కడ నమోదు చేయండి",
+    "phoneEmail": "ఫోన్ నెంబర్ లేదా ఇమేల్",
+    "password": "పాస్‌వర్డ్",
+    "loginBtn": "లాగిన్"
   },
   "signup": {
-    "pageTitle": "Trust Registration",
-    "pageSubtitle": "Become a member of the Sathya Sai family.",
-    "registerTitle": "Register",
-    "registerPrompt": "Create your member profile to join the trust activities.",
-    "alreadyRegistered": "Already registered?",
-    "signIn": "Sign in",
-    "registerBtn": "Register"
+    "pageTitle": "విశ్వాస నమోదు",
+    "pageSubtitle": "సాత్య సాంఈ కుటుంబం యొక్క సభ్యుడిగా మారండి.",
+    "registerTitle": "నమోదు",
+    "registerPrompt": "సభ్యత్వ ప్రొఫైల్ రూపొందించి చేరండి",
+    "alreadyRegistered": "ముందే నమోదు చేసారా?",
+    "signIn": "సైన్ ఇన్",
+    "registerBtn": "నమోదు"
   },
   "resetPassword": {
-    "pageTitle": "Set New Password",
-    "resetTitle": "Reset Password",
-    "resetSubtitle": "Enter and confirm your new password below."
+    "pageTitle": "కొత్త పాస్‌వర్డ్ సెట్ చేయండి",
+    "resetTitle": "పాస్‌వర్డ్ రీసెట్ చేయండి",
+    "resetSubtitle": "దయచేసి మీ కొత్త పాస్‌వర్డ్ను నిర్వహించండి."
   },
   "trustees": {
-    "pageTitle": "Board of Trustees",
-    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
+    "pageTitle": "నమ్మదికర్తల మండిపి",
+    "pageSubtitle": "12 అనివేశీయ ఆత్ములు ప్రేమతో అన్నింటికి, సేవ యొక్తి ప్రతిష్టానం సేవిస్తున్నారు."
   },
   "chatbot": {
-    "welcome": "Hello! How can I help you today?",
-    "placeholder": "Type your message...",
-    "send": "Send",
-    "usageLimit": "Usage limit reached. Resets tomorrow.",
-    "offline": "Offline",
-    "rateLimit": "Rate limit",
-    "reqLeft": "req left"
+    "welcome": "హలో! ఈరోజు నేను మీకు ఎలా సహాయపడగలను?",
+    "placeholder": "మీ సందేశాన్ని రాయండి...",
+    "send": "పంపు",
+    "usageLimit": "ఉపయోగ పరిమితి నిండిపోయింది. రేపు మీరిస్టేలుతుంది.",
+    "offline": "ఆఫ్లైన్",
+    "rateLimit": "రేట్ పరిమితి",
+    "reqLeft": "req ఎడిపోయింది"
   },
   "donation": {
-    "donateBtn": "Donate via Razorpay",
-    "openingRazorpay": "Opening Razorpay...",
-    "thankYou": "Thank you for your donation! Payment ID:",
-    "enterValidAmount": "Please enter a valid donation amount.",
-    "amountPlaceholder": "Enter amount"
+    "donateBtn": "Razorpay ద్వారా దానం చేయండి",
+    "openingRazorpay": "Razorpay తెరుస్తున్నాము...",
+    "thankYou": "మీ దానానికి ధన్యవాదాలు!",
+    "enterValidAmount": "దయచేసి సమర్థదాయకమైన రాషిని నమోదు చేయండి.",
+    "amountPlaceholder": "రాషిని నమోదుచేయండి"
   },
   "footer": {
-    "email": "Email: info@sathyasaipremakuterram.org",
-    "phone": "Phone: +91-XXXXXXXXXX",
-    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
+    "email": "ఇమేల్: info@sathyasaipremakuterram.org",
+    "phone": "ఫోన్: +91-XXXXXXXXXX",
+    "copyright": "శ్రీ సాఈ ధర్మ సమ్రక్షణ ప్రేమా కుటీరం ప్రజా చరిత్రక ట్రస్ట్ సారి నిధికి ఆవకాశం."
   },
   "translate": {
-    "label": "Translate to Tamil",
-    "placeholder": "Enter text to translate...",
-    "button": "Translate",
-    "translating": "Translating..."
+    "label": "తమిళానికి అనువదించండి",
+    "placeholder": "అనువదించే పాఠ్యాన్ని నమోదు చేయండి...",
+    "button": "అనువదించండి",
+    "translating": "అనువదిస్తోంది..."
   }
 }

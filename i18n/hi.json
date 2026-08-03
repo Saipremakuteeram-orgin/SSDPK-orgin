@@ -11,42 +11,42 @@
     "signOut": "साइन आउट"
   },
   "home": {
-    "heroTitle": "साथ्य साई प्रेमा कुटीरम",
-    "heroSubtitle": "आत्मless सेवा, universal प्रेम, और साथिया साई बाबा की शिक्षाओं के लिए एक आध्यात्मिक विश्वास।",
+    "heroTitle": "साथ्य साई प्रेमा लीरम",
+    "heroSubtitle": "आत्मless सेवा, सार्वत्रिक प्रेम, और श्री साथ्य साई बाबा की शिक्षाओं के लिए एक आध्यात्मिक विश्वास।",
     "learnMore": "और जानें",
-    "supportMission": "हमीं मिशन के समर्थन"
+    "supportMission": "हमारे मिशन के समर्थन"
   },
   "about": {
     "pageTitle": "हमारी गतिविधियाँ",
-    "pageSubtitle": "आध्यात्मिक भक्ति, आत्मless सेवा, शिक्षा, और समुदायिक सेवा।",
+    "pageSubtitle": "आध्यात्मिक भक्ति, आत्मless सेवा, शिक्षा, और सामुदायिक सेवा।",
     "spiritualActivities": "आध्यात्मिक गतिविधियाँ",
     "sevaActivities": "सेवा (सेवा) गतिविधियाँ",
-    "education": "शिक्षा व ज्ञान",
-    "publications": "प्रकाशन व संचार",
+    "education": "शिक्षा और ज्ञान",
+    "publications": "प्रकाशन और संचार",
     "ourImpact": "हमारा प्रभाव"
   },
   "events": {
     "pageTitle": "आयोजन",
-    "pageSubtitle": "आगामी भजन, उत्सवों और समुदायिक कार्यक्रम।",
+    "pageSubtitle": "आगामी भजन, उत्सव और सामुदायिक कार्यक्रम।",
     "prevMonth": "पिछला",
     "nextMonth": "अगला"
   },
   "gallery": {
     "pageTitle": "गैलरी",
-    "pageSubtitle": "भक्ति, सेवा और समुदाय के पल।"
+    "pageSubtitle": "भक्ति, सेवा और समुदाय के क्षण।"
   },
   "dashboard": {
     "pageTitle": "सदस्य पोर्टल",
-    "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुंचें और अपने प्रोफ़ाइल को प्रबंधित करें।"
+    "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुँचें और अपने प्रोफ़ाइल को प्रबंधित करें।"
   },
   "login": {
     "pageTitle": "साइन इन",
-    "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुंचें और अपने प्रोफ़ाइल को प्रबंधित करें।",
+    "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुँचें और अपने प्रोफ़ाइल को प्रबंधित करें।",
     "welcomeBack": "वापसी पर स्वागत है",
-    "signInPrompt": "अपनी पंजीकृत फोन नंबर या ईमेल के साथ साइन इन करें।",
+    "signInPrompt": "अपनी पंजीकृत फ़ोन नंबर या ईमेल के साथ साइन इन करें।",
     "forgotPassword": "पासवर्ड भूल गए?",
     "newMember": "नए सदस्य?",
-    "registerHere": "यहाँ पंजीकृत करें",
+    "registerHere": "यहाँ पंजीकरण करें",
     "phoneEmail": "फ़ोन नंबर या ईमेल",
     "password": "पासवर्ड",
     "loginBtn": "लॉगिन"
@@ -54,46 +54,46 @@
   "signup": {
     "pageTitle": "विश्वास पंजीकरण",
     "pageSubtitle": "साथ्य साई परिवार का सदस्य बनें।",
-    "registerTitle": "पंजीकृत करें",
+    "registerTitle": "पंजीकरण",
     "registerPrompt": "एक सदस्य प्रोफ़ाइल बनाकर जुड़ें",
-    "alreadyRegistered": "Already registered?",
-    "signIn": "Sign in",
-    "registerBtn": "Register"
+    "alreadyRegistered": "पहले से पंजीकृत?",
+    "signIn": "साइन इन",
+    "registerBtn": "पंजीकरण"
   },
   "resetPassword": {
-    "pageTitle": "Set New Password",
-    "resetTitle": "Reset Password",
-    "resetSubtitle": "Enter and confirm your new password below."
+    "pageTitle": "नई पासवर्ड सेट करें",
+    "resetTitle": "पासवर्ड रीसेट करें",
+    "resetSubtitle": "नीचे अपने नए पासवर्ड को दर्ज करें और पुष्टि करें।"
   },
   "trustees": {
-    "pageTitle": "Board of Trustees",
-    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
+    "pageTitle": "विश्वसनीय बोर्ड",
+    "pageSubtitle": "12 लोग प्रेम और सेवा के पवित्र मिशन की सेवा कर रहे हैं।"
   },
   "chatbot": {
-    "welcome": "Hello! How can I help you today?",
-    "placeholder": "Type your message...",
-    "send": "Send",
-    "usageLimit": "Usage limit reached. Resets tomorrow.",
-    "offline": "Offline",
-    "rateLimit": "Rate limit",
-    "reqLeft": "req left"
+    "welcome": "नमस्ते! आज मैं आपकी कैसे मदद कर सकता हूँ?",
+    "placeholder": "अपना संदेश टाइप करें...",
+    "send": "भेजें",
+    "usageLimit": "उपयोग सीमा तक पहुँच गई। कल रीसेट होगा।",
+    "offline": "ऑफ़लाइन",
+    "rateLimit": "दर सीमा",
+    "reqLeft": "बकाया अनुरोध"
   },
   "donation": {
-    "donateBtn": "Donate via Razorpay",
-    "openingRazorpay": "Opening Razorpay...",
-    "thankYou": "Thank you for your donation! Payment ID:",
-    "enterValidAmount": "Please enter a valid donation amount.",
-    "amountPlaceholder": "Enter amount"
+    "donateBtn": "Razorpay के माध्यम से दान करें",
+    "openingRazorpay": "Razorpay खोल रहे हैं...",
+    "thankYou": "आपके दान के लिए धन्यवाद! भुगतान आईडी:",
+    "enterValidAmount": "कृपया एक वैध राशि दर्ज करें।",
+    "amountPlaceholder": "राशि दर्शाएं"
   },
   "footer": {
-    "email": "Email: info@sathyasaipremakuterram.org",
-    "phone": "Phone: +91-XXXXXXXXXX",
-    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
+    "email": "ईमेल: info@sathyasaipremakuterram.org",
+    "phone": "फ़ोन: +91-XXXXXXXXXX",
+    "copyright": "श्री साई धर्म सम्रक्षण प्रेमा कुटीरम पब्लिक चैरिटेबल ट्रस्ट द्वारा सभी अधिकार उर्जा।"
   },
   "translate": {
-    "label": "Translate to Tamil",
-    "placeholder": "Enter text to translate...",
-    "button": "Translate",
-    "translating": "Translating..."
+    "label": "तमिल में अनूदित करें",
+    "placeholder": "अनूदित करने के लिए पाठ दर्शाएं...",
+    "button": "अनूदित करें",
+    "translating": "अनूदित कर रहे हैं..."
   }
 }
