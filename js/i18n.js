@@ -2,17 +2,12 @@
 (function() {
   'use strict';
 
-  // Default language
   const DEFAULT_LANG = 'en';
-
-  // Supported languages
   const SUPPORTED_LANGS = ['en', 'ta', 'hi', 'te', 'kn', 'ml'];
 
-  // Language detection cache
   let currentLang = null;
   let translations = {};
 
-  // Language emoji flags
   const LANG_FLAGS = {
     'en': '🇬🇧',
     'ta': '🇮🇳',
@@ -22,7 +17,6 @@
     'ml': '🇮🇳'
   };
 
-  // Language names
   const LANG_NAMES = {
     'en': 'English',
     'ta': 'தமிழ்',
@@ -32,152 +26,38 @@
     'ml': 'മലയാളം'
   };
 
-  // Initialize i18n
-  async function initI18n() {
-    if (currentLang) return; // Already initialized
-
-    // Detect language from URL, localStorage, or browser
-    currentLang = detectLanguage();
-
-    // Load translations for the detected language
-    await loadTranslations(currentLang);
-
-    // Apply translations
-    applyTranslations();
-
-    // Update HTML lang attribute
-    document.documentElement.setAttribute('lang', currentLang);
-
-    // Create language switcher
-    createLanguageSwitcher();
-
-    // Initialize user input translation widget if present
-    initUserTranslationWidget();
-
-  // Language switcher styling
-  const style = document.createElement('style');
-  style.textContent = `
-    .language-switcher {
-      position: absolute;
-      right: 80px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1000;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 6px 10px;
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s ease;
-    }
-    
-    .language-switcher:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--accent);
-    }
-    
-    .lang-select {
-      background: transparent;
-      border: none;
-      color: var(--fg);
-      font-family: var(--font-body);
-      font-size: 14px;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      appearance: none;
-      outline: none;
-      background-image: url('data:image/svg+xml;utf8,<svg fill=\"%23a1a1a1\" height=\"20\" width=\"20\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      background-size: 12px;
-      min-width: 120px;
-    }
-    
-    .lang-select option {
-      background: var(--surface);
-      color: var(--fg);
-      padding: 8px;
-    }
-    
-    .lang-select:hover, .lang-select:focus {
-      background-color: var(--accent-light);
-      color: var(--accent-dark);
-    }
-    
-    @media (max-width: 768px) {
-      .language-switcher {
-        position: static;
-        transform: none;
-        margin-top: 8px;
-        width: 100%;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        padding: 0;
-      }
-      .lang-select {
-        width: 100%;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // Language switcher positioning adjustment
-  setTimeout(() => {
-    const langSwitcher = document.getElementById('langSwitcher');
-    if (langSwitcher && !document.querySelector('.language-switcher')) {
-      // Create the switcher if it doesn't exist
-      createLanguageSwitcher();
-    }
-  }, 100);
-
-  // Detect user's preferred language
   function detectLanguage() {
     let lang = DEFAULT_LANG;
-
-    // Check URL parameter first
     const urlParams = new URLSearchParams(window.location.search);
     const urlLang = urlParams.get('lang');
     if (urlLang && SUPPORTED_LANGS.includes(urlLang)) {
       lang = urlLang;
-    }
-
-    // Check localStorage
-    else if (localStorage.getItem('sspk_lang')) {
+    } else if (localStorage.getItem('sspk_lang')) {
       const storedLang = localStorage.getItem('sspk_lang');
       if (SUPPORTED_LANGS.includes(storedLang)) {
         lang = storedLang;
       }
-    }
-
-    // Check browser language
-    else {
+    } else {
       const browserLang = navigator.language || navigator.userLanguage || '';
       const browserLangCode = browserLang.toLowerCase().split('-')[0];
       if (SUPPORTED_LANGS.includes(browserLangCode)) {
         lang = browserLangCode;
       }
     }
-
     return lang;
   }
 
-  // Load translation file
   async function loadTranslations(lang) {
     try {
-      const response = await fetch(`/i18n/${lang}.json`);
+      const response = await fetch('/i18n/' + lang + '.json');
       if (!response.ok) {
         if (lang !== DEFAULT_LANG) {
-          console.warn(`Failed to load ${lang}.json, falling back to English`);
+          console.warn('Failed to load ' + lang + '.json, falling back to English');
           await loadTranslations(DEFAULT_LANG);
           return;
         }
-        throw new Error(`Failed to load translations for language: ${lang}`);
+        throw new Error('Failed to load translations for language: ' + lang);
       }
-
       translations = await response.json();
       localStorage.setItem('sspk_lang', lang);
     } catch (error) {
@@ -185,15 +65,12 @@
     }
   }
 
-  // Apply translations to all elements with data-i18n attribute
   function applyTranslations() {
     const elements = document.querySelectorAll('[data-i18n]');
-    elements.forEach(element => {
+    elements.forEach(function(element) {
       const key = element.getAttribute('data-i18n');
       const translation = getNestedProperty(translations, key);
-
       if (translation) {
-        // Handle different element types
         if (element.tagName === 'INPUT' && element.getAttribute('placeholder') !== null) {
           element.setAttribute('placeholder', translation);
         } else if (element.tagName === 'TEXTAREA') {
@@ -202,16 +79,14 @@
           element.textContent = translation;
         }
       } else {
-        console.warn(`Missing translation for key: ${key}`);
+        console.warn('Missing translation for key: ' + key);
       }
     });
   }
 
-  // Get nested property from object using dot notation
   function getNestedProperty(obj, path) {
     const keys = path.split('.');
     let result = obj;
-
     for (const key of keys) {
       if (result && result[key] !== undefined) {
         result = result[key];
@@ -219,139 +94,124 @@
         return null;
       }
     }
-
     return result;
   }
 
-  // Set language and reload translations
   async function setLanguage(lang) {
     if (!SUPPORTED_LANGS.includes(lang)) {
-      console.error(`Unsupported language: ${lang}`);
+      console.error('Unsupported language: ' + lang);
       return;
     }
-
     currentLang = lang;
     document.documentElement.setAttribute('lang', lang);
     localStorage.setItem('sspk_lang', lang);
-
     await loadTranslations(lang);
     applyTranslations();
-
-    // Update URL with language parameter
     const url = new URL(window.location.href);
     url.searchParams.set('lang', lang);
     history.replaceState({}, '', url);
+  }
 
-  // Language switcher styling
-  const style = document.createElement('style');
-  style.textContent = `
-    .language-switcher {
-      position: absolute;
-      right: 80px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1000;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 6px 10px;
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s ease;
-    }
-    
-    .language-switcher:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--accent);
-    }
-    
-    .lang-select {
-      background: transparent;
-      border: none;
-      color: var(--fg);
-      font-family: var(--font-body);
-      font-size: 14px;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      appearance: none;
-      outline: none;
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%23a1a1a1" height="20" width="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      background-size: 12px;
-      min-width: 120px;
-    }
-    
-    .lang-select option {
-      background: var(--surface);
-      color: var(--fg);
-      padding: 8px;
-    }
-    
-    .lang-select:hover, .lang-select:focus {
-      background-color: var(--accent-light);
-      color: var(--accent-dark);
-    }
-    
-    @media (max-width: 768px) {
-      .language-switcher {
-        position: static;
-        transform: none;
-        margin-top: 8px;
-        width: 100%;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        padding: 0;
-      }
-      .lang-select {
-        width: 100%;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // Create language switcher dropdown
   function createLanguageSwitcher() {
     const existingSwitcher = document.getElementById('langSwitcher');
     if (existingSwitcher) {
       existingSwitcher.remove();
     }
 
+    const style = document.createElement('style');
+    style.textContent = `
+      .language-switcher {
+        position: absolute;
+        right: 80px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1000;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 6px 10px;
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+      }
+      .language-switcher:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent);
+      }
+      .lang-select {
+        background: transparent;
+        border: none;
+        color: var(--fg);
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        appearance: none;
+        outline: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%23a1a1a1" height="20" width="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 12px;
+        min-width: 120px;
+      }
+      .lang-select option {
+        background: var(--surface);
+        color: var(--fg);
+        padding: 8px;
+      }
+      .lang-select:hover, .lang-select:focus {
+        background-color: var(--accent-light);
+        color: var(--accent-dark);
+      }
+      @media (max-width: 768px) {
+        .language-switcher {
+          position: static;
+          transform: none;
+          margin-top: 8px;
+          width: 100%;
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          padding: 0;
+        }
+        .lang-select {
+          width: 100%;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
     const switcher = document.createElement('div');
     switcher.id = 'langSwitcher';
     switcher.className = 'language-switcher';
 
-    // Create dropdown
     const select = document.createElement('select');
     select.className = 'lang-select';
 
-    SUPPORTED_LANGS.forEach(lang => {
+    SUPPORTED_LANGS.forEach(function(lang) {
       const option = document.createElement('option');
       option.value = lang;
-      option.textContent = `${LANG_FLAGS[lang]} ${LANG_NAMES[lang]}`;
+      option.textContent = LANG_FLAGS[lang] + ' ' + LANG_NAMES[lang];
       if (lang === currentLang) {
         option.selected = true;
       }
       select.appendChild(option);
     });
 
-    select.addEventListener('change', async (e) => {
-      await setLanguage(e.target.value);
+    select.addEventListener('change', function(e) {
+      setLanguage(e.target.value);
     });
 
     switcher.appendChild(select);
 
-    // Find navbar container and append switcher
     const navbar = document.querySelector('nav .container');
     if (navbar) {
       navbar.appendChild(switcher);
     }
   }
 
-  // Initialize user input translation widget
   function initUserTranslationWidget() {
     const translateWidget = document.getElementById('translateWidget');
     if (!translateWidget) return;
@@ -362,7 +222,7 @@
 
     if (!translateBtn || !translateInput) return;
 
-    translateBtn.addEventListener('click', async () => {
+    translateBtn.addEventListener('click', async function() {
       const text = translateInput.value.trim();
       if (!text) return;
 
@@ -384,14 +244,11 @@
     });
   }
 
-  // Translate text to Tamil using MyMemory API
   async function translateToTamil(text) {
-    const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ta`;
-
+    const apiUrl = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=en|ta';
     try {
       const response = await fetch(apiUrl);
       const data = await response.json();
-
       if (data.responseStatus === 200) {
         return data.responseData.translatedText;
       } else {
@@ -403,17 +260,14 @@
     }
   }
 
-  // Update chatbot messages with current language
   function updateChatbotMessages() {
     if (!window.chatbotTranslations) {
       window.chatbotTranslations = translations.chatbot || {};
     }
-
     const chatbotElements = document.querySelectorAll('[data-chatbot-i18n]');
-    chatbotElements.forEach(element => {
+    chatbotElements.forEach(function(element) {
       const key = element.getAttribute('data-chatbot-i18n');
       const translation = window.chatbotTranslations[key];
-
       if (translation) {
         if (element.tagName === 'INPUT' && element.getAttribute('placeholder') !== null) {
           element.setAttribute('placeholder', translation);
@@ -426,16 +280,24 @@
     });
   }
 
-  // Expose public methods
+  async function initI18n() {
+    if (currentLang) return;
+    currentLang = detectLanguage();
+    await loadTranslations(currentLang);
+    applyTranslations();
+    document.documentElement.setAttribute('lang', currentLang);
+    createLanguageSwitcher();
+    initUserTranslationWidget();
+  }
+
   window.i18n = {
     init: initI18n,
     setLanguage: setLanguage,
-    getLanguage: () => currentLang,
-    t: (key) => getNestedProperty(translations, key) || key,
+    getLanguage: function() { return currentLang; },
+    t: function(key) { return getNestedProperty(translations, key) || key; },
     SUPPORTED_LANGS: SUPPORTED_LANGS
   };
 
-  // Auto-initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initI18n);
   } else {
