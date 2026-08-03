@@ -9,6 +9,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.0",
     "@vercel/analytics": "^2.0.1"
   },
   "devDependencies": {
