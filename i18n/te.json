@@ -39,6 +39,34 @@
     "pageTitle": "సభ్యుడి పోర్టల్",
     "pageSubtitle": "మీ డిజిటల్ సభ్యత్వానికి ప్రవేశం పొందండి మరియు మీ ప్రొఫైల్‌ని నిర్వహించండి."
   },
+  "seva": {
+    "title": "సేవ",
+    "subtitle": "సహకారం \u00b7 భాగస్వామ్యం \u00b7 మద్దతు",
+    "tabOnce": "ఒకేసారి సేవ",
+    "tabQr": "QR సేవ",
+    "tabAuto": "నెలవారీ సేవ",
+    "name": "మీ పేరు",
+    "email": "ఇమెయిల్",
+    "phone": "ఫోన్",
+    "tier101": "అన్నదానం",
+    "tier501": "వేద సహకారం",
+    "tier1101": "హోమం స్పాన్సర్ చేయండి",
+    "customAmount": "అనుకూల మొత్తం",
+    "amountPlaceholder": "500",
+    "contributeBtn": "ఇప్పుడే సహకరించండి",
+    "choosePurpose": "ఒక ప్రయోజనాన్ని ఎంచుకోండి",
+    "purposeAnnadana": "అన్నదానం",
+    "purposeHomam": "హోమం స్పాన్సర్ చేయండి",
+    "purposeVeda": "వేద సహకారం",
+    "purposeGrocery": "కిరాణా సహాయం",
+    "amount": "మొత్తం",
+    "generateQr": "QR రూపొందించండి",
+    "shareWhatsapp": "WhatsApp ద్వారా భాగస్వామ్యం చేయండి",
+    "monthlyAmount": "నెలవారీ మొత్తం",
+    "autopayNote": "UPI ఆటోపే లేదా కార్డ్ ద్వారా ఒక-క్లిక్ నెలవారీ ఆదేశాన్ని సెట్ చేయండి. మీరు ఎప్పుడైనా రద్దు చేయవచ్చు.",
+    "setupAutopay": "నెలవారీ సేవను సెటప్ చేయండి",
+    "invalidAmount": "దయచేసి చెల్లుబాటు అయ్యే మొత్తాన్ని నమోదు చేయండి."
+  },
   "login": {
     "pageTitle": "సైన్ ఇన్",
     "pageSubtitle": "మీ డిజిటల్ సభ్యత్వానికి ప్రవేశం పొందండి మరియు మీ ప్రొఫైల్‌ని నిర్వహించండి.",
@@ -77,13 +105,6 @@
     "offline": "ఆఫ్లైన్",
     "rateLimit": "రేట్ పరిమితి",
     "reqLeft": "req ఎడిపోయింది"
-  },
-  "donation": {
-    "donateBtn": "Razorpay ద్వారా దానం చేయండి",
-    "openingRazorpay": "Razorpay తెరుస్తున్నాము...",
-    "thankYou": "మీ దానానికి ధన్యవాదాలు!",
-    "enterValidAmount": "దయచేసి సమర్థదాయకమైన రాషిని నమోదు చేయండి.",
-    "amountPlaceholder": "రాషిని నమోదుచేయండి"
   },
   "footer": {
     "email": "ఇమేల్: info@sathyasaipremakuterram.org",

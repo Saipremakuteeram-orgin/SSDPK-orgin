@@ -286,4 +286,20 @@ Registered Office: No.104, Mettu Street, Karur – 639001
 **🕉️ Om Sai Ram 🙏**
 
 ---
+
+## Razorpay Seva (Contribution) Setup
+
+Serverless functions in `api/razorpay/` handle one-time orders, QR payment links,
+monthly subscriptions, and webhooks. Configure these in Vercel Environment Variables:
+
+- `RAZORPAY_KEY_ID` (public, also used client-side)
+- `RAZORPAY_KEY_SECRET` (secret, server-only)
+- `RAZORPAY_WEBHOOK_SECRET` (secret, for webhook signature)
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY` (secret, server-only)
+- `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` (optional, for admin alerts)
+
+Run `supabase_donations.sql` in the Supabase SQL editor to create the `donations` table.
+
+---
 </div>

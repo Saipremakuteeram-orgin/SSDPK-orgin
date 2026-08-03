@@ -22,6 +22,7 @@ client_secret.json.enc
 # ── Server & Backend Source (CONFIDENTIAL) ───────────────────
 api/*
 !api/config.js
+!api/razorpay/
 bot.py
 dev_server.py
 decrypt_secret.py
@@ -29,6 +30,7 @@ encrypt_secret.py
 
 # ── Database Schemas (CONFIDENTIAL) ─────────────────────────
 *.sql
+!supabase_donations.sql
 supabase_setup.sql
 telegram_storage_schema.sql
 
@@ -86,3 +88,6 @@ env/
 *.bak
 *.tmp
 *.temp
+
+# ── Git Worktrees ───────────────────────────────────────────
+.worktrees/

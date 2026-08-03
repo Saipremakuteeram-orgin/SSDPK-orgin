@@ -39,6 +39,34 @@
     "pageTitle": "सदस्य पोर्टल",
     "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुँचें और अपने प्रोफ़ाइल को प्रबंधित करें।"
   },
+  "seva": {
+    "title": "सेवा",
+    "subtitle": "योगदान \u00b7 भागीदारी \u00b7 सहयोग",
+    "tabOnce": "एकमुश्त सेवा",
+    "tabQr": "QR सेवा",
+    "tabAuto": "मासिक सेवा",
+    "name": "आपका नाम",
+    "email": "ईमेल",
+    "phone": "फ़ोन",
+    "tier101": "अन्नदान",
+    "tier501": "वेद समर्थन",
+    "tier1101": "होम को प्रायोजित करें",
+    "customAmount": "मनमानी राशि",
+    "amountPlaceholder": "500",
+    "contributeBtn": "अभी योगदान करें",
+    "choosePurpose": "एक उद्देश्य चुनें",
+    "purposeAnnadana": "अन्नदान",
+    "purposeHomam": "होम को प्रायोजित करें",
+    "purposeVeda": "वेद समर्थन",
+    "purposeGrocery": "किराना सहायता",
+    "amount": "राशि",
+    "generateQr": "QR बनाएं",
+    "shareWhatsapp": "WhatsApp पर साझा करें",
+    "monthlyAmount": "मासिक राशि",
+    "autopayNote": "UPI ऑटोपे या कार्ड से एक-क्लिक मासिक आदेश सेट करें। आप कभी भी रद्द कर सकते हैं।",
+    "setupAutopay": "मासिक सेवा सेट करें",
+    "invalidAmount": "कृपया एक वैध राशि दर्ज करें।"
+  },
   "login": {
     "pageTitle": "साइन इन",
     "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुँचें और अपने प्रोफ़ाइल को प्रबंधित करें।",
@@ -77,13 +105,6 @@
     "offline": "ऑफ़लाइन",
     "rateLimit": "दर सीमा",
     "reqLeft": "बकाया अनुरोध"
-  },
-  "donation": {
-    "donateBtn": "Razorpay के माध्यम से दान करें",
-    "openingRazorpay": "Razorpay खोल रहे हैं...",
-    "thankYou": "आपके दान के लिए धन्यवाद! भुगतान आईडी:",
-    "enterValidAmount": "कृपया एक वैध राशि दर्ज करें।",
-    "amountPlaceholder": "राशि दर्शाएं"
   },
   "footer": {
     "email": "ईमेल: info@sathyasaipremakuterram.org",

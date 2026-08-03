@@ -1165,3 +1165,41 @@ footer a:hover { color: white; text-decoration: none; }
 .skip-link:focus {
   left: 0;
 }
+
+/* Seva section */
+.seva-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0 8px;
+  flex-wrap: wrap;
+}
+.seva-tab {
+  padding: 9px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.seva-tab:hover {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+.seva-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.seva-panel {
+  display: none;
+}
+.seva-panel.active {
+  display: block;
+}
+.seva-panel .btn {
+  margin-top: 14px;
+}
+

@@ -39,6 +39,34 @@
     "pageTitle": "അംഗ പോർട്ടൽ",
     "pageSubtitle": "നിങ്ങളുടെ ഡിജിറ്റൽ അംഗത്വത്തിന് പ്രവേശിക്കുക നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുക."
   },
+  "seva": {
+    "title": "സേവ",
+    "subtitle": "സംഭാവന \u00b7 പങ്കാളിത്തം \u00b7 പിന്തുണ",
+    "tabOnce": "ഒറ്റത്തവണ സേവ",
+    "tabQr": "QR സേവ",
+    "tabAuto": "മാസിക സേവ",
+    "name": "നിങ്ങളുടെ പേര്",
+    "email": "ഇമെയിൽ",
+    "phone": "ഫോൺ",
+    "tier101": "അന്നദാനം",
+    "tier501": "വേദ പിന്തുണ",
+    "tier1101": "ഹോമം സ്പോൺസർ ചെയ്യുക",
+    "customAmount": "ഇഷ്ട തുക",
+    "amountPlaceholder": "500",
+    "contributeBtn": "ഇപ്പോൾ സംഭാവന ചെയ്യുക",
+    "choosePurpose": "ഒരു ഉദ്ദേശ്യം തിരഞ്ഞെടുക്കുക",
+    "purposeAnnadana": "അന്നദാനം",
+    "purposeHomam": "ഹോമം സ്പോൺസർ ചെയ്യുക",
+    "purposeVeda": "വേദ പിന്തുണ",
+    "purposeGrocery": "പലചരക്ക് സഹായം",
+    "amount": "തുക",
+    "generateQr": "QR സൃഷ്ടിക്കുക",
+    "shareWhatsapp": "WhatsApp വഴി പങ്കിടുക",
+    "monthlyAmount": "മാസിക തുക",
+    "autopayNote": "UPI ഓട്ടോപേ അല്ലെങ്കിൽ കാർഡ് വഴി ഒരു-ക്ലിക്ക് മാസിക ആജ്ഞ സജ്ജമാക്കുക. എപ്പോൾ വേണമെങ്കിലും റദ്ദാക്കാം.",
+    "setupAutopay": "മാസിക സേവ സജ്ജമാക്കുക",
+    "invalidAmount": "ദയവായി സാധുവായ തുക നൽകുക."
+  },
   "login": {
     "pageTitle": "സൈൻ ഇൻ",
     "pageSubtitle": "നിങ്ങളുടെ ഡിജിറ്റൽ അംഗത്വത്തിന് പ്രവേശിക്കുക നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുക.",
@@ -77,13 +105,6 @@
     "offline": "ഓഫ്‌ലൈൻ",
     "rateLimit": "നിരപ്പ് പരിധി",
     "reqLeft": "req എഡിപ്പോ"
-  },
-  "donation": {
-    "donateBtn": "Razorpay വഴി ദാനം ചെയ്യുക",
-    "openingRazorpay": "Razorpay തുറക്കുന്നു...",
-    "thankYou": "നിന്ന്റെ ദാനത്തിന് നന്ദി!",
-    "enterValidAmount": "ദയവായി സാധുവായ ദാന തോത് നമ്പിൽ.",
-    "amountPlaceholder": "തോത് നമ്പിൽ"
   },
   "footer": {
     "email": "ഇമെയിൽ: info@sathyasaipremakuterram.org",
