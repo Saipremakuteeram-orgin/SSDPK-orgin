@@ -48,21 +48,16 @@
   }
 
   async function loadTranslations(lang) {
-    try {
-      const response = await fetch('/i18n/' + lang + '.json');
-      if (!response.ok) {
-        if (lang !== DEFAULT_LANG) {
-          console.warn('Failed to load ' + lang + '.json, falling back to English');
-          await loadTranslations(DEFAULT_LANG);
-          return;
-        }
-        throw new Error('Failed to load translations for language: ' + lang);
+    const response = await fetch('/i18n/' + lang + '.json');
+    if (!response.ok) {
+      if (lang !== DEFAULT_LANG) {
+        console.warn('Failed to load ' + lang + '.json, falling back to English');
+        return loadTranslations(DEFAULT_LANG);
       }
-      translations = await response.json();
-      localStorage.setItem('sspk_lang', lang);
-    } catch (error) {
-      console.error('Error loading translations:', error);
+      throw new Error('Failed to load translations for language: ' + lang);
     }
+    const data = await response.json();
+    return data;
   }
 
   function applyTranslations() {
@@ -102,11 +97,20 @@
       console.error('Unsupported language: ' + lang);
       return;
     }
+    const previousLang = currentLang;
     currentLang = lang;
     document.documentElement.setAttribute('lang', lang);
     localStorage.setItem('sspk_lang', lang);
-    await loadTranslations(lang);
-    applyTranslations();
+    try {
+      translations = await loadTranslations(lang);
+      applyTranslations();
+      updateChatbotMessages();
+    } catch (error) {
+      console.error('Error switching language:', error);
+      currentLang = previousLang;
+      document.documentElement.setAttribute('lang', previousLang);
+      localStorage.setItem('sspk_lang', previousLang);
+    }
     const url = new URL(window.location.href);
     url.searchParams.set('lang', lang);
     history.replaceState({}, '', url);
@@ -261,13 +265,11 @@
   }
 
   function updateChatbotMessages() {
-    if (!window.chatbotTranslations) {
-      window.chatbotTranslations = translations.chatbot || {};
-    }
+    const chatbotTranslations = translations.chatbot || {};
     const chatbotElements = document.querySelectorAll('[data-chatbot-i18n]');
     chatbotElements.forEach(function(element) {
       const key = element.getAttribute('data-chatbot-i18n');
-      const translation = window.chatbotTranslations[key];
+      const translation = chatbotTranslations[key];
       if (translation) {
         if (element.tagName === 'INPUT' && element.getAttribute('placeholder') !== null) {
           element.setAttribute('placeholder', translation);
@@ -283,7 +285,12 @@
   async function initI18n() {
     if (currentLang) return;
     currentLang = detectLanguage();
-    await loadTranslations(currentLang);
+    try {
+      translations = await loadTranslations(currentLang);
+    } catch (error) {
+      console.error('Error initializing i18n:', error);
+      translations = {};
+    }
     applyTranslations();
     document.documentElement.setAttribute('lang', currentLang);
     createLanguageSwitcher();
