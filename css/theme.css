@@ -112,6 +112,21 @@ nav .container {
   justify-content: space-between;
   width: 100%;
 }
+nav .container > * {
+  flex: 1;
+}
+.nav-brand {
+  justify-content: flex-start;
+  text-align: left;
+}
+.nav-links {
+  justify-content: center;
+  text-align: center;
+}
+#langSwitcher {
+  justify-content: flex-end;
+  text-align: right;
+}
 .nav-brand {
   display: flex;
   align-items: center;
