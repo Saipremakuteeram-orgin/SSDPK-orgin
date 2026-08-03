@@ -32,18 +32,18 @@
       }
       
       var linksHtml = '';
-      linksHtml += '<a href="index.html">Home</a>';
-      linksHtml += '<a href="about.html">About</a>';
-      linksHtml += '<a href="trustees.html">Trustees</a>';
-      linksHtml += '<a href="gallery.html">Gallery</a>';
-      linksHtml += '<a href="events.html">Events</a>';
+      linksHtml += '<a href="index.html" data-i18n="nav.home">Home</a>';
+      linksHtml += '<a href="about.html" data-i18n="nav.about">About</a>';
+      linksHtml += '<a href="trustees.html" data-i18n="nav.trustees">Trustees</a>';
+      linksHtml += '<a href="gallery.html" data-i18n="nav.gallery">Gallery</a>';
+      linksHtml += '<a href="events.html" data-i18n="nav.events">Events</a>';
       
       if (session) {
-        linksHtml += '<a href="dashboard.html" class="donate-btn">Dashboard</a>';
-        linksHtml += '<a href="#" id="navLogoutBtn" class="nav-logout-btn">Sign Out</a>';
+        linksHtml += '<a href="dashboard.html" class="donate-btn" data-i18n="nav.dashboard">Dashboard</a>';
+        linksHtml += '<a href="#" id="navLogoutBtn" class="nav-logout-btn" data-i18n="nav.signOut">Sign Out</a>';
       } else {
-        linksHtml += '<a href="login.html" class="nav-login-btn">Sign In</a>';
-        linksHtml += '<a href="signup.html" class="nav-signup-btn">Sign Up</a>';
+        linksHtml += '<a href="login.html" class="nav-login-btn" data-i18n="nav.signIn">Sign In</a>';
+        linksHtml += '<a href="signup.html" class="nav-signup-btn" data-i18n="nav.signUp">Sign Up</a>';
       }
       
       navLinks.innerHTML = linksHtml;

@@ -127,20 +127,28 @@
       .language-switcher {
         display: flex;
         align-items: center;
-        margin-left: auto;
+        flex: 0 0 auto;
         order: 10;
         z-index: 1000;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
-        padding: 4px 8px;
+        padding: 2px 6px;
         backdrop-filter: blur(10px);
         box-shadow: var(--shadow-sm);
         transition: all 0.3s ease;
+        opacity: 1;
+        transform: scale(1);
       }
       .language-switcher:hover {
         box-shadow: var(--shadow-md);
         border-color: var(--accent);
+        transform: scale(1.03);
+      }
+      .language-switcher.switching {
+        transform: scale(0.95);
+        opacity: 0.7;
+        box-shadow: 0 0 12px oklch(58% 0.16 50 / 0.4);
       }
       .lang-select {
         background: transparent;
@@ -158,7 +166,8 @@
         background-repeat: no-repeat;
         background-position: right 4px center;
         background-size: 10px;
-        min-width: 100px;
+        min-width: 110px;
+        transition: color 0.2s ease, background-color 0.2s ease;
       }
       .lang-select option {
         background: var(--surface);
@@ -205,7 +214,14 @@
     });
 
     select.addEventListener('change', function(e) {
-      setLanguage(e.target.value);
+      const newLang = e.target.value;
+      if (newLang === currentLang) return;
+      switcher.classList.add('switching');
+      setLanguage(newLang).then(function() {
+        setTimeout(function() {
+          switcher.classList.remove('switching');
+        }, 300);
+      });
     });
 
     switcher.appendChild(select);
