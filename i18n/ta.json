@@ -39,6 +39,34 @@
     "pageTitle": "உறுப்பினர் வாசலாகம்",
     "pageSubtitle": "உங்கள் எணிகிய உறுப்பினர் அணுகியுங்கள் மற்றும் உங்கள் சுயம் மாற்றவுங்கள்."
   },
+  "seva": {
+    "title": "சேவை",
+    "subtitle": "பங்களிப்பு \u00b7 பங்கேற்பு \u00b7 ஆதரவு",
+    "tabOnce": "ஒருமுறை சேவை",
+    "tabQr": "QR சேவை",
+    "tabAuto": "மாதாந்திர சேவை",
+    "name": "உங்கள் பெயர்",
+    "email": "மின்னஞ்சல்",
+    "phone": "தொலைபேசி",
+    "tier101": "அன்னதானம்",
+    "tier501": "வேத ஆதரவு",
+    "tier1101": "ஹோமம் ஆதரவு",
+    "customAmount": "தனிப்பட்ட தொகை",
+    "amountPlaceholder": "500",
+    "contributeBtn": "இப்போது பங்களிக்கவும்",
+    "choosePurpose": "ஒரு நோக்கத்தை தேர்ந்தெடுக்கவும்",
+    "purposeAnnadana": "அன்னதானம்",
+    "purposeHomam": "ஹோமம் ஆதரவு",
+    "purposeVeda": "வேத ஆதரவு",
+    "purposeGrocery": "மளிகை உதவி",
+    "amount": "தொகை",
+    "generateQr": "QR உருவாக்கு",
+    "shareWhatsapp": "வாட்ஸ்அப் மூலம் பகிரவும்",
+    "monthlyAmount": "மாதாந்திர தொகை",
+    "autopayNote": "UPI ஆட்டோபே அல்லது அட்டை மூலம் ஒரே கிளிக் மாதாந்திர ஒப்பந்தம். எப்போது வேண்டுமானாலும் ரத்து செய்யலாம்.",
+    "setupAutopay": "மாதாந்திர சேவையை அமைக்கவும்",
+    "invalidAmount": "சரியான தொகையை உள்ளிடவும்."
+  },
   "login": {
     "pageTitle": "உள்நுழைய",
     "pageSubtitle": "உங்கள் எணிகிய உறுப்பினர் அணுகியுங்கள் மற்றும் உங்கள் சுயம் மாற்றவுங்கள்.",
@@ -77,13 +105,6 @@
     "offline": "ஆப்லைன்",
     "rateLimit": "தரநிலை எல்லாமை",
     "reqLeft": "req எல்லாமை"
-  },
-  "donation": {
-    "donateBtn": "Razorpay மூலம் ஆதாயம்",
-    "openingRazorpay": "Razorpay திறக்கில்ல...",
-    "thankYou": "உங்கள் ஆதாயம் நிறைவேறி!",
-    "enterValidAmount": "தயவுக்கு ஒரு செல்லுபடியான ஆதாய அளவை உடையவர்.",
-    "amountPlaceholder": "அளவை உடையவர்"
   },
   "footer": {
     "email": "மின்னஞ்சல்: info@sathyasaipremakuterram.org",

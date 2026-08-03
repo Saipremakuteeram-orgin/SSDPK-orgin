@@ -39,6 +39,34 @@
     "pageTitle": "Member Portal",
     "pageSubtitle": "Access your digital membership and manage your profile."
   },
+  "seva": {
+    "title": "Seva",
+    "subtitle": "Contribution \u00b7 Participation \u00b7 Support",
+    "tabOnce": "One-time Seva",
+    "tabQr": "QR Seva",
+    "tabAuto": "Monthly Seva",
+    "name": "Your name",
+    "email": "Email",
+    "phone": "Phone",
+    "tier101": "Anna Danam",
+    "tier501": "Veda Support",
+    "tier1101": "Sponsor a Homam",
+    "customAmount": "Custom amount",
+    "amountPlaceholder": "500",
+    "contributeBtn": "Contribute Now",
+    "choosePurpose": "Choose a purpose",
+    "purposeAnnadana": "Anna Danam",
+    "purposeHomam": "Sponsor a Homam",
+    "purposeVeda": "Veda Support",
+    "purposeGrocery": "Grocery Aid",
+    "amount": "Amount",
+    "generateQr": "Generate QR",
+    "shareWhatsapp": "Share via WhatsApp",
+    "monthlyAmount": "Monthly amount",
+    "autopayNote": "Set up a one-click monthly mandate via UPI Autopay or card. You can cancel anytime.",
+    "setupAutopay": "Set up Monthly Seva",
+    "invalidAmount": "Please enter a valid amount."
+  },
   "login": {
     "pageTitle": "Sign In",
     "pageSubtitle": "Access your digital membership and manage your profile.",
@@ -77,13 +105,6 @@
     "offline": "Offline",
     "rateLimit": "Rate limit",
     "reqLeft": "req left"
-  },
-  "donation": {
-    "donateBtn": "Donate via Razorpay",
-    "openingRazorpay": "Opening Razorpay...",
-    "thankYou": "Thank you for your donation! Payment ID:",
-    "enterValidAmount": "Please enter a valid donation amount.",
-    "amountPlaceholder": "Enter amount"
   },
   "footer": {
     "email": "Email: info@sathyasaipremakuterram.org",

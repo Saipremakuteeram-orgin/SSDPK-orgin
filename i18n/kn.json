@@ -39,6 +39,34 @@
     "pageTitle": "ಸದಸ್ಯ ಪೋರ್ಟಲ್",
     "pageSubtitle": "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಸದಸ್ಯತ್ವಕ್ಕೆ ಪ್ರವೇಶಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ."
   },
+  "seva": {
+    "title": "ಸೇವೆ",
+    "subtitle": "ಕೊಡುಗೆ \u00b7 ಭಾಗವಹಿಸುವಿಕೆ \u00b7 ಬೆಂಬಲ",
+    "tabOnce": "ಒಮ್ಮೆ ಸೇವೆ",
+    "tabQr": "QR ಸೇವೆ",
+    "tabAuto": "ಮಾಸಿಕ ಸೇವೆ",
+    "name": "ನಿಮ್ಮ ಹೆಸರು",
+    "email": "ಇಮೇಲ್",
+    "phone": "ಫೋನ್",
+    "tier101": "ಅನ್ನದಾನ",
+    "tier501": "ವೇದ ಬೆಂಬಲ",
+    "tier1101": "ಹೋಮವನ್ನು ಪ್ರಾಯೋಜಿಸಿ",
+    "customAmount": "ಕಸ್ಟಮ್ ಮೊತ್ತ",
+    "amountPlaceholder": "500",
+    "contributeBtn": "ಈಗ ಕೊಡುಗೆ ನೀಡಿ",
+    "choosePurpose": "ಒಂದು ಉದ್ದೇಶವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ",
+    "purposeAnnadana": "ಅನ್ನದಾನ",
+    "purposeHomam": "ಹೋಮವನ್ನು ಪ್ರಾಯೋಜಿಸಿ",
+    "purposeVeda": "ವೇದ ಬೆಂಬಲ",
+    "purposeGrocery": "ಕಿರಾಣಿ ಸಹಾಯ",
+    "amount": "ಮೊತ್ತ",
+    "generateQr": "QR ರಚಿಸಿ",
+    "shareWhatsapp": "WhatsApp ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಿ",
+    "monthlyAmount": "ಮಾಸಿಕ ಮೊತ್ತ",
+    "autopayNote": "UPI ಆಟೋಪೇ ಅಥವಾ ಕಾರ್ಡ್ ಮೂಲಕ ಒಂದು-ಕ್ಲಿಕ್ ಮಾಸಿಕ ಆದೇಶವನ್ನು ಹೊಂದಿಸಿ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ರದ್ದುಗೊಳಿಸಬಹುದು.",
+    "setupAutopay": "ಮಾಸಿಕ ಸೇವೆಯನ್ನು ಹೊಂದಿಸಿ",
+    "invalidAmount": "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ."
+  },
   "login": {
     "pageTitle": "ಸೈನ್ ಇನ್",
     "pageSubtitle": "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಸದಸ್ಯತ್ವಕ್ಕೆ ಪ್ರವೇಶಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ.",
@@ -77,13 +105,6 @@
     "offline": "ಆಫ್ಲೈನ್",
     "rateLimit": "ರೇಟ್ ಮರ್ಯಾದೆ",
     "reqLeft": "req ಎಡಲಿನ"
-  },
-  "donation": {
-    "donateBtn": "Razorpay ಮೂಲಕ ದಾನ ಮಾಡಿ",
-    "openingRazorpay": "Razorpay ತೆರುವುತ್ತಿದೆ...",
-    "thankYou": "ನಿಮ್ಮ ದಾನಕ್ಕೆ ಧನ್ಯವಾದಗಳು!",
-    "enterValidAmount": "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ದಾನ ಪ್ರಮಾಣವನ್ನು ನಮೋದು ಮಾಡಿ.",
-    "amountPlaceholder": "ಪ್ರಮಾಣವನ್ನು ನಮೋದು ಮಾಡಿ"
   },
   "footer": {
     "email": "ಇಮೇಲ್: info@sathyasaipremakuterram.org",
