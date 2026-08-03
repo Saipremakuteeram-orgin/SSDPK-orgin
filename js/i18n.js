@@ -124,6 +124,7 @@
         display: flex;
         align-items: center;
         margin-left: auto;
+        order: 10;
         z-index: 1000;
         background: var(--surface);
         border: 1px solid var(--border);
@@ -166,6 +167,7 @@
       }
       @media (max-width: 768px) {
         .language-switcher {
+          order: 10;
           margin-left: 0;
           margin-top: 8px;
           width: 100%;
