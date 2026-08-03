@@ -1,39 +1,39 @@
 {
   "nav": {
-    "home": "Home",
-    "about": "Activities",
-    "trustees": "Trustees",
-    "gallery": "Gallery",
-    "events": "Events",
-    "dashboard": "Dashboard",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "home": "ఇంగ్లు",
+    "about": "చర్యలు",
+    "trustees": "నమ్మదికర్తలు",
+    "gallery": "గ్యాలరీ",
+    "events": "సంఘటనలు",
+    "dashboard": "డాష్‌బోర్డ్",
+    "signIn": "సైన్ ఇన్",
+    "signUp": "సైన్ అప్",
+    "signOut": "సైన్ ఆఉట్"
   },
   "home": {
-    "heroTitle": "Sathya Sai Prema Kuterram",
-    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
-    "learnMore": "Learn More",
-    "supportMission": "Support Our Mission"
+    "heroTitle": "సాత్య సాంఈ ప్రేమా కుటీరం",
+    "heroSubtitle": "అలౌకిక సేవ, ప్రపంచ ప్రేమ, మరియు శ్రీ సాత్య సాంఈ బాబా ఉపదేశాల గురించి ఒక ఆధ్యాత్మిక సంఘం.",
+    "learnMore": "మరింత తెలుసుకోండి",
+    "supportMission": "మా సమిశ్రానికి మద్దతు"
   },
   "about": {
-    "pageTitle": "Our Activities",
-    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
-    "spiritualActivities": "Spiritual Activities",
-    "sevaActivities": "Seva (Service) Activities",
-    "education": "Education & Awareness",
-    "publications": "Publications & Communications",
-    "ourImpact": "Our Impact"
+    "pageTitle": "మా చర్యలు",
+    "pageSubtitle": "ఆధ్యాత్మిక భక్తి, అలౌకిక సేవ, విద్య, మరియు సముదాయ సేవ.",
+    "spiritualActivities": "ఆధ్యాత్మిక చర్యలు",
+    "sevaActivities": "సేవా (సేవ) చర్యలు",
+    "education": "విద్య మరియు జ్ఞానం",
+    "publications": "ప్రచురణలు మరియు సంవాదాలు",
+    "ourImpact": "మా ప్రభావం"
   },
   "events": {
-    "pageTitle": "Events",
-    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
-    "prevMonth": "Prev",
-    "nextMonth": "Next"
+    "pageTitle": "సంఘటనలు",
+    "pageSubtitle": "రాబోయే భజనాలు, జరుపుకుందాలు, మరియు సముదాయ కార్యక్రమాలు.",
+    "prevMonth": "మునుపటి",
+    "nextMonth": "తదుపరి"
   },
   "gallery": {
-    "pageTitle": "Gallery",
-    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
+    "pageTitle": "గ్యాలరీ",
+    "pageSubtitle": "భక్తి, సేవ మరియు సముదాయ క్షణాలు."
   },
   "dashboard": {
     "pageTitle": "Member Portal",

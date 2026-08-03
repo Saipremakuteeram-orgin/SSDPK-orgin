@@ -52,7 +52,7 @@
     if (translationCache[lang]) {
       return translationCache[lang];
     }
-    const response = await fetch('/i18n/' + lang + '.json');
+      const response = await fetch('i18n/' + lang + '.json');
     if (!response.ok) {
       if (lang !== DEFAULT_LANG) {
         console.warn('Failed to load ' + lang + '.json, falling back to English');

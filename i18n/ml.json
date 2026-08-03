@@ -1,39 +1,39 @@
 {
   "nav": {
-    "home": "Home",
-    "about": "Activities",
-    "trustees": "Trustees",
-    "gallery": "Gallery",
-    "events": "Events",
-    "dashboard": "Dashboard",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "home": "മറയിൽ",
+    "about": "പ്രവർത്തനങ്ങൾ",
+    "trustees": "സമ്മതി",
+    "gallery": "ഗ്യാലറി",
+    "events": "�മ്പന്നങ്ങൾ",
+    "dashboard": "ഡാഷ്ബോർഡ്",
+    "signIn": "സൈൻ ഇൻ",
+    "signUp": "സൈൻ അപ്പ്",
+    "signOut": "സൈൻ ഔട്ട്"
   },
   "home": {
-    "heroTitle": "Sathya Sai Prema Kuterram",
-    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
-    "learnMore": "Learn More",
-    "supportMission": "Support Our Mission"
+    "heroTitle": "സാത്യ സാഈ പ്രേമാ കുടീരം",
+    "heroSubtitle": "ആത്മാർപ്പണ സേവ, സാർവ്വത്രിക സ്നേഹം, മറ്റു ശ്രീ സാത്യ സാഈ ബാബയുടെ ശിക്ഷണങ്ങൾക്കുള്ള ഒരു ആധ്യാത്മിക സമിതി.",
+    "learnMore": "കൂടുതൽ അറിയാൻ",
+    "supportMission": "നമ്മുടെ സമിശ്രത്തിന് പിന്തുണ"
   },
   "about": {
-    "pageTitle": "Our Activities",
-    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
-    "spiritualActivities": "Spiritual Activities",
-    "sevaActivities": "Seva (Service) Activities",
-    "education": "Education & Awareness",
-    "publications": "Publications & Communications",
-    "ourImpact": "Our Impact"
+    "pageTitle": "നമ്മുടെ പ്രവർത്തനങ്ങൾ",
+    "pageSubtitle": "ആധ്യാത്മിക ഭക്തി, ആത്മാർപ്പണ സേവ, വിദ്യാർത്ഥി, മറ്റു സമൂഹ സേവ.",
+    "spiritualActivities": "ആധ്യാത്മിക പ്രവർത്തനങ്ങൾ",
+    "sevaActivities": "സേവ (സേവ) പ്രവർത്തനങ്ങൾ",
+    "education": "വിദ്യാർത്ഥി മറ്റു ജ്ഞാനം",
+    "publications": "പ്രസിദ്ധീകരണങ്ങൾ മറ്റു ആശംസകൾ",
+    "ourImpact": "നമ്മുടെ സ്വാധീനം"
   },
   "events": {
-    "pageTitle": "Events",
-    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
-    "prevMonth": "Prev",
-    "nextMonth": "Next"
+    "pageTitle": "സമ്പന്നങ്ങൾ",
+    "pageSubtitle": "അടുത്ത ഭജനങ്ങൾ, ആഘോഷങ്ങൾ, മറ്റു സമൂഹ പരമ്പരാഗതങ്ങൾ.",
+    "prevMonth": "മുൻപത്തെ",
+    "nextMonth": "അടുത്ത"
   },
   "gallery": {
-    "pageTitle": "Gallery",
-    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
+    "pageTitle": "ഗ്യാലറി",
+    "pageSubtitle": "ഭക്തി, സേവ, മറ്റു സമൂഹ സമയങ്ങൾ."
   },
   "dashboard": {
     "pageTitle": "Member Portal",

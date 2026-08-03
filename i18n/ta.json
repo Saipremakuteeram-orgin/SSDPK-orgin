@@ -1,99 +1,60 @@
 {
   "nav": {
-    "home": "Home",
-    "about": "Activities",
-    "trustees": "Trustees",
-    "gallery": "Gallery",
-    "events": "Events",
-    "dashboard": "Dashboard",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "home": "முகப்பு",
+    "about": "செயல்முறைகள்",
+    "trustees": "அமைச்சகங்கள்",
+    "gallery": "திரட்டங்கள்",
+    "events": "நிகழ்ச்சிகள்",
+    "dashboard": "டாஷ்போர்டு",
+    "signIn": "உள்நுழைய",
+    "signUp": "பதிவு",
+    "signOut": "தொடர்பு"
   },
   "home": {
-    "heroTitle": "Sathya Sai Prema Kuterram",
-    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
-    "learnMore": "Learn More",
-    "supportMission": "Support Our Mission"
+    "heroTitle": "சாத்ய சாய் பிரேமா குடீரம்",
+    "heroSubtitle": "பண்டித்துவம், பொது அன்பு, மற்றும் சிவரி சாத்ய சாய் பாபாவின் கோப்புக்களுக்கான ஒரு ஆன்மீக அமைப்பு.",
+    "learnMore": "மேலும் தெரிந்துகொள்ளுங்கள்",
+    "supportMission": "எங்கள் நிகழ்ச்சிக்கு ஆதரவாகுங்கள்"
   },
   "about": {
-    "pageTitle": "Our Activities",
-    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
-    "spiritualActivities": "Spiritual Activities",
-    "sevaActivities": "Seva (Service) Activities",
-    "education": "Education & Awareness",
-    "publications": "Publications & Communications",
-    "ourImpact": "Our Impact"
+    "pageTitle": "எங்கள் செயல்முறைகள்",
+    "pageSubtitle": "ஆன்மீக அனிமை, பண்டித்துவம், கல்வி, மற்றும் சமூக அணுகல்.",
+    "spiritualActivities": "ஆன்மீக செயல்முறைகள்",
+    "sevaActivities": "சேவா (சேவை) செயல்முறைகள்",
+    "education": "கல்வி & awareness",
+    "publications": "வெளிப்பாடுகள் & தொலைபேசி",
+    "ourImpact": "எங்கள் தாக்கம்"
   },
   "events": {
-    "pageTitle": "Events",
-    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
-    "prevMonth": "Prev",
-    "nextMonth": "Next"
+    "pageTitle": "நிகழ்ச்சிகள்",
+    "pageSubtitle": "வரவிருக்கும் பாடல்கள், கொண்டறைகள், மற்றும் சமூக திட்டங்கள்.",
+    "prevMonth": "முந்தைய",
+    "nextMonth": "அடுத்த"
   },
   "gallery": {
-    "pageTitle": "Gallery",
-    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
+    "pageTitle": "திரட்டங்கள்",
+    "pageSubtitle": "அனிமை, சேவை, மற்றும் சமூகம் ஆழ்ந்த நேரக் கவர்வு."
   },
   "dashboard": {
-    "pageTitle": "Member Portal",
-    "pageSubtitle": "Access your digital membership and manage your profile."
+    "pageTitle": "உறுப்பினர் வாசலாகம்",
+    "pageSubtitle": "உங்கள் எணிகிய உறுப்பினர் அணுகியுங்கள் மற்றும் உங்கள் சுயம் மாற்றவுங்கள்."
   },
   "login": {
-    "pageTitle": "Sign In",
-    "pageSubtitle": "Access your digital membership and manage your profile.",
-    "welcomeBack": "Welcome Back",
-    "signInPrompt": "Sign in with your registered phone number or email.",
-    "forgotPassword": "Forgot password?",
-    "newMember": "New to the trust?",
-    "registerHere": "Register here",
-    "phoneEmail": "Phone Number or Email",
-    "password": "Password",
-    "loginBtn": "Login"
+    "pageTitle": "உள்நுழைய",
+    "pageSubtitle": "உங்கள் எணிகிய உறுப்பினர் அணுகியுங்கள் மற்றும் உங்கள் சுயம் மாற்றவுங்கள்.",
+    "welcomeBack": "திருப்தி",
+    "signInPrompt": "உங்கள் பதிவு பதிவுக்கு அல்லது மின்னஞ்சலை உபயோகித்து உள்நுழைய.",
+    "forgotPassword": "கடப்பாட்டு மறைப்பு?",
+    "newMember": "புதிய உறுப்பினர்?",
+    "registerHere": "இங்கே பதிவு",
+    "phoneEmail": "தொலைபேசி எண் அல்லது மின்னஞ்சல்",
+    "password": "கடப்பாடு",
+    "loginBtn": "உள்நுழைய"
   },
   "signup": {
-    "pageTitle": "Trust Registration",
-    "pageSubtitle": "Become a member of the Sathya Sai family.",
-    "registerTitle": "Register",
-    "registerPrompt": "Create your member profile to join the trust activities.",
-    "alreadyRegistered": "Already registered?",
-    "signIn": "Sign in",
-    "registerBtn": "Register"
-  },
-  "resetPassword": {
-    "pageTitle": "Set New Password",
-    "resetTitle": "Reset Password",
-    "resetSubtitle": "Enter and confirm your new password below."
-  },
-  "trustees": {
-    "pageTitle": "Board of Trustees",
-    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
-  },
-  "chatbot": {
-    "welcome": "Hello! How can I help you today?",
-    "placeholder": "Type your message...",
-    "send": "Send",
-    "usageLimit": "Usage limit reached. Resets tomorrow.",
-    "offline": "Offline",
-    "rateLimit": "Rate limit",
-    "reqLeft": "req left"
-  },
-  "donation": {
-    "donateBtn": "Donate via Razorpay",
-    "openingRazorpay": "Opening Razorpay...",
-    "thankYou": "Thank you for your donation! Payment ID:",
-    "enterValidAmount": "Please enter a valid donation amount.",
-    "amountPlaceholder": "Enter amount"
-  },
-  "footer": {
-    "email": "Email: info@sathyasaipremakuterram.org",
-    "phone": "Phone: +91-XXXXXXXXXX",
-    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
-  },
-  "translate": {
-    "label": "Translate to Tamil",
-    "placeholder": "Enter text to translate...",
-    "button": "Translate",
-    "translating": "Translating..."
+    "pageTitle": "அமைப்பு பதிவு",
+    "pageSubtitle": "சாத்ய சாய் குடும்பத்தின் உறுப்பினராக வாழ்ந்துகொள்ளுங்கள்.",
+    "registerTitle": "பதிவு",
+    "registerPrompt": "இணக்கம் கொள்ள ஒரு உறுப்பினர் வடிவமைவு உருவாக்குங்கள்"
   }
 }

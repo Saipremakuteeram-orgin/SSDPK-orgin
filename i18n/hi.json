@@ -1,61 +1,61 @@
 {
   "nav": {
-    "home": "Home",
-    "about": "Activities",
-    "trustees": "Trustees",
-    "gallery": "Gallery",
-    "events": "Events",
-    "dashboard": "Dashboard",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "home": "होम",
+    "about": "गतिविधियाँ",
+    "trustees": "विश्वसनीय",
+    "gallery": "गैलरी",
+    "events": "आयोजन",
+    "dashboard": "डैशबोर्ड",
+    "signIn": "साइन इन",
+    "signUp": "साइन अप",
+    "signOut": "साइन आउट"
   },
   "home": {
-    "heroTitle": "Sathya Sai Prema Kuterram",
-    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
-    "learnMore": "Learn More",
-    "supportMission": "Support Our Mission"
+    "heroTitle": "साथ्य साई प्रेमा कुटीरम",
+    "heroSubtitle": "आत्मless सेवा, universal प्रेम, और साथिया साई बाबा की शिक्षाओं के लिए एक आध्यात्मिक विश्वास।",
+    "learnMore": "और जानें",
+    "supportMission": "हमीं मिशन के समर्थन"
   },
   "about": {
-    "pageTitle": "Our Activities",
-    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
-    "spiritualActivities": "Spiritual Activities",
-    "sevaActivities": "Seva (Service) Activities",
-    "education": "Education & Awareness",
-    "publications": "Publications & Communications",
-    "ourImpact": "Our Impact"
+    "pageTitle": "हमारी गतिविधियाँ",
+    "pageSubtitle": "आध्यात्मिक भक्ति, आत्मless सेवा, शिक्षा, और समुदायिक सेवा।",
+    "spiritualActivities": "आध्यात्मिक गतिविधियाँ",
+    "sevaActivities": "सेवा (सेवा) गतिविधियाँ",
+    "education": "शिक्षा व ज्ञान",
+    "publications": "प्रकाशन व संचार",
+    "ourImpact": "हमारा प्रभाव"
   },
   "events": {
-    "pageTitle": "Events",
-    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
-    "prevMonth": "Prev",
-    "nextMonth": "Next"
+    "pageTitle": "आयोजन",
+    "pageSubtitle": "आगामी भजन, उत्सवों और समुदायिक कार्यक्रम।",
+    "prevMonth": "पिछला",
+    "nextMonth": "अगला"
   },
   "gallery": {
-    "pageTitle": "Gallery",
-    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
+    "pageTitle": "गैलरी",
+    "pageSubtitle": "भक्ति, सेवा और समुदाय के पल।"
   },
   "dashboard": {
-    "pageTitle": "Member Portal",
-    "pageSubtitle": "Access your digital membership and manage your profile."
+    "pageTitle": "सदस्य पोर्टल",
+    "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुंचें और अपने प्रोफ़ाइल को प्रबंधित करें।"
   },
   "login": {
-    "pageTitle": "Sign In",
-    "pageSubtitle": "Access your digital membership and manage your profile.",
-    "welcomeBack": "Welcome Back",
-    "signInPrompt": "Sign in with your registered phone number or email.",
-    "forgotPassword": "Forgot password?",
-    "newMember": "New to the trust?",
-    "registerHere": "Register here",
-    "phoneEmail": "Phone Number or Email",
-    "password": "Password",
-    "loginBtn": "Login"
+    "pageTitle": "साइन इन",
+    "pageSubtitle": "अपनी डिजिटल सदस्यता तक पहुंचें और अपने प्रोफ़ाइल को प्रबंधित करें।",
+    "welcomeBack": "वापसी पर स्वागत है",
+    "signInPrompt": "अपनी पंजीकृत फोन नंबर या ईमेल के साथ साइन इन करें।",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "newMember": "नए सदस्य?",
+    "registerHere": "यहाँ पंजीकृत करें",
+    "phoneEmail": "फ़ोन नंबर या ईमेल",
+    "password": "पासवर्ड",
+    "loginBtn": "लॉगिन"
   },
   "signup": {
-    "pageTitle": "Trust Registration",
-    "pageSubtitle": "Become a member of the Sathya Sai family.",
-    "registerTitle": "Register",
-    "registerPrompt": "Create your member profile to join the trust activities.",
+    "pageTitle": "विश्वास पंजीकरण",
+    "pageSubtitle": "साथ्य साई परिवार का सदस्य बनें।",
+    "registerTitle": "पंजीकृत करें",
+    "registerPrompt": "एक सदस्य प्रोफ़ाइल बनाकर जुड़ें",
     "alreadyRegistered": "Already registered?",
     "signIn": "Sign in",
     "registerBtn": "Register"

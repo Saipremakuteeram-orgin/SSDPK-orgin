@@ -1,39 +1,39 @@
 {
   "nav": {
-    "home": "Home",
-    "about": "Activities",
-    "trustees": "Trustees",
-    "gallery": "Gallery",
-    "events": "Events",
-    "dashboard": "Dashboard",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "home": "ಮುಂದಿನ",
+    "about": "ಸಕ್ರಿಯತೆಗಳು",
+    "trustees": "ನಂಬಾರು",
+    "gallery": "ಗ್ಯಾಲರಿ",
+    "events": "ಸಂಘಟನೆಗಳು",
+    "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "signIn": "ಸೈನ್ ಇನ್",
+    "signUp": "ಸೈನ್ ಅಪ್",
+    "signOut": "ಸೈನ್ ಔಟ್"
   },
   "home": {
-    "heroTitle": "Sathya Sai Prema Kuterram",
-    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
-    "learnMore": "Learn More",
-    "supportMission": "Support Our Mission"
+    "heroTitle": "ಸಾತ್ಯ ಸಾಈ ಪ್ರೇಮಾ ಕುಟೀರ್",
+    "heroSubtitle": "ಅನಿವೇಶೀಯ ಸೇವೆ, ಸಾರ್ವತ್ರಿಕ ಪ್ರೀತಿ, ಮತ್ತು ಶ್ರೀ ಸಾತ್ಯ ಸಾಈ ಬಾಬಾದ ಬೋಧಗಳ ಒಂದು ಆಧ್ಯಾತ್ಮಿಕ ನಂಬಿಕೆ.",
+    "learnMore": "ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ",
+    "supportMission": "ನಮ್ಮ ಸಂದೇಶಕ್ಕೆ ಬೆಂಬಲಿಸಿ"
   },
   "about": {
-    "pageTitle": "Our Activities",
-    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
-    "spiritualActivities": "Spiritual Activities",
-    "sevaActivities": "Seva (Service) Activities",
-    "education": "Education & Awareness",
-    "publications": "Publications & Communications",
-    "ourImpact": "Our Impact"
+    "pageTitle": "ನಮ್ಮ ಸಕ್ರಿಯತೆಗಳು",
+    "pageSubtitle": "ಆಧ್ಯಾತ್ಮಿಕ ಭಕ್ತಿ, ಅನಿವೇಶೀಯ ಸೇವೆ, ಓದಿಮೆ, ಮತ್ತು ಸಮುದಾಯ ಸೇವೆ.",
+    "spiritualActivities": "ಆಧ್ಯಾತ್ಮಿಕ ಸಕ್ರಿಯತೆಗಳು",
+    "sevaActivities": "ಸೇವಾ (ಸೇವೆ) ಸಕ್ರಿಯತೆಗಳು",
+    "education": "ಓದಿಮೆ ಮತ್ತು ಅವರೋಧನೆ",
+    "publications": "ಪ್ರಕಾಶನಗಳು ಮತ್ತು ಸಂವಾದಗಳು",
+    "ourImpact": "ನಮ್ಮ ಪ್ರಭಾವ"
   },
   "events": {
-    "pageTitle": "Events",
-    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
-    "prevMonth": "Prev",
-    "nextMonth": "Next"
+    "pageTitle": "ಸಂಘಟನೆಗಳು",
+    "pageSubtitle": "ಮುಂದಿನ ಭಜನಗಳು, ಜನಹೋದಮೆಯುಗಳು, ಮತ್ತು ಸಮುದಾಯ ಕಾರ್ಯಕ್ರಮಗಳು.",
+    "prevMonth": "ಮುನ್ನೆ",
+    "nextMonth": "ಮುಂದೆ"
   },
   "gallery": {
-    "pageTitle": "Gallery",
-    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
+    "pageTitle": "ಗ್ಯಾಲರಿ",
+    "pageSubtitle": "ಭಕ್ತಿ, ಸೇವೆ, ಮತ್ತು ಸಮುದಾಯದ ಕ್ಷಣಗಳು."
   },
   "dashboard": {
     "pageTitle": "Member Portal",
