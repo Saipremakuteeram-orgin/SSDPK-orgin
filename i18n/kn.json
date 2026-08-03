@@ -1,85 +1,99 @@
 {
   "nav": {
-    "home": "ಮುಖಪುಟ",
-    "about": "ಚಟುವಟಿಕೆಗಳು",
-    "trustees": "ಟ್ರಸ್ಟಿಗಳು",
-    "gallery": "ಗ್ಯಾಲರಿ",
-    "events": "ಘಟನೆಗಳು",
-    "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
-    "signIn": "ಸೈನ್ ಇನ್",
-    "signUp": "ಸೈನ್ ಅಪ್",
-    "signOut": "ಸೈನ್ ಔಟ್"
+    "home": "Home",
+    "about": "Activities",
+    "trustees": "Trustees",
+    "gallery": "Gallery",
+    "events": "Events",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
   },
   "home": {
-    "heroTitle": "ಸ್ಥ್ಯಾ ಸಾಯ್ ಪ್ರೇಮ ಕುಟ್ಟೆರಂ",
-    "heroSubtitle": "ಒಂದು ಆಧ್ಯಾತ್ಮಿಕ ಟ್ರಸ್ಟ್, ಸ್ವಯಂಸೇವನೆ, ಸಾರ್ವತ್ರಿಕ ಪ್ರೀತಿ ಮತ್ತು ಸ್ಥ್ಯಾ ಸಾಯ್ ಬಾಬಾರ ಬೋಧನೆಗಳಿಗೆ ಸೇರಿರಿದೆ.",
-    "learnMore": "ಇನ್ನೊಂದಿ ಓಲಿಸಿರಿ",
-    "supportMission": "ನಮ್ಮ ಮಿಷನ್ ಗೆ ಬೆಂಬಲ"
+    "heroTitle": "Sathya Sai Prema Kuterram",
+    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
+    "learnMore": "Learn More",
+    "supportMission": "Support Our Mission"
   },
   "about": {
-    "pageTitle": "ನಮ್ಮ ಚಟುವಟಿಕೆಗಳು",
-    "pageSubtitle": "ಆಧ್ಯಾತ್ಮಿಕ ಭಕ್ತಿ, ನಿಸ್ವಾರ್ಥ ಸೇವೆ, ಶಿಕ್ಷಣ ಮತ್ತು ಸಮುದಾಯ ವ್ಯಾಪ್ತಿ."
+    "pageTitle": "Our Activities",
+    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
+    "spiritualActivities": "Spiritual Activities",
+    "sevaActivities": "Seva (Service) Activities",
+    "education": "Education & Awareness",
+    "publications": "Publications & Communications",
+    "ourImpact": "Our Impact"
   },
   "events": {
-    "pageTitle": "ಘಟನೆಗಳು",
-    "pageSubtitle": "ಭಜನಗಳು, ಆಚರಣೆಗಳು ಮತ್ತು ಸಮುದಾಯ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ನಡೆಯುತ್ತದೆ."
+    "pageTitle": "Events",
+    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
+    "prevMonth": "Prev",
+    "nextMonth": "Next"
   },
   "gallery": {
-    "pageTitle": "ಗ್ಯಾಲರಿ"
+    "pageTitle": "Gallery",
+    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
   },
   "dashboard": {
-    "pageTitle": "ಸದಸ್ಯ ಪೋರ್ಟಲ್",
-    "pageSubtitle": "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಸದಸ್ಯತ್ವವನ್ನು ಪ್ರವೇಶಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ನಿರ್ವಹಿಸಿಕೊಳ್ಳಿ."
+    "pageTitle": "Member Portal",
+    "pageSubtitle": "Access your digital membership and manage your profile."
   },
   "login": {
-    "pageTitle": "ಸೈನ್ ಇನ್",
-    "pageSubtitle": "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಸದಸ್ಯತ್ವವನ್ನು ಪ್ರವೇಶಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ನಿರ್ವಹಿಸಿಕೊಳ್ಳಿ.",
-    "welcomeBack": "ಮುಂದಿನಿಂದೇ ಸ್ವಾಗತಂ",
-    "signInPrompt": "ನಿಮ್ಮ ನೋಂದಾಯಿಸ್ ಫೋನ್ ಸಂಖ್ಯೆ ಅಥವಾ ಇಮೇಲ್ ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಮಾಡಿ.",
-    "forgotPassword": "ಪಾಸ್ವರ್ಡ್ ಮರೆದು ಹೋಗಿದೆಯೇ?",
-    "newMember": "ಟ್ರಸ್ಟ್‌ನಲ್ಲಿ ಹೊಸದಾಗಿರಾ?",
-    "registerHere": "ಇಲ್ಲಿ ನೋಂದಾಯಿಸ್ ಪಡೆಯೇನು"
+    "pageTitle": "Sign In",
+    "pageSubtitle": "Access your digital membership and manage your profile.",
+    "welcomeBack": "Welcome Back",
+    "signInPrompt": "Sign in with your registered phone number or email.",
+    "forgotPassword": "Forgot password?",
+    "newMember": "New to the trust?",
+    "registerHere": "Register here",
+    "phoneEmail": "Phone Number or Email",
+    "password": "Password",
+    "loginBtn": "Login"
   },
   "signup": {
-    "pageTitle": "ಟ್ರಸ್ಟ್ ನೋಂದಾಯಿಸ್",
-    "pageSubtitle": "ಸ್ಥ್ಯಾ ಸಾಯ್ ಕುಟುಂಬರ್‌ನಲ್ಲಿ ಭಾಗವಾಗಲು.",
-    "registerTitle": "ನೋಂದಾಯಿಸ್ ಮಾಡಿಕೊಳ್ಳಿ",
-    "registerPrompt": "ನಿಮ್ಮ ಸದಸ್ಯ ಪ್ರೊಫೈಲ್ ನಿರ್ಮಿಸಿ ಮತ್ತು ಟ್ರಸ್ಟ್‌ನ ಚಟುವಟಿಕೆಗಳಲ್ಲಿ ಭಾಗವಾಗಲು.",
-    "alreadyRegistered": "ಈಗಾಗಲೇ ನೋಂದಾಯಿಸ್ ಮಾಡಿಕೊಂಡಿದೆಯೇ?",
-    "signIn": "ಸೈನ್ ಇನ್ ಮಾಡಿಕೊಂಡಿದೆಯೇ?"
+    "pageTitle": "Trust Registration",
+    "pageSubtitle": "Become a member of the Sathya Sai family.",
+    "registerTitle": "Register",
+    "registerPrompt": "Create your member profile to join the trust activities.",
+    "alreadyRegistered": "Already registered?",
+    "signIn": "Sign in",
+    "registerBtn": "Register"
   },
   "resetPassword": {
-    "pageTitle": "ಹೊಸ ಪಾಸ್ವರ್ಡ್‌ ಸೆಟ್ ಮಾಡಿಕೊಂಡಿದೆಯೇ",
-    "resetTitle": "ಪಾಸ್ವರ್ಡ್ ರಿಸೆಟ್ ಮಾಡಿಕೊಂಡಿದೆಯೇ"
+    "pageTitle": "Set New Password",
+    "resetTitle": "Reset Password",
+    "resetSubtitle": "Enter and confirm your new password below."
   },
   "trustees": {
-    "pageTitle": "ಬೋರ್ಡ್ ಆಫ್ ಟ್ರಸ್ಟೀಸ್"
+    "pageTitle": "Board of Trustees",
+    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
   },
   "chatbot": {
-    "welcome": "ಸ್ವಾಗತ! ನಾನಕಿ ಹೇಗೆ ಸಹಾಯ ಮಾಡುತ್ತೇನೆ?",
-    "placeholder": "ನಿಮ್ಮ ಸಂದೇಶ ಬರೆಯಿರಿ...",
-    "send": "ಕಳುಹಿಸಿ",
-    "usageLimit": "ಬಳಕೆ ಮಿತಿ ತುಂದಿಹಾಗಿದೆ. ನಾಳೆಯಿಂದಿನಿ ರಿಸೆಟ್ ಅಡಾಯ.",
-    "offline": "ಆಫ್‌ಲೈನ್",
-    "rateLimit": "ರೇಟ್ ಮಿತಿ",
-    "reqLeft": "ಉಳಿದ ಮಿತಿ"
+    "welcome": "Hello! How can I help you today?",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "usageLimit": "Usage limit reached. Resets tomorrow.",
+    "offline": "Offline",
+    "rateLimit": "Rate limit",
+    "reqLeft": "req left"
   },
   "donation": {
-    "donateBtn": "ರೇಜೆಪೇಯ್ ಮೂಲೆ ದಾನ ಮಾಡಿಕೊಂಡಿದೆಯೇ",
-    "openingRazorpay": "ರೇಜೆಪೇಯ್ ಮೂಲೆ ತೆರೆಯಲೆಂದಿರಿದೆಯೇ...",
-    "thankYou": "ನಿಮ್ಮ ದಾನಕ್ಕಾ ಹೇಗೆ ಮಾಡಿಕೊಂಡಿದೆಯೆಂದು ಪೇಯ್ ಮೆಂಟ್ ಐಡಿ:",
-    "enterValidAmount": "ದಾನ ಅಡಾಯವನ್ನು ನಿಮ್ಮ ಬೇಡಿಸಿಕೊಂಡಿರಾ.",
-    "amountPlaceholder": "ಅಡಾಯವನ್ನು ಪಡೆಯಲೆಂದು"
+    "donateBtn": "Donate via Razorpay",
+    "openingRazorpay": "Opening Razorpay...",
+    "thankYou": "Thank you for your donation! Payment ID:",
+    "enterValidAmount": "Please enter a valid donation amount.",
+    "amountPlaceholder": "Enter amount"
   },
   "footer": {
-    "email": "ಇಮೇಲ್: info@sathyasaipremakuterram.org",
-    "phone": "ಫೋನ್: +91-XXXXXXXXXX",
-    "copyright": "ಸ್ವಾಮ್ಯಂ ಸ್ವಾಮ್ಯಂ ಸ್ಥ್ಯಾ ಸಾಯ್ ಪ್ರೇಮಾ ಕುಟೇರಂ ಪಬ್ಲಿಕ್ ಟ್ರಸ್ಟ್‌ಗಳಿಗೆ."
+    "email": "Email: info@sathyasaipremakuterram.org",
+    "phone": "Phone: +91-XXXXXXXXXX",
+    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
   },
   "translate": {
-    "label": "ಕನ್ನಡಕ್ಕೆ ಭಾಷಾಂತರಿಸುವಲ್ಲ",
-    "placeholder": "ಭಾಷಾಂತರಿಸಲು ಬೇಕೆಯ ಪಠ್ಯವನ್ನು ನಮೋದು ಮಾಡಿಕೊಂಡಿರಿ...",
-    "button": "ಭಾಷಾಂತರಿಸು",
-    "translating": "ಭಾಷಾಂತರಿಸುವಲ್ಲ..."
+    "label": "Translate to Tamil",
+    "placeholder": "Enter text to translate...",
+    "button": "Translate",
+    "translating": "Translating..."
   }
-}}
+}

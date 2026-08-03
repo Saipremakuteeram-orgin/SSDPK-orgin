@@ -18,14 +18,22 @@
   },
   "about": {
     "pageTitle": "Our Activities",
-    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach."
+    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
+    "spiritualActivities": "Spiritual Activities",
+    "sevaActivities": "Seva (Service) Activities",
+    "education": "Education & Awareness",
+    "publications": "Publications & Communications",
+    "ourImpact": "Our Impact"
   },
   "events": {
     "pageTitle": "Events",
-    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs."
+    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
+    "prevMonth": "Prev",
+    "nextMonth": "Next"
   },
   "gallery": {
-    "pageTitle": "Gallery"
+    "pageTitle": "Gallery",
+    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
   },
   "dashboard": {
     "pageTitle": "Member Portal",
@@ -38,7 +46,10 @@
     "signInPrompt": "Sign in with your registered phone number or email.",
     "forgotPassword": "Forgot password?",
     "newMember": "New to the trust?",
-    "registerHere": "Register here"
+    "registerHere": "Register here",
+    "phoneEmail": "Phone Number or Email",
+    "password": "Password",
+    "loginBtn": "Login"
   },
   "signup": {
     "pageTitle": "Trust Registration",
@@ -46,14 +57,17 @@
     "registerTitle": "Register",
     "registerPrompt": "Create your member profile to join the trust activities.",
     "alreadyRegistered": "Already registered?",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "registerBtn": "Register"
   },
   "resetPassword": {
     "pageTitle": "Set New Password",
-    "resetTitle": "Reset Password"
+    "resetTitle": "Reset Password",
+    "resetSubtitle": "Enter and confirm your new password below."
   },
   "trustees": {
-    "pageTitle": "Board of Trustees"
+    "pageTitle": "Board of Trustees",
+    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
   },
   "chatbot": {
     "welcome": "Hello! How can I help you today?",

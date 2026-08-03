@@ -1,80 +1,99 @@
 {
   "nav": {
-    "home": "முகப்பு",
-    "about": "செயல்கள்",
-    "trustees": "அறங்காவலர்கள்",
-    "gallery": "கேலரி",
-    "events": "நிகழ்ச்சிகள்",
-    "dashboard": "டாஷ்போர்ட்",
-    "signIn": "உள்நுழை",
-    "signUp": "பதிவுசெய்",
-    "signOut": "வெளியேறுக"
+    "home": "Home",
+    "about": "Activities",
+    "trustees": "Trustees",
+    "gallery": "Gallery",
+    "events": "Events",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
   },
   "home": {
-    "heroTitle": "ஸாத்யா சாய் பிரேமா கூடெரம்",
-    "heroSubtitle": "ஸாத்யா சாய் பிரேமா ஒரு ஆன்மீக அறக்கட்டளை, சுயநலமற்ற சேவை, உலகளாவிய அன்பு மற்றும் ஸாத்யா சாய் பாபாவின் போதனைகளுக்கு அர்ப்பணிக்கப்பட்டுள்ளது.",
-    "learnMore": "மேலும் அறிக",
-    "supportMission": "எங்கள் பணிக்கு ஆதரவளிக்கவும்"
+    "heroTitle": "Sathya Sai Prema Kuterram",
+    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
+    "learnMore": "Learn More",
+    "supportMission": "Support Our Mission"
   },
   "about": {
-    "pageTitle": "எங்கள் செயல்கள்",
-    "pageSubtitle": "ஆன்மீக ஆராதனை, சுயநலமற்ற சேவை, கல்வி மற்றும் சமூக வெளியீடு."
+    "pageTitle": "Our Activities",
+    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
+    "spiritualActivities": "Spiritual Activities",
+    "sevaActivities": "Seva (Service) Activities",
+    "education": "Education & Awareness",
+    "publications": "Publications & Communications",
+    "ourImpact": "Our Impact"
   },
   "events": {
-    "pageTitle": "நிகழ்ச்சிகள்",
-    "pageSubtitle": "வரவிருக்கும் பஜான்கள், கொண்டாட்டங்கள் மற்றும் சமூக நிகழ்ச்சிகள்."
+    "pageTitle": "Events",
+    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
+    "prevMonth": "Prev",
+    "nextMonth": "Next"
   },
   "gallery": {
-    "pageTitle": "கேலரி"
+    "pageTitle": "Gallery",
+    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
   },
   "dashboard": {
-    "pageTitle": "உறுப்பினர் போர்டல்",
-    "pageSubtitle": "உங்கள் டிஜிட்டல் உறுப்பினர் தகவலை அணுகவும் மற்றும் நிர்வகிக்கவும்."
+    "pageTitle": "Member Portal",
+    "pageSubtitle": "Access your digital membership and manage your profile."
   },
   "login": {
-    "pageTitle": "உள்நுழை",
-    "pageSubtitle": "உங்கள் டிஜிட்டல் உறுப்பினர் தகவலை அணுகவும் மற்றும் நிர்வகிக்கவும்.",
-    "welcomeBack": "மறுபடியும் வரவேற்கிறோம்",
-    "signInPrompt": "உங்கள் பதிவுசெய்த தொலைபேசி எண் அல்லது மின்னஞ்சல் மூலம் உள்நுழைக.",
-    "forgotPassword": "கடவுச்சொல்லை மறந்துவிட்டீர்களா?",
-    "newMember": "புதிய உறுப்பினரா?",
-    "registerHere": "இங்கே பதிவுசெய்யவும்"
+    "pageTitle": "Sign In",
+    "pageSubtitle": "Access your digital membership and manage your profile.",
+    "welcomeBack": "Welcome Back",
+    "signInPrompt": "Sign in with your registered phone number or email.",
+    "forgotPassword": "Forgot password?",
+    "newMember": "New to the trust?",
+    "registerHere": "Register here",
+    "phoneEmail": "Phone Number or Email",
+    "password": "Password",
+    "loginBtn": "Login"
   },
   "signup": {
-    "pageTitle": "அறக்கட்டளை பதிவு",
-    "pageSubtitle": "ஸாத்யா சாய் குடும்பத்தில் ஒரு உறுப்பினராகிறீர்கள்.",
-    "registerTitle": "பதிவுசெய்",
-    "registerPrompt": "உறுப்பினர் பதிவைச் செய்யுங்கள் மற்றும் அறக்கட்டளை நடவடிக்கைகளில் கலந்துகொள்ளுங்கள்.",
-    "alreadyRegistered": "ஏற்கனவே பதிவுசெய்துள்ளீர்களா?",
-    "signIn": "உள்நுழை"
+    "pageTitle": "Trust Registration",
+    "pageSubtitle": "Become a member of the Sathya Sai family.",
+    "registerTitle": "Register",
+    "registerPrompt": "Create your member profile to join the trust activities.",
+    "alreadyRegistered": "Already registered?",
+    "signIn": "Sign in",
+    "registerBtn": "Register"
   },
   "resetPassword": {
-    "pageTitle": "புதிய கடவுச்சொல்லை அமைக்கவும்",
-    "resetTitle": "கடவுச்சொல்லை மீட்டமை"
+    "pageTitle": "Set New Password",
+    "resetTitle": "Reset Password",
+    "resetSubtitle": "Enter and confirm your new password below."
   },
   "trustees": {
-    "pageTitle": "அறக்கட்டளை அறங்காவலர்கள்"
+    "pageTitle": "Board of Trustees",
+    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
   },
   "chatbot": {
-    "welcome": "வணக்கம்! நான் எப்படி உதவ முடியும்?",
-    "placeholder": "உங்கள் செய்தியை தட்டச்செய்க...")
+    "welcome": "Hello! How can I help you today?",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "usageLimit": "Usage limit reached. Resets tomorrow.",
+    "offline": "Offline",
+    "rateLimit": "Rate limit",
+    "reqLeft": "req left"
   },
   "donation": {
-    "donateBtn": "ரேச்பே常用ைச் செய்யுங்கள்",
-    "openingRazorpay": "ரேச்பே பயன்படுத்துகிறது...",
-    "thankYou": "உங்கள் நன்கொடைக்கு நன்றி! பேமெண்ட் ID:",
-    "enterValidAmount": "நன்கொடைக்கு செல்லக்கூடியத் தொகையை உள்ளிடவும்.",
-    "amountPlaceholder": "தொகையை உள்ளிடவும்"
+    "donateBtn": "Donate via Razorpay",
+    "openingRazorpay": "Opening Razorpay...",
+    "thankYou": "Thank you for your donation! Payment ID:",
+    "enterValidAmount": "Please enter a valid donation amount.",
+    "amountPlaceholder": "Enter amount"
   },
   "footer": {
-    "email": "மின்னஞ்சல்: info@sathyasaipremakuterram.org",
-    "phone": "தொலைபேசி: +91-XXXXXXXXXX",
-    "copyright": "அனைத்து உரிமைகளும் ஸாத்யா சாய் பிரேமா கூடெரம் பொது அறக்கட்டளையின் சொத்து."
+    "email": "Email: info@sathyasaipremakuterram.org",
+    "phone": "Phone: +91-XXXXXXXXXX",
+    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
   },
   "translate": {
-    "label": "தமிழுக்கு மொழிபெயர்க்கவும்",
-    "placeholder": "மொழிபெயர்க்க வேண்டிய உரையை உள்ளிடவும்...",
-    "button": "மொழிபெயர்க்கவும்",
-    "translating": "மொழிபெயர்க்கிறது..."
+    "label": "Translate to Tamil",
+    "placeholder": "Enter text to translate...",
+    "button": "Translate",
+    "translating": "Translating..."
   }
 }

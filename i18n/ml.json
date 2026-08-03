@@ -1,85 +1,99 @@
 {
   "nav": {
-    "home": "വീക്കൂട്ട്",
-    "about": "പ്രവർത്തികൾ",
-    "trustees": "ട്രസ്റ്റ്റ്റ",
-    "gallery": "ഗ്യാലരി",
-    "events": "ഇവെന്റുകൾ",
-    "dashboard": "ഡാശ്ബോർഡ്",
-    "signIn": "സൈൻ ഇൻ",
-    "signUp": "സൈൻ അപ്",
-    "signOut": "സൈൻ ഔട്ട്"
+    "home": "Home",
+    "about": "Activities",
+    "trustees": "Trustees",
+    "gallery": "Gallery",
+    "events": "Events",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
   },
   "home": {
-    "heroTitle": "സ്ഥ്യാ സൈ പ്രേമ കുട്ടെര്റം",
-    "heroSubtitle": "ഒരു ആധ്യാത്മിക ട്രസ്റ്റ്റ്റ്, സൌംഗാർജ്യം എല്ലാം, സേവനം എല്ലാം, സ്ഥ്യാ സൈ ബാബയുടെ പ്രേരണകൾ.",
-    "learnMore": "കൂടുതൽ അറിയുക",
-    "supportMission": "ഞങ്ങളുടെ ദൗത്യം പിന്തുണയ്ക്കുക"
+    "heroTitle": "Sathya Sai Prema Kuterram",
+    "heroSubtitle": "A spiritual trust dedicated to selfless service, universal love, and the teachings of Sri Sathya Sai Baba.",
+    "learnMore": "Learn More",
+    "supportMission": "Support Our Mission"
   },
   "about": {
-    "pageTitle": "ഞങ്ങളുടെ പ്രവർത്തികൾ",
-    "pageSubtitle": "ആധ്യാത്മിക പ്രാർഥന, സ്വേച്ഛാ സേവനം, വിദ്യാഭ്യാസം, സമൂഹ ഔട്ട്രീച്ച്."
+    "pageTitle": "Our Activities",
+    "pageSubtitle": "Spiritual devotion, selfless service, education, and community outreach.",
+    "spiritualActivities": "Spiritual Activities",
+    "sevaActivities": "Seva (Service) Activities",
+    "education": "Education & Awareness",
+    "publications": "Publications & Communications",
+    "ourImpact": "Our Impact"
   },
   "events": {
-    "pageTitle": "ഇവെന്റുകൾ",
-    "pageSubtitle": "ഭജനം, അത്തേതരം, പഠനചക്രം, കോളേജ് ബുക്കിംഗുകൾ."
+    "pageTitle": "Events",
+    "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",
+    "prevMonth": "Prev",
+    "nextMonth": "Next"
   },
   "gallery": {
-    "pageTitle": "ഗ്യാലരി"
+    "pageTitle": "Gallery",
+    "pageSubtitle": "Moments of devotion, service, and community — captured through the years."
   },
   "dashboard": {
-    "pageTitle": "അംഗദാരകക്കുള്ള വേദി",
-    "pageSubtitle": "നിന്ന ഡിജിറ്റ്റൻശ്യൻ അംഗദാരകക്ക് കണ്ടെത്തുക."
+    "pageTitle": "Member Portal",
+    "pageSubtitle": "Access your digital membership and manage your profile."
   },
   "login": {
-    "pageTitle": "സൈൻ ഇൻ",
-    "pageSubtitle": "നിന്ന ഡിജിറ്റ്റൻശ്യൻ അംഗദാരകക്ക് കണ്ടെത്തുക.",
-    "welcomeBack": "വീണ്ടും സ്വാഗതം",
-    "signInPrompt": "നിന്ന രജിസ്റ്റ്റംബർ ഫോണ് അല്ലെങ്കിൽ ഇമെയിൽ.",
-    "forgotPassword": "പാസ്വേഡ് മേൽപ്പിച്ചാൽനാ?",
-    "newMember": "ട്രസ്റ്റ്റിനർ പുതിയായേയ്ക്കൊംടെ?",
-    "registerHere": "ഇവിടെ രജിസ്റ്റ്റിനർ പുതിയായേയ്ക്കൊംടെ."
+    "pageTitle": "Sign In",
+    "pageSubtitle": "Access your digital membership and manage your profile.",
+    "welcomeBack": "Welcome Back",
+    "signInPrompt": "Sign in with your registered phone number or email.",
+    "forgotPassword": "Forgot password?",
+    "newMember": "New to the trust?",
+    "registerHere": "Register here",
+    "phoneEmail": "Phone Number or Email",
+    "password": "Password",
+    "loginBtn": "Login"
   },
   "signup": {
-    "pageTitle": "ട്രസ്റ്റ്റിനർ നോംദായിസ്",
-    "pageSubtitle": "സ്ഥ്യാ സൈ കുടുംബര്‌ന്ല് ഭാഗമാവുക.",
-    "registerTitle": "നോംദായിസ് മാഡി കൊള്ളടെ",
-    "registerPrompt": "നിന്ന സദസ്യ പ്രോഫൈൽ നിർമ്മിക്കാൻകൊംടെ, ട്രസ്റ്റിനർ പ്രവർത്തികളില് പങ്കൊന്നു.",
-    "alreadyRegistered": "ഈഗളേ നോംദായിസ് മാഡിയായാലേ?",
-    "signIn": "സൈൻ ഇൻ മാഡിയായേയ്ക്കൊംടെ"
+    "pageTitle": "Trust Registration",
+    "pageSubtitle": "Become a member of the Sathya Sai family.",
+    "registerTitle": "Register",
+    "registerPrompt": "Create your member profile to join the trust activities.",
+    "alreadyRegistered": "Already registered?",
+    "signIn": "Sign in",
+    "registerBtn": "Register"
   },
   "resetPassword": {
-    "pageTitle": "ഹൊസ പാസ്വേഡ്‌ സെറ്റ് മാഡിയായേയ്ക്കൊംടെ",
-    "resetTitle": "പാസ്വേഡ് രിസെട് മാഡിയായേയ്ക്കൊംടെ"
+    "pageTitle": "Set New Password",
+    "resetTitle": "Reset Password",
+    "resetSubtitle": "Enter and confirm your new password below."
   },
   "trustees": {
-    "pageTitle": "ബോര്ഡ് ആഫ് ട്രസ്റ്റ്റ്റ്റ്റ്റ്റ്റ്റ്റ്റ്റ്റ്റ.
+    "pageTitle": "Board of Trustees",
+    "pageSubtitle": "12 devoted souls serving the divine mission of Love All, Serve All."
   },
   "chatbot": {
-    "welcome": "നമസ്കാരം! എനിക്ക് എങ്ങനെ സഹായം ചെയ്യാംഎനിക്ക് എങ്ങനെ സഹായം ചെയ്യാം?",
-    "placeholder": "നിങ്ങളുടെ സംദേശം ടൈപ്പ് ചെയ്യുക...",
-    "send": "അയയം അയയം",
-    "usageLimit": "ഉപയോഗ മിതി നീപ്പിരിക്കുന്നു. നാളെയിൽ റിസെറ്റ് ആയ്കാണം.",
-    "offline": "ഓൺഫ്ലൈൻസ്",
-    "rateLimit": "റേറ്റ് മിതി",
-    "reqLeft": "ഉളിത്തക്കാംതി"
+    "welcome": "Hello! How can I help you today?",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "usageLimit": "Usage limit reached. Resets tomorrow.",
+    "offline": "Offline",
+    "rateLimit": "Rate limit",
+    "reqLeft": "req left"
   },
   "donation": {
-    "donateBtn": "രേജിപ്പേയ് മൂലെ ദാന മാഡിയായേയ്ക്കൊംടെ",
-    "openingRazorpay": "രേജിപ്പേയ് മൂലെ തുറക്കുന്നു...",
-    "thankYou": "നിന്ന ദാനക്ക് നന്ദി! പേമെന്റ് ഐഡി:",
-    "enterValidAmount": "ദയവാം ഒരു സാധുവായ ദാന അഡായം നൽക്കുക.",
-    "amountPlaceholder": "അഡായം നൽക്കുക"
+    "donateBtn": "Donate via Razorpay",
+    "openingRazorpay": "Opening Razorpay...",
+    "thankYou": "Thank you for your donation! Payment ID:",
+    "enterValidAmount": "Please enter a valid donation amount.",
+    "amountPlaceholder": "Enter amount"
   },
   "footer": {
-    "email": "ഇമെയിൽ: info@sathyasaipremakuterram.org",
-    "phone": "ഫോൺ: +91-XXXXXXXXXX",
-    "copyright": "സ്വയം സ്വാമ്യം സ്ഥ്യാ സൈ പ്രേമാ കുട്ടെരം പബ്ലിക് ട്രസ്റ്റ്‌ഗൾക്ക്."
+    "email": "Email: info@sathyasaipremakuterram.org",
+    "phone": "Phone: +91-XXXXXXXXXX",
+    "copyright": "All rights reserved by Sri Sai Dharma Samrakshana Prema Kuteeram Public Charitable Trust."
   },
   "translate": {
-    "label": "തമിളിലേക്ക് ഭാഷാംതരിസുവല്ല",
-    "placeholder": "ഭാഷാംതരിസുവല്ല പാഠ്യം നൽകുക...",
-    "button": "ഭാഷാംതരിസുവല്ല",
-    "translating": "ഭാഷാംതരിസുവല്ല..."
+    "label": "Translate to Tamil",
+    "placeholder": "Enter text to translate...",
+    "button": "Translate",
+    "translating": "Translating..."
   }
 }
