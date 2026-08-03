@@ -86,3 +86,6 @@ env/
 *.bak
 *.tmp
 *.temp
+
+# ── Git Worktrees ───────────────────────────────────────────
+.worktrees/
