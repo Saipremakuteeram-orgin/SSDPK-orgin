@@ -7,6 +7,7 @@
 
   let currentLang = null;
   let translations = {};
+  const translationCache = {};
 
   const LANG_FLAGS = {
     'en': '🇬🇧',
@@ -48,6 +49,9 @@
   }
 
   async function loadTranslations(lang) {
+    if (translationCache[lang]) {
+      return translationCache[lang];
+    }
     const response = await fetch('/i18n/' + lang + '.json');
     if (!response.ok) {
       if (lang !== DEFAULT_LANG) {
@@ -57,6 +61,7 @@
       throw new Error('Failed to load translations for language: ' + lang);
     }
     const data = await response.json();
+    translationCache[lang] = data;
     return data;
   }
 
@@ -217,10 +222,16 @@
       const newLang = e.target.value;
       if (newLang === currentLang) return;
       switcher.classList.add('switching');
+      select.disabled = true;
       setLanguage(newLang).then(function() {
+        select.disabled = false;
         setTimeout(function() {
           switcher.classList.remove('switching');
         }, 300);
+      }).catch(function(err) {
+        select.disabled = false;
+        switcher.classList.remove('switching');
+        console.error('Language switch failed:', err);
       });
     });
 
