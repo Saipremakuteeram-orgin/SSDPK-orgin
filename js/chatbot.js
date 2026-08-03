@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="chatbot-notification-text">Need help? Ask me anything!</span>
         <div class="chatbot-notification-arrow"></div>
       </div>
-      <div class="chatbot-fab" id="chatbotFab" title="Ask Sai AI">
+      <div class="chatbot-fab" id="chatbotFab" title="Ask Sai AI" role="button" aria-label="Open chat assistant" aria-expanded="false" aria-controls="chatbotWindow" tabindex="0">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           <circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/>
@@ -19,13 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </div>
     
-    <div class="chatbot-window" id="chatbotWindow">
+    <div class="chatbot-window" id="chatbotWindow" role="dialog" aria-label="Chat assistant" aria-hidden="true">
       <div class="chatbot-header">
         <div class="chatbot-header-title">
           <h3>Sai AI Assistant</h3>
           <span>&bull; Online</span>
         </div>
-        <button class="chatbot-close" id="chatbotClose">&times;</button>
+        <button class="chatbot-close" id="chatbotClose" aria-label="Close chat assistant">&times;</button>
       </div>
 
       <!-- Header Banner Image — Replace src with your image -->
@@ -172,11 +172,35 @@ CRITICAL RULES:
   loadLocalApiKey();
 
   // Toggle Window
-  fab.addEventListener('click', () => {
+  const openChat = () => {
     win.classList.add('active');
+    win.setAttribute('aria-hidden', 'false');
+    fab.setAttribute('aria-expanded', 'true');
     if (notification) notification.classList.add('dismissed');
+    setTimeout(() => input && input.focus(), 250);
+  };
+  const closeChat = () => {
+    win.classList.remove('active');
+    win.setAttribute('aria-hidden', 'true');
+    fab.setAttribute('aria-expanded', 'false');
+  };
+  fab.addEventListener('click', () => {
+    if (win.classList.contains('active')) {
+      closeChat();
+    } else {
+      openChat();
+    }
   });
-  closeBtn.addEventListener('click', () => win.classList.remove('active'));
+  fab.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openChat();
+    }
+  });
+  closeBtn.addEventListener('click', closeChat);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && win.classList.contains('active')) closeChat();
+  });
 
   // Save Key
   saveKeyBtn.addEventListener('click', () => {

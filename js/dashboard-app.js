@@ -1149,7 +1149,7 @@ function initDashboard() {
         if (isVideo) {
           mediaHtml = `<video src="${imgSrc}" controls style="width:100%; height:100%; object-fit:cover;"></video>`;
         } else {
-          mediaHtml = `<img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover; opacity:0.85;">`;
+          mediaHtml = `<img src="${imgSrc}" loading="lazy" style="width:100%; height:100%; object-fit:cover; opacity:0.85;">`;
         }
       } else {
         mediaHtml = `<div style="display:flex; align-items:center; justify-content:center; height:100%; font-size:32px;">${item.placeholder || '🖼️'}</div>`;

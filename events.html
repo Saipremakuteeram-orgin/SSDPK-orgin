@@ -463,6 +463,9 @@
 </head>
 <body>
 
+<!-- Skip to Content Link -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <!-- Nav -->
 <nav>
   <div class="container">
@@ -482,6 +485,8 @@
     <div id="langSwitcher"></div>
   </div>
 </nav>
+
+<main id="main-content">
 
 <!-- Page header -->
 <section class="page-header" data-animate="fade-up">
@@ -549,6 +554,8 @@
     </div>
   </div>
 </div>
+
+</main>
 
 <!-- Footer -->
 <footer data-animate="fade-up">
@@ -1121,6 +1128,13 @@
     eventModalBackdrop.classList.remove('open');
     document.body.style.overflow = '';
   }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (eventDrawer && eventDrawer.classList.contains('open')) closeDrawer();
+      if (eventModal && eventModal.classList.contains('open')) closeModal();
+    }
+  });
 
   function padZero(num) {
     return num < 10 ? "0" + num : num;

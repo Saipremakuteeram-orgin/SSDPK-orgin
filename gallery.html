@@ -72,6 +72,9 @@
 </head>
 <body>
 
+<!-- Skip to Content Link -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <!-- Nav -->
 <nav>
   <div class="container">
@@ -91,6 +94,8 @@
         <div id="langSwitcher"></div>
   </div>
 </nav>
+
+<main id="main-content">
 
 <!-- Page header -->
 <section class="page-header" data-animate="fade-up">
@@ -145,6 +150,8 @@
     <div id="modalThumbnails" class="lightbox-thumb-strip"></div>
   </div>
 </div>
+
+</main>
 
 <!-- Footer -->
 <footer data-animate="fade-up">
@@ -260,6 +267,7 @@
       activeEvent.photos.forEach((photoUrl, idx) => {
         var thumb = document.createElement('img');
         thumb.src = photoUrl;
+        thumb.loading = 'lazy';
         thumb.className = 'lightbox-thumb';
         thumb.alt = `Thumbnail ${idx + 1}`;
         thumb.addEventListener('click', () => {

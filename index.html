@@ -199,6 +199,9 @@ footer a:hover{color:#fff;text-decoration:none}
 </head>
 <body>
 
+<!-- Skip to Content Link -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <!-- Loading Screen -->
 <div class="loader" id="loader">
   <div class="loader-ring"></div>
@@ -215,7 +218,7 @@ footer a:hover{color:#fff;text-decoration:none}
       <img src="logo.jpg" alt="SSPK" class="nav-logo-img" width="40" height="40" loading="eager">
       SSPK
     </a>
-    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">&#9776;</button>
 <div class="nav-links" id="navLinks">
       <a href="index.html" data-i18n="nav.home">Home</a>
       <a href="about.html" data-i18n="nav.about">About</a>
@@ -229,6 +232,7 @@ footer a:hover{color:#fff;text-decoration:none}
 </nav>
 
 <!-- Hero -->
+<main id="main-content">
 <section class="hero">
   <div class="hero-content" data-animate="scale-in">
     <div class="lotus-wrap" style="margin-bottom:20px">
@@ -358,6 +362,7 @@ footer a:hover{color:#fff;text-decoration:none}
     </div>
   </div>
 </section>
+</main>
 
 <!-- Footer -->
 <footer>
