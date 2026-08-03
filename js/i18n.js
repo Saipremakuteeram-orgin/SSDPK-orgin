@@ -121,15 +121,14 @@
     const style = document.createElement('style');
     style.textContent = `
       .language-switcher {
-        position: absolute;
-        right: 80px;
-        top: 50%;
-        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        margin-left: auto;
         z-index: 1000;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
-        padding: 6px 10px;
+        padding: 4px 8px;
         backdrop-filter: blur(10px);
         box-shadow: var(--shadow-sm);
         transition: all 0.3s ease;
@@ -143,7 +142,7 @@
         border: none;
         color: var(--fg);
         font-family: var(--font-body);
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         padding: 4px 8px;
         border-radius: var(--radius-sm);
@@ -152,9 +151,9 @@
         outline: none;
         background-image: url('data:image/svg+xml;utf8,<svg fill="%23a1a1a1" height="20" width="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
         background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 12px;
-        min-width: 120px;
+        background-position: right 4px center;
+        background-size: 10px;
+        min-width: 100px;
       }
       .lang-select option {
         background: var(--surface);
@@ -167,8 +166,7 @@
       }
       @media (max-width: 768px) {
         .language-switcher {
-          position: static;
-          transform: none;
+          margin-left: 0;
           margin-top: 8px;
           width: 100%;
           background: transparent;
