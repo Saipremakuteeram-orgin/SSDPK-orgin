@@ -322,6 +322,13 @@
     document.documentElement.setAttribute('lang', currentLang);
     createLanguageSwitcher();
     initUserTranslationWidget();
+    SUPPORTED_LANGS.forEach(function(lang) {
+      if (lang !== currentLang) {
+        loadTranslations(lang).catch(function(err) {
+          console.warn('Preloading failed for ' + lang + ':', err);
+        });
+      }
+    });
   }
 
   window.i18n = {
