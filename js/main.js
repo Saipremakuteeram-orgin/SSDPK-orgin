@@ -260,22 +260,14 @@
       }
     });
 
-    // 2. Upgrade hero content card
+    // 2. Upgrade hero content card (glass styling only - NO data-tilt, as the
+    //    live 3D transform shifts CTA buttons under the cursor mid-click,
+    //    routing clicks to the container div instead of the anchor)
     var heroContent = document.querySelector('.hero-content');
     if (heroContent && !heroContent.classList.contains('tilt-card')) {
-      heroContent.classList.add('glass-panel', 'tilt-card');
-      heroContent.setAttribute('data-tilt', '');
+      heroContent.classList.add('glass-panel');
       heroContent.style.padding = '40px';
       heroContent.style.borderRadius = '16px';
-      
-      if (!heroContent.querySelector('.tilt-card-inner')) {
-        var wrapper = document.createElement('div');
-        wrapper.className = 'tilt-card-inner';
-        while (heroContent.firstChild) {
-          wrapper.appendChild(heroContent.firstChild);
-        }
-        heroContent.appendChild(wrapper);
-      }
     }
 
     // 3. Upgrade primary buttons

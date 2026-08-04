@@ -119,6 +119,35 @@ describe('main.js', () => {
       expect(logoutBtn.getAttribute('data-i18n')).toBe('nav.signOut');
     });
 
+    it('should not apply data-tilt to hero-content (so CTA buttons stay clickable)', () => {
+      if (!globalThis.IntersectionObserver) {
+        globalThis.IntersectionObserver = class {
+          observe() {}
+          unobserve() {}
+          disconnect() {}
+        };
+      }
+
+      setupDOM(`
+        <html><body>
+          <div class="hero-content" data-animate="scale-in">
+            <div class="hero-actions">
+              <a href="about.html" class="btn btn-primary ripple magnetic-btn">Learn More</a>
+              <a href="dashboard.html" class="btn btn-outline ripple magnetic-btn">Support Our Mission</a>
+            </div>
+          </div>
+        </body></html>
+      `);
+
+      window.localStorage = mockLocalStorage({});
+
+      // The IIFE runs upgradeRedesign on import; re-verify after it ran
+      const hero = document.querySelector('.hero-content');
+      expect(hero).toBeTruthy();
+      expect(hero.hasAttribute('data-tilt')).toBe(false);
+      expect(hero.classList.contains('tilt-card')).toBe(false);
+    });
+
     it('should handle corrupted session gracefully', () => {
       setupDOM(`
         <html><body>
