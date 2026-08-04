@@ -25,6 +25,10 @@
     "publications": "प्रकाशन और संचार",
     "ourImpact": "हमारा प्रभाव"
   },
+  "donate": {
+    "modalTitle": "Sai Ram, please sign in",
+    "modalMessage": "Already registered? Sign In. New to our community? Register first, then sign in to continue your seva."
+  },
   "events": {
     "pageTitle": "आयोजन",
     "pageSubtitle": "आगामी भजन, उत्सव और सामुदायिक कार्यक्रम।",

@@ -25,6 +25,10 @@
     "publications": "ప్రచురణలు మరియు సంవాదాలు",
     "ourImpact": "మా ప్రభావం"
   },
+  "donate": {
+    "modalTitle": "Sai Ram, please sign in",
+    "modalMessage": "Already registered? Sign In. New to our community? Register first, then sign in to continue your seva."
+  },
   "events": {
     "pageTitle": "సంఘటనలు",
     "pageSubtitle": "రాబోయే భజనలు, జరుపుకుందాలు, మరియు సముదాయ కార్యక్రమాలు.",

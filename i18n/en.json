@@ -25,6 +25,10 @@
     "publications": "Publications & Communications",
     "ourImpact": "Our Impact"
   },
+  "donate": {
+    "modalTitle": "Sai Ram, please sign in",
+    "modalMessage": "Already registered? Sign In. New to our community? Register first, then sign in to continue your seva."
+  },
   "events": {
     "pageTitle": "Events",
     "pageSubtitle": "Upcoming bhajans, celebrations, and community programs.",

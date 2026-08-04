@@ -3,6 +3,8 @@
   "framework": null,
   "rewrites": [
     { "source": "/api/config", "destination": "/api/config.js" },
+    { "source": "/api/notify-event", "destination": "/api/notify-event.js" },
+    { "source": "/api/send-welcome", "destination": "/api/send-welcome.js" },
     { "source": "/api/razorpay/order", "destination": "/api/razorpay/order.js" },
     { "source": "/api/razorpay/payment-link", "destination": "/api/razorpay/payment-link.js" },
     { "source": "/api/razorpay/subscription", "destination": "/api/razorpay/subscription.js" },

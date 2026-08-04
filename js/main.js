@@ -525,5 +525,111 @@
   }
   initParallax();
 
+  // ══════════════════════════════════════════════════════════════
+  // DONATE FLOW — login-gated "Support Us" (seva) click handling
+  // ══════════════════════════════════════════════════════════════
+  var SESSION_KEY = 'sspk_session';
+  var DONATE_INTENT_KEY = 'sspk_donate_intent';
+
+  function isSignedIn() {
+    try {
+      var raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return false;
+      var s = JSON.parse(raw);
+      return !!(s && s.role && s.identifier);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getDonateIntent() {
+    try { return localStorage.getItem(DONATE_INTENT_KEY) === '1'; } catch (e) { return false; }
+  }
+
+  function setDonateIntent() {
+    try { localStorage.setItem(DONATE_INTENT_KEY, '1'); } catch (e) {}
+  }
+
+  function clearDonateIntent() {
+    try { localStorage.removeItem(DONATE_INTENT_KEY); } catch (e) {}
+  }
+
+  function afterAuthURL() {
+    var url = getDonateIntent() ? 'dashboard.html#seva' : 'dashboard.html';
+    clearDonateIntent();
+    return url;
+  }
+
+  function redirectAfterAuth() {
+    window.location.href = afterAuthURL();
+  }
+
+  function openDonateModal() {
+    var existing = document.getElementById('sspk-donate-modal');
+    if (existing) { existing.style.display = 'flex'; existing.classList.add('open'); return; }
+
+    function t(key, fallback) {
+      return (window.i18n && window.i18n.t) ? window.i18n.t(key) : fallback;
+    }
+    var title = t('donate.modalTitle', 'Sai Ram, please sign in');
+    var message = t('donate.modalMessage', 'Already registered? Sign In. New to our community? Register first, then sign in to continue your seva.');
+    var signInLabel = t('nav.signIn', 'Sign In');
+    var signUpLabel = t('nav.signUp', 'Register');
+
+    var backdrop = document.createElement('div');
+    backdrop.id = 'sspk-donate-modal';
+    backdrop.style.cssText = [
+      'position:fixed', 'inset:0', 'z-index:999999',
+      'display:flex', 'align-items:center', 'justify-content:center',
+      'background:rgba(0,0,0,0.55)', 'backdrop-filter:blur(6px)', 'padding:20px'
+    ].join(';');
+
+    backdrop.innerHTML =
+      '<div style="background:var(--surface,#fff);border:1px solid var(--border,#e5d8c8);border-radius:20px;max-width:420px;width:100%;padding:36px 32px;box-shadow:0 24px 64px rgba(0,0,0,0.4);position:relative;">' +
+        '<button type="button" class="sspk-modal-close" aria-label="Close" style="position:absolute;top:14px;right:18px;font-size:28px;background:none;border:none;cursor:pointer;color:var(--muted,#8a6d57);">&times;</button>' +
+        '<div style="font-size:34px;text-align:center;margin-bottom:12px;">&#128583;&#xFE0F;</div>' +
+        '<h3 style="margin:0 0 8px;text-align:center;color:var(--fg,#2b2118);font-size:20px;">' + title + '</h3>' +
+        '<p style="text-align:center;color:var(--muted,#8a6d57);font-size:14px;line-height:1.6;margin:0 0 24px;">' + message + '</p>' +
+        '<div style="display:flex;flex-direction:column;gap:12px;">' +
+          '<a href="login.html" class="btn btn-primary" style="display:block;text-align:center;padding:13px;border-radius:10px;text-decoration:none;font-weight:600;">' + signInLabel + '</a>' +
+          '<a href="signup.html" class="btn btn-outline" style="display:block;text-align:center;padding:13px;border-radius:10px;text-decoration:none;font-weight:600;border:1.5px solid var(--accent,#c46a1a);color:var(--accent,#c46a1a);">' + signUpLabel + '</a>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(backdrop);
+
+    function close() {
+      backdrop.classList.remove('open');
+      backdrop.style.display = 'none';
+    }
+    backdrop.querySelector('.sspk-modal-close').addEventListener('click', close);
+    backdrop.addEventListener('click', function(e) { if (e.target === backdrop) close(); });
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', escHandler); }
+    });
+  }
+
+  // Delegated handler for any [data-donate] element (homepage "Support Us" card, etc.)
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest('[data-donate]');
+    if (!el) return;
+    e.preventDefault();
+    if (isSignedIn()) {
+      window.location.href = 'dashboard.html#seva';
+    } else {
+      setDonateIntent();
+      openDonateModal();
+    }
+  });
+
+  window.SSPK = window.SSPK || {};
+  window.SSPK.isSignedIn = isSignedIn;
+  window.SSPK.afterAuthURL = afterAuthURL;
+  window.SSPK.redirectAfterAuth = redirectAfterAuth;
+  window.SSPK.getDonateIntent = getDonateIntent;
+  window.SSPK.setDonateIntent = setDonateIntent;
+  window.SSPK.clearDonateIntent = clearDonateIntent;
+  window.SSPK.openDonateModal = openDonateModal;
+
 })();
 

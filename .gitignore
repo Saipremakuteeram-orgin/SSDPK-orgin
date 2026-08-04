@@ -6,6 +6,7 @@
 # ── Environment & Secrets ────────────────────────────────────
 .env
 .env.local
+rzp-key.csv
 .env.production
 .env.development
 .env.staging
@@ -23,6 +24,9 @@ client_secret.json.enc
 api/*
 !api/config.js
 !api/razorpay/
+!api/_mail.js
+!api/notify-event.js
+!api/send-welcome.js
 bot.py
 dev_server.py
 decrypt_secret.py

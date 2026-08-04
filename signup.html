@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check redirect if session already exists
   const session = JSON.parse(localStorage.getItem('sspk_session'));
   if (session) {
-    window.location.href = 'dashboard.html';
+    window.SSPK.redirectAfterAuth();
     return;
   }
 
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/dashboard.html'
+          redirectTo: window.location.origin + '/' + window.SSPK.afterAuthURL()
         }
       });
       if (error) throw error;
@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: email }));
-      window.location.href = 'dashboard.html';
+      window.SSPK.redirectAfterAuth();
     }
   });
 
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const identifier = email || phone;
       localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
-      window.location.href = 'dashboard.html';
+      window.SSPK.redirectAfterAuth();
 
     } catch (err) {
       console.error('Registration submission error:', err);

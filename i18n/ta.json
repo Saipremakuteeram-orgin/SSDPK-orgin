@@ -25,6 +25,10 @@
     "publications": "வெளிப்பாடுகள் & தொலைபேசி",
     "ourImpact": "எங்கள் தாக்கம்"
   },
+  "donate": {
+    "modalTitle": "Sai Ram, please sign in",
+    "modalMessage": "Already registered? Sign In. New to our community? Register first, then sign in to continue your seva."
+  },
   "events": {
     "pageTitle": "நிகழ்ச்சிகள்",
     "pageSubtitle": "வரவிருக்கும் பாடல்கள், கொண்டறைகள், மற்றும் சமூக திட்டங்கள்.",

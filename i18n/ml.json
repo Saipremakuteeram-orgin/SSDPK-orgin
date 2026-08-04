@@ -25,6 +25,10 @@
     "publications": "പ്രകാശനങ്ങൾ മറ്റു സംവാദങ്ങൾ",
     "ourImpact": "നമ്മുടെ സ്വാധീനം"
   },
+  "donate": {
+    "modalTitle": "Sai Ram, please sign in",
+    "modalMessage": "Already registered? Sign In. New to our community? Register first, then sign in to continue your seva."
+  },
   "events": {
     "pageTitle": "സമ്പന്നങ്ങൾ",
     "pageSubtitle": "അടുത്ത ഭജനങ്ങൾ, ആഘോഷങ്ങൾ, മറ്റു സമുദായ പരമ്പരാഗതങ്ങൾ.",

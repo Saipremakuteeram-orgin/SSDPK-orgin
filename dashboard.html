@@ -596,7 +596,7 @@
 </main>
 
 <!-- Seva (Contribution) Section -->
-<section class="section seva-section" data-animate="fade-up">
+<section class="section seva-section" id="seva" data-animate="fade-up">
   <div class="container">
     <div class="donation-section">
       <h2 data-i18n="seva.title">Seva</h2>
@@ -732,5 +732,15 @@
 <script defer src="js/dashboard-app.js?v=1.1.3"></script>
     <script src="js/i18n.js" defer></script>
 <script defer src="js/seva.js?v=1.0.0"></script>
+<script defer>
+  // If the user arrived via the "Support Us" donate flow (dashboard.html#seva),
+  // scroll the Seva/payment section into view once it is rendered.
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#seva') {
+      var target = document.getElementById('seva');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+</script>
 </body>
 </html>

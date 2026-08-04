@@ -25,6 +25,10 @@
     "publications": "ಪ್ರಕಾಶನಗಳು ಮತ್ತು ಸಂವಾದಗಳು",
     "ourImpact": "ನಮ್ಮ ಪ್ರಭಾವ"
   },
+  "donate": {
+    "modalTitle": "Sai Ram, please sign in",
+    "modalMessage": "Already registered? Sign In. New to our community? Register first, then sign in to continue your seva."
+  },
   "events": {
     "pageTitle": "ಸಂಘಟನೆಗಳು",
     "pageSubtitle": "ಮುಂದಿನ ಭಜನಗಳು, ಜನಹೋದಮೆಯುಗಳು, ಮತ್ತು ಸಮುದಾಯ ಕಾರ್ಯಕ್ರಮಗಳು.",
