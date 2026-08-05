@@ -3,7 +3,7 @@
 // Called by the admin dashboard: POST /api/notify-event { event, emails }
 
 const { chunkArray, buildEventEmail } = require('../js/mail-helpers.js');
-const { cors, readBody, sendBatch } = require('./_mail.js');
+const { cors, readBody, sendBatch, fromEmail } = require('./_mail.js');
 
 module.exports = async function handler(req, res) {
   cors(res);
@@ -28,7 +28,7 @@ module.exports = async function handler(req, res) {
   }
 
   const baseUrl = 'https://' + (req.headers.host || 'sathyasaipremakuterram.org');
-  const email = buildEventEmail(event, baseUrl);
+  const email = buildEventEmail(event, baseUrl, fromEmail());
   const chunks = chunkArray(emails, 100);
   const messages = [];
   chunks.forEach(function (chunk) {

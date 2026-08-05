@@ -5,7 +5,9 @@ import {
   cleanDescription,
   formatEventDate,
   buildEventEmail,
-  buildWelcomeEmail
+  buildWelcomeEmail,
+  buildEmailFooter,
+  LOGO_BASE64
 } from '../js/mail-helpers.js';
 
 describe('mail helpers', () => {
@@ -84,6 +86,19 @@ describe('mail helpers', () => {
       expect(html).toContain('https://example.org/events.html?id=42');
     });
 
+    it('embeds the logo inline in the footer (not as an attachment)', () => {
+      const { html, text } = buildEventEmail(event, 'https://example.org');
+      expect(html).toContain('data:image/jpeg;base64,' + LOGO_BASE64);
+      expect(html).toContain('Love All, Serve All');
+      expect(text).not.toContain('attachment');
+    });
+
+    it('shows the from email in the footer when provided', () => {
+      const { html, text } = buildEventEmail(event, 'https://example.org', 'noreply@example.org');
+      expect(html).toContain('From: noreply@example.org');
+      expect(text).toContain('From: noreply@example.org');
+    });
+
     it('builds a details link even without an id', () => {
       const { html } = buildEventEmail({ title: 'Seva Day', date: '2026-08-01' }, 'https://example.org');
       expect(html).toContain('https://example.org/events.html');
@@ -99,6 +114,29 @@ describe('mail helpers', () => {
     it('falls back to Devotee when name is empty', () => {
       const { text } = buildWelcomeEmail('');
       expect(text).toContain('Sai Ram, Devotee');
+    });
+    it('embeds the logo inline in the footer', () => {
+      const { html } = buildWelcomeEmail('Ravi');
+      expect(html).toContain('data:image/jpeg;base64,' + LOGO_BASE64);
+    });
+    it('shows the from email in the footer when provided', () => {
+      const { html, text } = buildWelcomeEmail('Ravi', 'no-reply@sathyasaipremakuterram.org');
+      expect(html).toContain('From: no-reply@sathyasaipremakuterram.org');
+      expect(text).toContain('From: no-reply@sathyasaipremakuterram.org');
+    });
+    it('falls back to the default from email when none provided', () => {
+      const { html } = buildWelcomeEmail('Ravi');
+      expect(html).toContain('From: info@sathyasaipremakuterram.org');
+    });
+  });
+
+  describe('buildEmailFooter', () => {
+    it('contains an inline base64 logo and no cid/attachment reference', () => {
+      const footer = buildEmailFooter('test@example.org');
+      expect(footer).toContain('data:image/jpeg;base64,');
+      expect(footer).not.toContain('cid:');
+      expect(footer).not.toContain('attachment');
+      expect(footer).toContain('From: test@example.org');
     });
   });
 });

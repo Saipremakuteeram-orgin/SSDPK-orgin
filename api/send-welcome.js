@@ -3,7 +3,7 @@
 // Called from signup/login/dashboard: POST /api/send-welcome { email, name }
 
 const { buildWelcomeEmail } = require('../js/mail-helpers.js');
-const { cors, readBody, sendBatch, isValidEmail } = require('./_mail.js');
+const { cors, readBody, sendBatch, isValidEmail, fromEmail } = require('./_mail.js');
 
 module.exports = async function handler(req, res) {
   cors(res);
@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
   }
 
   const name = body.name || '';
-  const welcome = buildWelcomeEmail(name);
+  const welcome = buildWelcomeEmail(name, fromEmail());
 
   const result = await sendBatch([Object.assign({ to: email }, welcome)]);
   if (!result.ok && result.error) {

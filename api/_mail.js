@@ -29,6 +29,10 @@ function fromAddress() {
   return email ? name + ' <' + email + '>' : name;
 }
 
+function fromEmail() {
+  return process.env.RESEND_FROM_EMAIL || '';
+}
+
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
@@ -82,4 +86,4 @@ async function sendBatch(messages) {
   return { ok: failed === 0, sent: sent, failed: failed, results: results };
 }
 
-module.exports = { cors, readBody, getApiKey, fromAddress, isValidEmail, sendBatch };
+module.exports = { cors, readBody, getApiKey, fromAddress, fromEmail, isValidEmail, sendBatch };
