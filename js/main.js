@@ -618,6 +618,7 @@
   window.SSPK.isSignedIn = isSignedIn;
   window.SSPK.afterAuthURL = afterAuthURL;
   window.SSPK.redirectAfterAuth = redirectAfterAuth;
+  window.SSPK.renderNav = renderDynamicNav;
   window.SSPK.getDonateIntent = getDonateIntent;
   window.SSPK.setDonateIntent = setDonateIntent;
   window.SSPK.clearDonateIntent = clearDonateIntent;

@@ -169,6 +169,12 @@ function initDashboard() {
     const trust = getTrust(identifier);
     const mode = trust?.mode || existing?.mode || '30days';
     localStorage.setItem(SESSION_KEY, JSON.stringify(makeSession(role, identifier, mode)));
+
+    // Re-render the header nav. On OAuth redirect the session may be saved
+    // AFTER main.js already rendered the nav as signed-out, so refresh it.
+    if (window.SSPK && typeof window.SSPK.renderNav === 'function') {
+      window.SSPK.renderNav();
+    }
   }
 
   // ══════════════════════════════════════════════════════════════════════════

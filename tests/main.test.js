@@ -165,6 +165,45 @@ describe('main.js', () => {
         expect(session).toBeNull();
       }
     });
+
+    it('should re-render nav to Dashboard when session is saved after page load (OAuth redirect)', async () => {
+      // Simulates landing on dashboard.html right after a Google OAuth redirect:
+      // the session is NOT yet in localStorage when the page (and main.js) loads,
+      // so renderDynamicNav initially renders "Sign In". When dashboard-app.js
+      // later resolves the Supabase session and saves it, the nav must update.
+      setupDOM(`
+        <html><body>
+          <nav><div class="container">
+            <div class="nav-links" id="navLinks">
+              <a href="dashboard.html" class="donate-btn active" data-i18n="nav.dashboard">Dashboard</a>
+            </div>
+          </div></nav>
+        </body></html>
+      `);
+
+      window.localStorage = mockLocalStorage({}); // no session on OAuth redirect yet
+
+      // Fresh module instance so main.js's IIFE auto-renders the nav on load
+      vi.resetModules();
+      await import('../js/main.js');
+
+      // Initially the header shows Sign In (session not saved yet)
+      expect(document.querySelector('#navLinks a.nav-login-btn')).toBeTruthy();
+      expect(document.querySelector('#navLinks a.nav-login-btn').textContent).toBe('Sign In');
+
+      // Simulate dashboard-app.js resolving the Supabase session asynchronously
+      window.localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier: 'test@example.com' }));
+      window.SSPK.renderNav();
+
+      // Header must now show Dashboard + Sign Out, not Sign In
+      const dashboardLink = document.querySelector('#navLinks a.donate-btn');
+      const logoutBtn = document.querySelector('#navLinks #navLogoutBtn');
+      expect(dashboardLink).toBeTruthy();
+      expect(dashboardLink.textContent).toBe('Dashboard');
+      expect(dashboardLink.getAttribute('data-i18n')).toBe('nav.dashboard');
+      expect(logoutBtn).toBeTruthy();
+      expect(document.querySelector('#navLinks a.nav-login-btn')).toBeNull();
+    });
   });
 
   describe('nav toggle', () => {
