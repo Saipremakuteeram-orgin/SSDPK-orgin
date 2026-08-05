@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sathya Sai Trust — Seva</title>
+
+<!-- DNS Preconnect — resolves domain before scripts request them -->
+<link rel="preconnect" href="https://zkzotagctwqthxypczej.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+
+<!-- Tailwind config (inline only — runtime loaded async below) -->
+<script>
+  tailwind = { config: { theme: { extend: { colors: { saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' } } } } } };
+</script>
+
+<!-- Login gate — this page is only accessible to signed-in members -->
+<script>
+  (function() {
+    var session = null;
+    try { session = JSON.parse(localStorage.getItem('sspk_session')); } catch (e) { session = null; }
+    if (!session || !session.role || !session.identifier) {
+      window.location.replace('login.html');
+    }
+  })();
+</script>
+
+<link rel="stylesheet" href="css/theme.css?v=1.1.0">
+<link rel="stylesheet" href="css/divine.css?v=1.0.0">
+<style>
+  .hidden { display: none !important; }
+
+  .seva-page-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .seva-page-header h1 {
+    font-family: var(--font-heading);
+    color: var(--fg);
+    font-size: 30px;
+    margin-bottom: 8px;
+  }
+  .seva-page-header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Skip to Content Link -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <img src="logo.jpg" alt="SSPK" class="nav-logo-img">
+      SSPK
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" data-i18n="nav.home">Home</a>
+      <a href="about.html" data-i18n="nav.about">Activities</a>
+      <a href="trustees.html" data-i18n="nav.trustees">Trustees</a>
+      <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+      <a href="events.html" data-i18n="nav.events">Events</a>
+      <a href="dashboard.html" class="donate-btn" data-i18n="nav.dashboard">Dashboard</a>
+    </div>
+    <div id="langSwitcher"></div>
+  </div>
+</nav>
+
+<main id="main-content">
+
+<!-- Page header -->
+<section class="page-header" data-animate="fade-up">
+  <div class="seva-page-header">
+    <h1 data-i18n="seva.title">Seva</h1>
+    <p data-i18n="seva.subtitle">Contribution &middot; Participation &middot; Support</p>
+  </div>
+</section>
+
+<!-- Seva (Contribution) Section -->
+<section class="section seva-section" id="seva" data-animate="fade-up">
+  <div class="container">
+    <div class="donation-section">
+      <!-- Tabs -->
+      <div class="seva-tabs" role="tablist">
+        <button type="button" class="seva-tab active" data-tab="once" role="tab" data-i18n="seva.tabOnce">One-time Seva</button>
+        <button type="button" class="seva-tab" data-tab="qr" role="tab" data-i18n="seva.tabQr">QR Seva</button>
+        <button type="button" class="seva-tab" data-tab="auto" role="tab" data-i18n="seva.tabAuto">Monthly Seva</button>
+      </div>
+
+      <!-- Donor details -->
+      <form class="seva-donor" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:16px 0;">
+        <input type="text" id="sevaName" data-i18n="seva.name" placeholder="Your name">
+        <input type="email" id="sevaEmail" data-i18n="seva.email" placeholder="Email">
+        <input type="tel" id="sevaPhone" data-i18n="seva.phone" placeholder="Phone">
+      </form>
+
+      <!-- One-time panel -->
+      <div class="seva-panel active" id="sevaPanelOnce">
+        <div class="donation-tiers">
+          <button type="button" class="donation-tier" data-amount="101"><span class="amount">&#8377;101</span><span class="label" data-i18n="seva.tier101">Anna Danam</span></button>
+          <button type="button" class="donation-tier" data-amount="501"><span class="amount">&#8377;501</span><span class="label" data-i18n="seva.tier501">Veda Support</span></button>
+          <button type="button" class="donation-tier" data-amount="1101"><span class="amount">&#8377;1101</span><span class="label" data-i18n="seva.tier1101">Sponsor a Homam</span></button>
+        </div>
+        <div class="custom-amount-wrap">
+          <label for="sevaOnceAmount" data-i18n="seva.customAmount">Custom amount</label>
+          <div class="input-group">
+            <span class="prefix">&#8377;</span>
+            <input type="number" id="sevaOnceAmount" min="1" placeholder="500" data-i18n="seva.amountPlaceholder">
+          </div>
+        </div>
+        <button type="button" id="sevaOnceBtn" class="btn btn-primary" data-i18n="seva.contributeBtn">Contribute Now</button>
+      </div>
+
+      <!-- QR panel -->
+      <div class="seva-panel" id="sevaPanelQr">
+        <label for="sevaQrPurpose" data-i18n="seva.choosePurpose">Choose a purpose</label>
+        <select class="seva-purpose-select" id="sevaQrPurpose">
+          <option value="annadana" data-amount="101" data-i18n="seva.purposeAnnadana">Anna Danam</option>
+          <option value="homam" data-amount="1101" data-i18n="seva.purposeHomam">Sponsor a Homam</option>
+          <option value="veda" data-amount="501" data-i18n="seva.purposeVeda">Veda Support</option>
+          <option value="grocery" data-amount="251" data-i18n="seva.purposeGrocery">Grocery Aid</option>
+        </select>
+        <div class="custom-amount-wrap">
+          <label for="sevaQrAmount" data-i18n="seva.amount">Amount (&#8377;)</label>
+          <input type="number" id="sevaQrAmount" min="1" value="101">
+        </div>
+        <button type="button" id="sevaQrBtn" class="btn btn-primary" data-i18n="seva.generateQr">Generate QR</button>
+        <div id="sevaQR" style="margin:16px 0; min-height:220px; display:flex; align-items:center; justify-content:center;"></div>
+        <button type="button" id="sevaShareBtn" class="btn btn-outline hidden" data-i18n="seva.shareWhatsapp">Share via WhatsApp</button>
+      </div>
+
+      <!-- Autopay panel -->
+      <div class="seva-panel" id="sevaPanelAuto">
+        <div class="custom-amount-wrap">
+          <label for="sevaAutoAmount" data-i18n="seva.monthlyAmount">Monthly amount</label>
+          <div class="input-group">
+            <span class="prefix">&#8377;</span>
+            <input type="number" id="sevaAutoAmount" min="1" placeholder="101" data-i18n="seva.amountPlaceholder">
+          </div>
+        </div>
+        <p class="donation-note" data-i18n="seva.autopayNote">Set up a one-click monthly mandate via UPI Autopay or card. You can cancel anytime.</p>
+        <button type="button" id="sevaAutoBtn" class="btn btn-primary" data-i18n="seva.setupAutopay">Set up Monthly Seva</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer data-animate="fade-up">
+  <div class="container">
+    <div>
+      <p class="footer-brand">Sathya Sai Trust</p>
+      <p>A spiritual trust dedicated to the teachings of Sri Sathya Sai Baba. Love All, Serve All.</p>
+    </div>
+    <div>
+      <h4>Pages</h4>
+      <a href="index.html">Home</a><br>
+      <a href="about.html">Activities</a><br>
+      <a href="trustees.html">Trustees</a><br>
+      <a href="gallery.html">Gallery</a><br>
+      <a href="events.html">Events</a><br>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div>
+      <h4>Activities</h4>
+      <a href="events.html">Bhajans</a><br>
+      <a href="events.html">Seva</a><br>
+      <a href="events.html">Study Circle</a><br>
+      <a href="gallery.html">Gallery</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Email: info@sathyasaipremakuterram.org</p>
+      <p>Phone: +91-XXXXXXXXXX</p>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Sathya Sai Trust. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts — deferred so they never block HTML parse -->
+<!-- Tailwind CSS runtime (async, non-critical render path) -->
+<script async src="https://cdn.tailwindcss.com"></script>
+<!-- Supabase JS SDK -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- App scripts — defer preserves execution order -->
+<script defer src="js/main.js?v=1.4.0"></script>
+<script defer src="js/supabase-client.js?v=1.1.1"></script>
+<script src="js/i18n.js" defer></script>
+<script type="module" defer src="js/seva.js?v=1.1.0"></script>
+</body>
+</html>

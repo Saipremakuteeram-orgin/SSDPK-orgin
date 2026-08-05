@@ -31,6 +31,41 @@ async function fetchJson(url, body) {
   return data;
 }
 
+async function fetchConfig() {
+  try {
+    const res = await fetch('/api/razorpay/config');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+export function hasSession(session) {
+  return !!(session && session.role && session.identifier);
+}
+
+export function getSessionEmail() {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null;
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem('sspk_session')); } catch (e) { raw = null; }
+  return raw && raw.identifier && String(raw.identifier).includes('@') ? raw.identifier : null;
+}
+
+export function resolveQRSource(config) {
+  if (config && config.payment_link_short_url) {
+    return { source: 'configured', short_url: config.payment_link_short_url };
+  }
+  return { source: 'api' };
+}
+
+export function resolveAutopaySource(config) {
+  if (config && config.subscription_id) {
+    return { source: 'configured', subscription_id: config.subscription_id, key_id: config.key_id || '' };
+  }
+  return { source: 'api' };
+}
+
 function loadCheckoutScript() {
   return new Promise(function(resolve, reject) {
     if (window.Razorpay) return resolve();
@@ -112,12 +147,22 @@ async function handleQR(doc, btn) {
   const donor = createDonorFromForm(doc);
   btn.disabled = true;
   try {
-    const data = await fetchJson('/api/razorpay/payment-link', { amount, purpose: label || 'Seva', donor });
-    renderQR(data.short_url, 'sevaQR');
+    const config = await fetchConfig();
+    const src = resolveQRSource(config);
+    let shortUrl;
+    if (src.source === 'configured') {
+      shortUrl = src.short_url;
+      const email = getSessionEmail();
+      if (email) shortUrl += (shortUrl.includes('?') ? '&' : '?') + 'email=' + encodeURIComponent(email);
+    } else {
+      const data = await fetchJson('/api/razorpay/payment-link', { amount, purpose: label || 'Seva', donor });
+      shortUrl = data.short_url;
+    }
+    renderQR(shortUrl, 'sevaQR');
     const shareBtn = doc.getElementById('sevaShareBtn');
-    if (shareBtn && data.short_url) {
+    if (shareBtn && shortUrl) {
       shareBtn.onclick = function() {
-        window.open('https://wa.me/?text=' + encodeURIComponent('Please contribute to our Seva: ' + data.short_url), '_blank');
+        window.open('https://wa.me/?text=' + encodeURIComponent('Please contribute to our Seva: ' + shortUrl), '_blank');
       };
     }
   } catch (e) {
@@ -134,15 +179,38 @@ async function handleAuto(doc, btn) {
   const donor = createDonorFromForm(doc);
   btn.disabled = true;
   try {
-    const data = await fetchJson('/api/razorpay/subscription', { amount, interval: 'monthly', donor });
+    const config = await fetchConfig();
+    const src = resolveAutopaySource(config);
+    let keyId, subscriptionId;
+    if (src.source === 'configured') {
+      keyId = src.key_id;
+      subscriptionId = src.subscription_id;
+    } else {
+      const data = await fetchJson('/api/razorpay/subscription', { amount, interval: 'monthly', donor });
+      keyId = data.key_id;
+      subscriptionId = data.subscription_id;
+    }
     await openCheckout({
-      key: data.key_id,
-      subscription_id: data.subscription_id,
+      key: keyId,
+      subscription_id: subscriptionId,
       name: 'Sathya Sai Prema Kuteeram',
       description: 'Monthly Seva',
       prefill: { name: donor.name, email: donor.email, contact: donor.phone },
       theme: { color: '#C07A3E' },
-      handler: function() {
+      handler: function(response) {
+        const email = getSessionEmail();
+        if (email && response && response.razorpay_subscription_id) {
+          fetch('/api/razorpay/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subscription_id: response.razorpay_subscription_id,
+              email: email,
+              name: donor.name,
+              phone: donor.phone
+            })
+          }).catch(function() { /* non-blocking attribution */ });
+        }
         alert('Sai Ram! Your monthly seva has been set up.');
       }
     });
@@ -156,6 +224,15 @@ async function handleAuto(doc, btn) {
 export function initSeva() {
   const section = document.querySelector('.seva-section');
   if (!section) return;
+
+  let session = null;
+  try { session = JSON.parse(localStorage.getItem('sspk_session')); } catch (e) { session = null; }
+  if (!hasSession(session)) {
+    if (typeof window !== 'undefined' && window.location.pathname.indexOf('seva.html') !== -1) {
+      window.location.replace('login.html');
+    }
+    return;
+  }
 
   document.querySelectorAll('.seva-tab').forEach(function(tab) {
     tab.addEventListener('click', function() {
@@ -183,7 +260,14 @@ export function initSeva() {
 }
 
 if (typeof window !== 'undefined') {
-  window.Seva = { init: initSeva, createDonorFromForm: createDonorFromForm };
+  window.Seva = {
+    init: initSeva,
+    createDonorFromForm: createDonorFromForm,
+    hasSession: hasSession,
+    getSessionEmail: getSessionEmail,
+    resolveQRSource: resolveQRSource,
+    resolveAutopaySource: resolveAutopaySource
+  };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSeva);
   } else {

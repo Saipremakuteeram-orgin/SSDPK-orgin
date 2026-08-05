@@ -8,6 +8,9 @@
     { "source": "/api/razorpay/order", "destination": "/api/razorpay/order.js" },
     { "source": "/api/razorpay/payment-link", "destination": "/api/razorpay/payment-link.js" },
     { "source": "/api/razorpay/subscription", "destination": "/api/razorpay/subscription.js" },
+    { "source": "/api/razorpay/config", "destination": "/api/razorpay/config.js" },
+    { "source": "/api/razorpay/history", "destination": "/api/razorpay/history.js" },
+    { "source": "/api/razorpay/subscribe", "destination": "/api/razorpay/subscribe.js" },
     { "source": "/api/razorpay/plans", "destination": "/api/razorpay/plans.js" },
     { "source": "/api/razorpay/webhook", "destination": "/api/razorpay/webhook.js" }
   ]

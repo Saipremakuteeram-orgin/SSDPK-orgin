@@ -177,6 +177,53 @@ function initDashboard() {
     }
   }
 
+  async function loadSevaHistory(session) {
+    const panel = document.getElementById('sevaHistoryPanel');
+    if (!panel || !session || !session.identifier) return;
+    const countEl = document.getElementById('sevaPayCount');
+    const statusEl = document.getElementById('sevaAutopayStatus');
+    const listEl = document.getElementById('sevaHistoryList');
+    if (!session.identifier.includes('@')) {
+      if (countEl) countEl.textContent = '0';
+      if (statusEl) statusEl.textContent = 'Not set up';
+      if (listEl) listEl.textContent = 'Sign in with your email to track Seva contributions here.';
+      return;
+    }
+    try {
+      const res = await fetch('/api/razorpay/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: session.identifier })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      if (countEl) countEl.textContent = String(data.total || 0);
+      if (statusEl) {
+        if (data.autopay && data.autopay.active) {
+          statusEl.textContent = 'Active';
+          statusEl.style.color = '#2e7d32';
+        } else {
+          statusEl.textContent = 'Not set up';
+          statusEl.style.color = 'var(--muted)';
+        }
+      }
+      if (listEl) {
+        if (!data.payments || data.payments.length === 0) {
+          listEl.textContent = 'No contributions yet. Use the button above to make your first Seva.';
+        } else {
+          const lines = data.payments.slice(0, 5).map((p) => {
+            const amt = 'Rs ' + (p.amount || 0) + ' ' + (p.currency || 'INR');
+            const when = p.created_at ? new Date(p.created_at).toLocaleDateString() : '';
+            return amt + ' — ' + (p.purpose || 'Seva') + ' (' + (p.method || '') + ') ' + when;
+          });
+          listEl.innerHTML = lines.join('<br>');
+        }
+      }
+    } catch (e) {
+      if (listEl) listEl.textContent = 'Could not load contribution history.';
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   // CHECK AUTH STATE — validates session expiry, shows correct view
   // ══════════════════════════════════════════════════════════════════════════
@@ -192,6 +239,7 @@ function initDashboard() {
       } else {
         showView(dashboardView);
         renderMembershipCard(session);
+        loadSevaHistory(session);
         if (window.initQuoteLimits && session.identifier) {
           window.initQuoteLimits(session.identifier);
         }

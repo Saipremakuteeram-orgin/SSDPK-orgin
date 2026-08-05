@@ -31,7 +31,7 @@ describe('donate flow (login-gated Support Us)', () => {
 
     setupDOM(`
       <html><body>
-        <a id="donateCard" href="dashboard.html#seva" data-donate class="card">Support Us</a>
+        <a id="donateCard" href="seva.html" data-donate class="card">Support Us</a>
       </body></html>
     `);
     originalLocalStorage = window.localStorage;
@@ -96,9 +96,9 @@ describe('donate flow (login-gated Support Us)', () => {
       expect(SSPK.getDonateIntent()).toBe(false);
     });
 
-    it('returns dashboard.html#seva when intent set, then clears it', async () => {
+    it('returns seva.html when intent set, then clears it', async () => {
             SSPK.setDonateIntent();
-      expect(SSPK.afterAuthURL()).toBe('dashboard.html#seva');
+      expect(SSPK.afterAuthURL()).toBe('seva.html');
       expect(SSPK.getDonateIntent()).toBe(false);
     });
   });
@@ -110,10 +110,10 @@ describe('donate flow (login-gated Support Us)', () => {
       expect(window.location.href).toBe('dashboard.html');
     });
 
-    it('navigates to dashboard.html#seva with intent then clears it', async () => {
+    it('navigates to seva.html with intent then clears it', async () => {
             SSPK.setDonateIntent();
       SSPK.redirectAfterAuth();
-      expect(window.location.href).toBe('dashboard.html#seva');
+      expect(window.location.href).toBe('seva.html');
       expect(SSPK.getDonateIntent()).toBe(false);
     });
   });
@@ -125,7 +125,7 @@ describe('donate flow (login-gated Support Us)', () => {
       const card = document.getElementById('donateCard');
       card.click();
 
-      expect(window.location.href).toBe('dashboard.html#seva');
+      expect(window.location.href).toBe('seva.html');
       expect(SSPK.getDonateIntent()).toBe(false);
       expect(document.getElementById('sspk-donate-modal')).toBeNull();
     });

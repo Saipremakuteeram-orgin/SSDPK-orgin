@@ -18,7 +18,29 @@ create table if not exists public.donations (
 
 alter table public.donations enable row level security;
 
--- No public reads/writes; inserts happen via service role from the webhook.
-create policy "Admins can read donations"
+-- Users can read only their own donations (matched by the auth email).
+drop policy if exists "Users read own donations" on public.donations;
+create policy "Users read own donations"
   on public.donations for select
-  using (true);
+  to authenticated
+  using (donor_email = (select email from auth.users where id = auth.uid()));
+
+-- Subscribers mapping: binds a Razorpay subscription to a logged-in user so
+-- autopay charges can be attributed to them even when the subscription was
+-- created without donor notes.
+create table if not exists public.subscribers (
+  subscription_id text primary key,
+  donor_email text,
+  donor_name text,
+  donor_phone text,
+  status text not null default 'active',
+  created_at timestamptz not null default now()
+);
+
+alter table public.subscribers enable row level security;
+
+drop policy if exists "Users read own subscribers" on public.subscribers;
+create policy "Users read own subscribers"
+  on public.subscribers for select
+  to authenticated
+  using (donor_email = (select email from auth.users where id = auth.uid()));

@@ -1,5 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
-const { verifySignature, mapWebhookToDonation } = require('../../js/razorpay-helpers.js');
+const { verifySignature, mapWebhookToDonation } = require('./helpers.cjs');
 const { cors } = require('./_lib.js');
 const sendTelegramAlert = require('./telegram.js');
 
@@ -28,6 +28,18 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'Server not configured' });
     }
     const sb = createClient(supabaseUrl, serviceKey);
+    if (row.method === 'auto' && !row.donor_email && row.subscription_id) {
+      const { data: sub, error: subErr } = await sb
+        .from('subscribers')
+        .select('donor_email, donor_name, donor_phone')
+        .eq('subscription_id', row.subscription_id)
+        .maybeSingle();
+      if (!subErr && sub && sub.donor_email) {
+        row.donor_email = sub.donor_email;
+        row.donor_name = row.donor_name || sub.donor_name || null;
+        row.donor_phone = row.donor_phone || sub.donor_phone || null;
+      }
+    }
     const { error } = await sb.from('donations').upsert(
       { ...row, webhook_raw: event },
       { onConflict: 'payment_id' }

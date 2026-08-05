@@ -1,4 +1,4 @@
-const { validateAmount, buildOrderPayload } = require('../../js/razorpay-helpers.js');
+const { validateAmount, buildOrderPayload } = require('./helpers.cjs');
 const { razorpayHeaders, parseJson, cors } = require('./_lib.js');
 
 module.exports = async function handler(req, res) {

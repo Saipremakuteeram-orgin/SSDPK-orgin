@@ -133,7 +133,7 @@ describe('main.js', () => {
           <div class="hero-content" data-animate="scale-in">
             <div class="hero-actions">
               <a href="about.html" class="btn btn-primary ripple magnetic-btn">Learn More</a>
-              <a href="dashboard.html#seva" data-donate class="btn btn-outline ripple magnetic-btn">Support Our Mission</a>
+              <a href="seva.html" data-donate class="btn btn-outline ripple magnetic-btn">Support Our Mission</a>
             </div>
           </div>
         </body></html>

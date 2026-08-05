@@ -547,7 +547,7 @@
   }
 
   function afterAuthURL() {
-    var url = getDonateIntent() ? 'dashboard.html#seva' : 'dashboard.html';
+    var url = getDonateIntent() ? 'seva.html' : 'dashboard.html';
     clearDonateIntent();
     return url;
   }
@@ -607,7 +607,7 @@
     if (!el) return;
     e.preventDefault();
     if (isSignedIn()) {
-      window.location.href = 'dashboard.html#seva';
+      window.location.href = 'seva.html';
     } else {
       setDonateIntent();
       openDonateModal();
