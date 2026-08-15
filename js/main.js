@@ -468,7 +468,7 @@
   function initMagnetic() {
     if ('ontouchstart' in window) return;
     document.addEventListener('mousemove', function(e) {
-      var btn = e.target.closest('.magnetic-btn');
+      var btn = e.target && typeof e.target.closest === 'function' ? e.target.closest('.magnetic-btn') : null;
       if (!btn) return;
       var rect = btn.getBoundingClientRect();
       var x = e.clientX - rect.left - rect.width / 2;
@@ -476,7 +476,7 @@
       btn.style.transform = 'translate(' + (x * 0.2) + 'px, ' + (y * 0.2) + 'px)';
     });
     document.addEventListener('mouseleave', function(e) {
-      var btn = e.target.closest('.magnetic-btn');
+      var btn = e.target && typeof e.target.closest === 'function' ? e.target.closest('.magnetic-btn') : null;
       if (btn) btn.style.transform = '';
     }, true);
   }
