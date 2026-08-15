@@ -11,6 +11,7 @@ rzp-key.csv
 .env.development
 .env.staging
 *.env
+.git-credentials
 client_secret_*.json
 client_secret.json.enc
 *.enc
