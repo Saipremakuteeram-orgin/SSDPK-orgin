@@ -44,6 +44,7 @@
       linksHtml += '<a href="trustees.html" data-i18n="nav.trustees">Trustees</a>';
       linksHtml += '<a href="gallery.html" data-i18n="nav.gallery">Gallery</a>';
       linksHtml += '<a href="events.html" data-i18n="nav.events">Events</a>';
+      linksHtml += '<a href="discourse.html" data-i18n="nav.discourse">Discourses</a>';
       
       if (session) {
         linksHtml += '<a href="dashboard.html" class="donate-btn" data-i18n="nav.dashboard">Dashboard</a>';
