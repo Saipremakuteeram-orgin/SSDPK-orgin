@@ -4,6 +4,8 @@
 // CommonJS (.cjs) so Vercel serverless functions can require() them.
 
 const TELEGRAM_UPLOAD_MAX_BYTES = 50 * 1024 * 1024; // Bot API upload ceiling (50MB)
+const THUMBNAIL_MAX_BYTES = 5 * 1024 * 1024; // 5MB
+const THUMBNAIL_MIMES = new Set(['image/jpeg', 'image/png']);
 
 const AUDIO_EXT = new Set(['mp3', 'm4a', 'ogg', 'oga', 'opus', 'flac', 'wav', 'aac']);
 const VIDEO_EXT = new Set(['mp4', 'm4v', 'mov', 'mkv', 'webm', 'avi']);
@@ -90,6 +92,21 @@ function validateFile({ mediaType, filename, bytes }) {
   };
 }
 
+function validateThumbnail(thumb) {
+  if (thumb == null) return { ok: true, errors: [], value: null };
+  const mime = String(thumb.mime || '');
+  const bytes = (thumb.buffer && thumb.buffer.length) || 0;
+  const errors = [];
+  if (!THUMBNAIL_MIMES.has(mime)) errors.push('thumbnail must be a JPEG or PNG image');
+  if (!(bytes > 0)) errors.push('thumbnail file is empty');
+  if (bytes > THUMBNAIL_MAX_BYTES) errors.push('thumbnail is too large (max 5MB)');
+  return { ok: errors.length === 0, errors, value: errors.length === 0 ? { mime, bytes } : {} };
+}
+
+function isTelegramEmbedUrl(url) {
+  return /^https:\/\/t\.me\/[A-Za-z0-9_]+\/\d+\?embed=1$/.test(String(url || ''));
+}
+
 function escapeHtml(str) {
   return String(str == null ? '' : str)
     .replace(/&/g, '&amp;')
@@ -102,10 +119,13 @@ function escapeHtml(str) {
 module.exports = {
   cors,
   TELEGRAM_UPLOAD_MAX_BYTES,
+  THUMBNAIL_MAX_BYTES,
   telegramMethodFor,
   buildEmbedUrl,
   parseTelegramLink,
   validateWeeklyPayload,
   validateFile,
+  validateThumbnail,
+  isTelegramEmbedUrl,
   escapeHtml
 };

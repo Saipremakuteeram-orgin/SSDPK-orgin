@@ -11,7 +11,10 @@ import {
   validateWeeklyPayload,
   validateFile,
   escapeHtml,
-  TELEGRAM_UPLOAD_MAX_BYTES
+  TELEGRAM_UPLOAD_MAX_BYTES,
+  THUMBNAIL_MAX_BYTES,
+  validateThumbnail,
+  isTelegramEmbedUrl
 } from '../api/shared/weekly-common.cjs';
 
 describe('weekly-common helpers', () => {
@@ -68,6 +71,38 @@ describe('weekly-common helpers', () => {
 
   it('escapeHtml escapes special chars', () => {
     expect(escapeHtml('<a href="x">&\'')).toBe('&lt;a href=&quot;x&quot;&gt;&amp;&#39;');
+  });
+});
+
+describe('thumbnail helpers', () => {
+  it('validateThumbnail treats missing/empty thumbnail as optional', () => {
+    expect(validateThumbnail(null)).toEqual({ ok: true, errors: [], value: null });
+    expect(validateThumbnail(undefined).ok).toBe(true);
+  });
+
+  it('validateThumbnail accepts jpeg and png under 5MB', () => {
+    expect(validateThumbnail({ mime: 'image/jpeg', buffer: Buffer.alloc(10) }).ok).toBe(true);
+    expect(validateThumbnail({ mime: 'image/png', buffer: Buffer.alloc(10) }).ok).toBe(true);
+  });
+
+  it('validateThumbnail rejects non-image mime and oversized files', () => {
+    const bad = validateThumbnail({ mime: 'text/plain', buffer: Buffer.alloc(10) });
+    expect(bad.ok).toBe(false);
+    expect(bad.errors[0]).toMatch(/JPEG or PNG/);
+    const empty = validateThumbnail({ mime: 'image/jpeg', buffer: Buffer.alloc(0) });
+    expect(empty.ok).toBe(false);
+    expect(empty.errors).toContain('thumbnail file is empty');
+    const big = validateThumbnail({ mime: 'image/jpeg', buffer: Buffer.alloc(THUMBNAIL_MAX_BYTES + 1) });
+    expect(big.ok).toBe(false);
+    expect(big.errors[0]).toMatch(/5MB/);
+  });
+
+  it('isTelegramEmbedUrl matches embed URLs only', () => {
+    expect(isTelegramEmbedUrl('https://t.me/sspk_discourse/123?embed=1')).toBe(true);
+    expect(isTelegramEmbedUrl('https://t.me/sspk_discourse/123')).toBe(false);
+    expect(isTelegramEmbedUrl('https://example.com/photo.jpg')).toBe(false);
+    expect(isTelegramEmbedUrl('t.me/sspk_discourse/1?embed=1')).toBe(false);
+    expect(isTelegramEmbedUrl('')).toBe(false);
   });
 });
 
