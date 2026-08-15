@@ -1632,7 +1632,7 @@ function initDashboard() {
 // ══════════════════════════════════════════════════════════════════════════
 // WEEKLY MESSAGES (DISCOURSE) ADMIN
 // ══════════════════════════════════════════════════════════════════════════
-const WEEKLY_UPLOAD_MAX_BYTES = 4 * 1024 * 1024; // Vercel function body cap is 4.5MB
+const WEEKLY_UPLOAD_MAX_BYTES = 48 * 1024 * 1024; // Telegram Bot API caps media at 50MB
 const WEEKLY_THUMB_MAX_BYTES = 4 * 1024 * 1024; // keep under the 4.5MB Vercel body cap
 
 async function initWeeklyMessagesAdmin() {
@@ -1709,6 +1709,15 @@ async function initWeeklyMessagesAdmin() {
       throw new Error(msg);
     }
     return data;
+  }
+
+  async function uploadToStorage(blob, name) {
+    const token = await getToken();
+    if (!token) throw new Error('Not signed in. Please sign in again.');
+    const path = 'discourse/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '/' + name;
+    const { error } = await supabase.storage.from('weekly-messages').upload(path, blob, { upsert: false });
+    if (error) throw new Error('Storage upload failed: ' + error.message);
+    return path;
   }
 
   function toggleMode() {
@@ -1866,32 +1875,25 @@ async function initWeeklyMessagesAdmin() {
         await api('/api/telegram-upload', 'POST', { ...base, text });
       } else if (file) {
         if (file.size > WEEKLY_UPLOAD_MAX_BYTES) {
-          setStatus('File is larger than 4MB. Post it to the channel directly and use the message-link option instead.', true);
+          setStatus('File is larger than 48MB. Post it to the channel directly and use the message-link option instead.', true);
           return;
         }
         if (thumbFile && (file.size + thumbFile.size) > WEEKLY_UPLOAD_MAX_BYTES) {
-          setStatus('File plus thumbnail must stay under 4MB. Post large files to the channel and use the message-link option instead.', true);
+          setStatus('File plus thumbnail must stay under 48MB. Post large files to the channel and use the message-link option instead.', true);
           return;
         }
-        setStatus('Uploading…');
-        const fd = new FormData();
-        Object.keys(base).forEach((k) => fd.append(k, base[k]));
-        fd.append('file', file, file.name);
-        if (thumbFile) fd.append('thumbnail', thumbFile, thumbFile.name);
-        const token = await getToken();
-        if (!token) throw new Error('Not signed in. Please sign in again.');
-        const res = await fetch('/api/telegram-upload', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + token },
-          body: fd
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          const msg = res.status === 413
-            ? 'File is too large for direct upload (max 4MB). Post it to the channel and use the message-link option instead.'
-            : (data.error || (data.errors && data.errors.join(', ')) || ('Upload failed (' + res.status + ')'));
-          throw new Error(msg);
+        setStatus('Uploading to storage…');
+        const storagePath = await uploadToStorage(file, file.name);
+        let thumbnailStoragePath = null;
+        if (thumbFile) {
+          thumbnailStoragePath = await uploadToStorage(thumbFile, 'thumb-' + thumbFile.name);
         }
+        setStatus('Publishing…');
+        await api('/api/telegram-upload', 'POST', {
+          ...base,
+          storagePath,
+          thumbnailStoragePath: thumbnailStoragePath || undefined
+        });
       } else if (telegramLink) {
         if (thumbFile) {
           setStatus('Creating from link…');
