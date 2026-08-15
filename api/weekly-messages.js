@@ -1,10 +1,11 @@
 'use strict';
 
 // Combined weekly-messages endpoint.
-// Serves two paths (see vercel.json rewrites) to stay within the Vercel
+// Serves three paths (see vercel.json rewrites) to stay within the Vercel
 // Hobby limit of 12 serverless functions per deployment:
 //   /api/weekly-messages   -> link-first POST / PATCH / DELETE
 //   /api/telegram-upload   -> POST: send text or media to Telegram, then store
+//   /api/weekly-media      -> GET: public media proxy from Telegram file_id
 
 const busboy = require('busboy');
 const { createClient } = require('@supabase/supabase-js');
@@ -14,14 +15,16 @@ const {
   validateFile,
   parseTelegramLink,
   validateThumbnail,
-  buildEmbedUrl
+  buildEmbedUrl,
+  validateStoragePayload
 } = require('./shared/weekly-common.cjs');
 const { authenticateAdmin } = require('./shared/admin-auth.cjs');
 const {
   sendMediaToTelegram,
   sendTextToTelegram,
   sendPhotoToTelegram,
-  getChannelId
+  getChannelId,
+  getTelegramFileStream
 } = require('./shared/telegram-bot.cjs');
 
 const OPTIONAL_FIELDS = ['description', 'category', 'language', 'duration', 'thumbnail_url'];
@@ -36,6 +39,10 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Server not configured' });
   }
   const sb = createClient(supabaseUrl, serviceKey);
+
+  if (req.method === 'GET' && (req.url || '').indexOf('/weekly-media') !== -1) {
+    return handleMediaProxy(req, res, sb);
+  }
 
   const admin = await authenticateAdmin(sb, req.headers.authorization);
   if (!admin) return res.status(401).json({ error: 'Not authorized' });
@@ -61,21 +68,96 @@ async function handleTelegramUpload(req, res, sb, admin) {
     const v = validateWeeklyPayload(body);
     if (!v.ok) return res.status(400).json({ errors: v.errors });
 
-    const sent = await sendTextToTelegram({ text: v.value.description });
+    if (v.value.media_type === 'text') {
+      const sent = await sendTextToTelegram({ text: v.value.description });
+      if (!sent.ok) return res.status(502).json({ error: sent.error });
+
+      const row = {
+        ...v.value,
+        telegram_channel: normalizeChannel(getChannelId()),
+        telegram_message_id: sent.messageId,
+        created_by: admin.id
+      };
+      const { data, error } = await sb.from('weekly_messages').insert(row).select().single();
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(201).json({
+        id: data.id,
+        telegram_channel: data.telegram_channel,
+        telegram_message_id: data.telegram_message_id
+      });
+    }
+
+    const sv = validateStoragePayload(body);
+    if (!sv.ok) return res.status(400).json({ errors: sv.errors });
+
+    const { data: mediaObj, error: mediaErr } = await sb.storage
+      .from('weekly-messages')
+      .download(sv.value.storagePath);
+    if (mediaErr || !mediaObj) {
+      return res.status(502).json({ error: 'Could not read uploaded file from storage' });
+    }
+    const mediaBuffer = Buffer.from(await mediaObj.arrayBuffer());
+
+    const fv = validateFile({
+      mediaType: v.value.media_type,
+      filename: sv.value.storagePath.split('/').pop(),
+      bytes: mediaBuffer.length
+    });
+    if (!fv.ok) return res.status(400).json({ errors: fv.errors });
+
+    const sent = await sendMediaToTelegram({
+      mediaType: v.value.media_type,
+      buffer: mediaBuffer,
+      filename: fv.value.filename,
+      mime: v.value.media_type === 'video' ? 'video/mp4' : 'audio/mpeg',
+      caption: v.value.title
+    });
     if (!sent.ok) return res.status(502).json({ error: sent.error });
+
+    let thumbnailUrl = v.value.thumbnail_url;
+    let thumbFileId = null;
+    if (sv.value.thumbnailStoragePath) {
+      const { data: thumbObj, error: thumbErr } = await sb.storage
+        .from('weekly-messages')
+        .download(sv.value.thumbnailStoragePath);
+      if (thumbErr || !thumbObj) {
+        return res.status(502).json({ error: 'Could not read uploaded thumbnail from storage' });
+      }
+      const thumbBuffer = Buffer.from(await thumbObj.arrayBuffer());
+      const tv = validateThumbnail({ mime: 'image/jpeg', buffer: thumbBuffer });
+      if (!tv.ok) return res.status(400).json({ errors: tv.errors });
+      const sentThumb = await sendPhotoToTelegram({
+        buffer: thumbBuffer,
+        mime: 'image/jpeg',
+        filename: sv.value.thumbnailStoragePath.split('/').pop(),
+        caption: v.value.title
+      });
+      if (!sentThumb.ok) return res.status(502).json({ error: sentThumb.error });
+      thumbFileId = sentThumb.fileId || null;
+      thumbnailUrl = buildEmbedUrl(normalizeChannel(getChannelId()), sentThumb.messageId);
+    }
 
     const row = {
       ...v.value,
       telegram_channel: normalizeChannel(getChannelId()),
       telegram_message_id: sent.messageId,
+      telegram_file_id: sent.fileId || null,
+      thumbnail_file_id: thumbFileId,
       created_by: admin.id
     };
-    const { data, error } = await sb.from('weekly_messages').insert(row).select().single();
-    if (error) return res.status(500).json({ error: error.message });
+    if (thumbnailUrl) row.thumbnail_url = thumbnailUrl;
+    const { data: rowData, error: rowErr } = await sb.from('weekly_messages').insert(row).select().single();
+    if (rowErr) return res.status(500).json({ error: rowErr.message });
+
+    await sb.storage.from('weekly-messages').remove([sv.value.storagePath]);
+    if (sv.value.thumbnailStoragePath) {
+      await sb.storage.from('weekly-messages').remove([sv.value.thumbnailStoragePath]);
+    }
+
     return res.status(201).json({
-      id: data.id,
-      telegram_channel: data.telegram_channel,
-      telegram_message_id: data.telegram_message_id
+      id: rowData.id,
+      telegram_channel: rowData.telegram_channel,
+      telegram_message_id: rowData.telegram_message_id
     });
   }
 
@@ -129,6 +211,7 @@ async function handleTelegramUpload(req, res, sb, admin) {
     ...v.value,
     telegram_channel: normalizeChannel(getChannelId()),
     telegram_message_id: sent.messageId,
+    telegram_file_id: sent.fileId || null,
     created_by: admin.id
   };
   if (thumbnailUrl) row.thumbnail_url = thumbnailUrl;
@@ -139,6 +222,44 @@ async function handleTelegramUpload(req, res, sb, admin) {
     telegram_channel: data.telegram_channel,
     telegram_message_id: data.telegram_message_id
   });
+}
+
+// ── GET /api/weekly-media (public) ──────────────────────────────────────────
+// Streams media/thumbnail bytes back from Telegram by stored file_id.
+// Runs before admin auth — intentionally public so <audio>/<video> embeds work.
+async function handleMediaProxy(req, res, sb) {
+  const url = new URL(req.url, 'https://example.invalid');
+  const id = String(url.searchParams.get('id') || '').trim();
+  const kind = url.searchParams.get('kind') === 'thumb' ? 'thumb' : 'media';
+  if (!id) return res.status(400).json({ error: 'id is required' });
+
+  const column = kind === 'thumb' ? 'thumbnail_file_id' : 'telegram_file_id';
+  const { data, error } = await sb.from('weekly_messages')
+    .select('title, media_type, ' + column)
+    .eq('id', id)
+    .maybeSingle();
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data || !data[column]) return res.status(404).json({ error: 'Media not found' });
+
+  const got = await getTelegramFileStream(data[column]);
+  if (!got.ok) return res.status(502).json({ error: got.error });
+
+  const contentType = kind === 'thumb'
+    ? (data.media_type === 'video' ? 'image/jpeg' : 'image/jpeg')
+    : (data.media_type === 'video' ? 'video/mp4' : 'audio/mpeg');
+  res.setHeader('Content-Type', contentType);
+  const len = got.stream.headers && got.stream.headers.get('content-length');
+  if (len) res.setHeader('Content-Length', len);
+  const body = got.stream.body;
+  if (!body) return res.status(502).json({ error: 'Telegram returned no body' });
+  const reader = body.getReader();
+  res.on('close', () => { try { reader.cancel(); } catch (e) {} });
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    res.write(value);
+  }
+  res.end();
 }
 
 // ── /api/weekly-messages (link-first) ───────────────────────────────────────

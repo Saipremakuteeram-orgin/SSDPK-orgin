@@ -13,6 +13,7 @@
     { "source": "/api/razorpay/subscribe", "destination": "/api/razorpay/subscribe.js" },
     { "source": "/api/razorpay/plans", "destination": "/api/razorpay/plans.js" },
     { "source": "/api/razorpay/webhook", "destination": "/api/razorpay/webhook.js" },
-    { "source": "/api/telegram-upload", "destination": "/api/weekly-messages" }
+    { "source": "/api/telegram-upload", "destination": "/api/weekly-messages" },
+    { "source": "/api/weekly-media", "destination": "/api/weekly-messages" }
   ]
 }
