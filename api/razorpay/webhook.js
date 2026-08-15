@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const { verifySignature, mapWebhookToDonation } = require('./helpers.cjs');
 const { cors } = require('./_lib.js');
-const sendTelegramAlert = require('./telegram.js');
+const sendTelegramAlert = require('./_telegram.js');
 
 module.exports = async function handler(req, res) {
   cors(res);

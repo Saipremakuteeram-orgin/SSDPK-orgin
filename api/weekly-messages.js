@@ -1,21 +1,27 @@
 'use strict';
 
+// Combined weekly-messages endpoint.
+// Serves two paths (see vercel.json rewrites) to stay within the Vercel
+// Hobby limit of 12 serverless functions per deployment:
+//   /api/weekly-messages   -> link-first POST / PATCH / DELETE
+//   /api/telegram-upload   -> POST: send text or media to Telegram, then store
+
+const busboy = require('busboy');
 const { createClient } = require('@supabase/supabase-js');
 const {
   cors,
   validateWeeklyPayload,
+  validateFile,
   parseTelegramLink
 } = require('./shared/weekly-common.cjs');
 const { authenticateAdmin } = require('./shared/admin-auth.cjs');
+const { sendMediaToTelegram, sendTextToTelegram, getChannelId } = require('./shared/telegram-bot.cjs');
 
 const OPTIONAL_FIELDS = ['description', 'category', 'language', 'duration', 'thumbnail_url'];
 
 module.exports = async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (!['POST', 'PATCH', 'DELETE'].includes(req.method)) {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -26,6 +32,100 @@ module.exports = async function handler(req, res) {
 
   const admin = await authenticateAdmin(sb, req.headers.authorization);
   if (!admin) return res.status(401).json({ error: 'Not authorized' });
+
+  const isTelegramUpload = (req.url || '').indexOf('/telegram-upload') !== -1;
+
+  if (isTelegramUpload) {
+    return handleTelegramUpload(req, res, sb, admin);
+  }
+  return handleMessages(req, res, sb, admin);
+};
+
+// ── POST /api/telegram-upload ───────────────────────────────────────────────
+// application/json  -> text mode (post discourse text to channel, store row)
+// multipart/form-data -> media mode (send audio/video to channel, store row)
+async function handleTelegramUpload(req, res, sb, admin) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const contentType = req.headers['content-type'] || '';
+
+  if (contentType.startsWith('application/json')) {
+    const body = parseJson(await readBody(req));
+    const v = validateWeeklyPayload(body);
+    if (!v.ok) return res.status(400).json({ errors: v.errors });
+
+    const sent = await sendTextToTelegram({ text: v.value.description });
+    if (!sent.ok) return res.status(502).json({ error: sent.error });
+
+    const row = {
+      ...v.value,
+      telegram_channel: normalizeChannel(getChannelId()),
+      telegram_message_id: sent.messageId,
+      created_by: admin.id
+    };
+    const { data, error } = await sb.from('weekly_messages').insert(row).select().single();
+    if (error) return res.status(500).json({ error: error.message });
+    return res.status(201).json({
+      id: data.id,
+      telegram_channel: data.telegram_channel,
+      telegram_message_id: data.telegram_message_id
+    });
+  }
+
+  if (!contentType.startsWith('multipart/form-data')) {
+    return res.status(400).json({ error: 'Content-Type must be application/json or multipart/form-data' });
+  }
+
+  const parts = await parseMultipart(req);
+  const fields = parts.fields || {};
+  const file = parts.file;
+
+  const v = validateWeeklyPayload(fields);
+  if (!v.ok) return res.status(400).json({ errors: v.errors });
+  if (v.value.media_type === 'text') {
+    return res.status(400).json({ error: 'Text messages must be sent as application/json' });
+  }
+  if (!file) return res.status(400).json({ error: 'file is required' });
+
+  const fv = validateFile({
+    mediaType: v.value.media_type,
+    filename: file.filename,
+    bytes: file.buffer.length
+  });
+  if (!fv.ok) return res.status(400).json({ errors: fv.errors });
+
+  const sent = await sendMediaToTelegram({
+    mediaType: v.value.media_type,
+    buffer: file.buffer,
+    filename: file.filename,
+    mime: file.mime,
+    caption: v.value.title
+  });
+  if (!sent.ok) return res.status(502).json({ error: sent.error });
+
+  const row = {
+    ...v.value,
+    telegram_channel: normalizeChannel(getChannelId()),
+    telegram_message_id: sent.messageId,
+    created_by: admin.id
+  };
+  const { data, error } = await sb.from('weekly_messages').insert(row).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  return res.status(201).json({
+    id: data.id,
+    telegram_channel: data.telegram_channel,
+    telegram_message_id: data.telegram_message_id
+  });
+}
+
+// ── /api/weekly-messages (link-first) ───────────────────────────────────────
+// POST   create from an existing t.me message link
+// PATCH  update optional fields
+// DELETE remove
+async function handleMessages(req, res, sb, admin) {
+  if (!['POST', 'PATCH', 'DELETE'].includes(req.method)) {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   const body = parseJson(await readBody(req));
 
@@ -58,7 +158,6 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  // PATCH
   const updates = {};
   const title = typeof body.title === 'string' ? body.title.trim() : undefined;
   const date = typeof body.date === 'string' ? body.date.trim() : undefined;
@@ -84,7 +183,11 @@ module.exports = async function handler(req, res) {
   const { data, error } = await sb.from('weekly_messages').update(updates).eq('id', id).select().single();
   if (error) return res.status(500).json({ error: error.message });
   return res.status(200).json({ ok: true, id: data.id });
-};
+}
+
+function normalizeChannel(ch) {
+  return String(ch || '').replace(/^@/, '').trim();
+}
 
 function readBody(req) {
   return new Promise((resolve) => {
@@ -96,4 +199,24 @@ function readBody(req) {
 
 function parseJson(body) {
   try { return JSON.parse(body || '{}'); } catch (e) { return {}; }
+}
+
+function parseMultipart(req) {
+  return new Promise((resolve, reject) => {
+    const bb = busboy({ headers: req.headers });
+    const fields = {};
+    let file = null;
+
+    bb.on('field', (name, value) => { fields[name] = value; });
+    bb.on('file', (name, stream, info) => {
+      const chunks = [];
+      stream.on('data', (c) => chunks.push(c));
+      stream.on('end', () => {
+        file = { filename: info.filename, mime: info.mimeType, buffer: Buffer.concat(chunks) };
+      });
+    });
+    bb.on('close', () => resolve({ fields, file }));
+    bb.on('error', (e) => reject(e));
+    req.pipe(bb);
+  });
 }
