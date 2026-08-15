@@ -1844,7 +1844,7 @@ async function initWeeklyMessagesAdmin() {
           }
         } else if (thumbRemoveRequested) {
           setStatus('Saving…');
-          await api('/api/weekly-messages', 'PATCH', { id: editingId, thumbnail_url: null });
+          await api('/api/weekly-messages', 'PATCH', { id: editingId, ...base, thumbnail_url: null });
         } else {
           setStatus('Saving…');
           await api('/api/weekly-messages', 'PATCH', { id: editingId, ...base });
