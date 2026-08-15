@@ -3,7 +3,7 @@
 // Shared pure helpers for the weekly discourse feature.
 // CommonJS (.cjs) so Vercel serverless functions can require() them.
 
-const TELEGRAM_UPLOAD_MAX_BYTES = 4 * 1024 * 1024; // Vercel function body cap is 4.5MB
+const TELEGRAM_UPLOAD_MAX_BYTES = 48 * 1024 * 1024; // Telegram Bot API caps media at 50MB; stay under
 const THUMBNAIL_MAX_BYTES = 4 * 1024 * 1024; // keep under the 4.5MB Vercel body cap
 const THUMBNAIL_MIMES = new Set(['image/jpeg', 'image/png']);
 
@@ -82,7 +82,7 @@ function validateFile({ mediaType, filename, bytes }) {
   }
   if (!(bytes > 0)) errors.push('file is empty');
   if (bytes > TELEGRAM_UPLOAD_MAX_BYTES) {
-    errors.push('file is too large (max 4MB). For larger files, post to the channel and use the message-link option.');
+    errors.push('file is too large (max 48MB)');
   }
 
   return {
@@ -116,6 +116,23 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+function validateStoragePayload(payload) {
+  const p = payload || {};
+  const errors = [];
+  const value = {};
+  const storagePath = typeof p.storagePath === 'string' ? p.storagePath.trim() : '';
+  const thumbPath = typeof p.thumbnailStoragePath === 'string' ? p.thumbnailStoragePath.trim() : '';
+  if (!storagePath) errors.push('storagePath is required');
+  if (thumbPath) value.thumbnailStoragePath = thumbPath;
+  value.storagePath = storagePath;
+  return { ok: errors.length === 0, errors, value };
+}
+
+function buildMediaUrl(id, kind) {
+  const base = '/api/weekly-media?id=' + encodeURIComponent(String(id || ''));
+  return kind === 'thumb' ? base + '&kind=thumb' : base;
+}
+
 module.exports = {
   cors,
   TELEGRAM_UPLOAD_MAX_BYTES,
@@ -127,5 +144,7 @@ module.exports = {
   validateFile,
   validateThumbnail,
   isTelegramEmbedUrl,
-  escapeHtml
+  escapeHtml,
+  validateStoragePayload,
+  buildMediaUrl
 };

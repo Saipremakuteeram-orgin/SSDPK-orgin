@@ -14,7 +14,10 @@ import {
   TELEGRAM_UPLOAD_MAX_BYTES,
   THUMBNAIL_MAX_BYTES,
   validateThumbnail,
-  isTelegramEmbedUrl
+  isTelegramEmbedUrl,
+  buildMediaUrl,
+  validateStoragePayload,
+  TELEGRAM_UPLOAD_MAX_BYTES as UPLOAD_MAX
 } from '../api/shared/weekly-common.cjs';
 
 describe('weekly-common helpers', () => {
@@ -61,17 +64,47 @@ describe('weekly-common helpers', () => {
   });
 
   it('validateFile accepts valid audio and rejects wrong/empty/oversized', () => {
-    expect(TELEGRAM_UPLOAD_MAX_BYTES).toBe(4 * 1024 * 1024);
+    expect(TELEGRAM_UPLOAD_MAX_BYTES).toBe(48 * 1024 * 1024);
     expect(validateFile({ mediaType: 'audio', filename: 'talk.mp3', bytes: 10 }).ok).toBe(true);
     expect(validateFile({ mediaType: 'audio', filename: 'talk.mp4', bytes: 10 }).ok).toBe(false);
     expect(validateFile({ mediaType: 'video', filename: 'talk.mp4', bytes: 0 }).ok).toBe(false);
     const big = validateFile({ mediaType: 'audio', filename: 'talk.mp3', bytes: TELEGRAM_UPLOAD_MAX_BYTES + 1 });
     expect(big.ok).toBe(false);
-    expect(big.errors[0]).toMatch(/4MB/);
+    expect(big.errors[0]).toMatch(/48MB/);
   });
 
   it('escapeHtml escapes special chars', () => {
     expect(escapeHtml('<a href="x">&\'')).toBe('&lt;a href=&quot;x&quot;&gt;&amp;&#39;');
+  });
+});
+
+describe('weekly storage upload', () => {
+  it('TELEGRAM_UPLOAD_MAX_BYTES is 48MB', () => {
+    expect(UPLOAD_MAX).toBe(48 * 1024 * 1024);
+  });
+
+  it('validateStoragePayload requires a non-empty storagePath', () => {
+    expect(validateStoragePayload({}).ok).toBe(false);
+    expect(validateStoragePayload({ storagePath: ' ' }).ok).toBe(false);
+    expect(validateStoragePayload({ storagePath: 'discourse/x.mp3' }).ok).toBe(true);
+  });
+
+  it('validateStoragePayload trims and returns value', () => {
+    const r = validateStoragePayload({ storagePath: '  a/b.mp3  ', thumbnailStoragePath: '  a/t.jpg  ' });
+    expect(r.ok).toBe(true);
+    expect(r.value.storagePath).toBe('a/b.mp3');
+    expect(r.value.thumbnailStoragePath).toBe('a/t.jpg');
+  });
+
+  it('validateStoragePayload accepts missing thumbnail', () => {
+    const r = validateStoragePayload({ storagePath: 'a/b.mp3' });
+    expect(r.ok).toBe(true);
+    expect(r.value.thumbnailStoragePath).toBeUndefined();
+  });
+
+  it('buildMediaUrl builds media and thumb urls', () => {
+    expect(buildMediaUrl('abc-123', 'media')).toBe('/api/weekly-media?id=abc-123');
+    expect(buildMediaUrl('abc-123', 'thumb')).toBe('/api/weekly-media?id=abc-123&kind=thumb');
   });
 });
 
