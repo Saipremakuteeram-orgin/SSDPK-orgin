@@ -3,8 +3,8 @@
 // Shared pure helpers for the weekly discourse feature.
 // CommonJS (.cjs) so Vercel serverless functions can require() them.
 
-const TELEGRAM_UPLOAD_MAX_BYTES = 50 * 1024 * 1024; // Bot API upload ceiling (50MB)
-const THUMBNAIL_MAX_BYTES = 5 * 1024 * 1024; // 5MB
+const TELEGRAM_UPLOAD_MAX_BYTES = 4 * 1024 * 1024; // Vercel function body cap is 4.5MB
+const THUMBNAIL_MAX_BYTES = 4 * 1024 * 1024; // keep under the 4.5MB Vercel body cap
 const THUMBNAIL_MIMES = new Set(['image/jpeg', 'image/png']);
 
 const AUDIO_EXT = new Set(['mp3', 'm4a', 'ogg', 'oga', 'opus', 'flac', 'wav', 'aac']);
@@ -82,7 +82,7 @@ function validateFile({ mediaType, filename, bytes }) {
   }
   if (!(bytes > 0)) errors.push('file is empty');
   if (bytes > TELEGRAM_UPLOAD_MAX_BYTES) {
-    errors.push('file is too large (max 50MB). For larger files, post to the channel and use the message-link option.');
+    errors.push('file is too large (max 4MB). For larger files, post to the channel and use the message-link option.');
   }
 
   return {
@@ -99,7 +99,7 @@ function validateThumbnail(thumb) {
   const errors = [];
   if (!THUMBNAIL_MIMES.has(mime)) errors.push('thumbnail must be a JPEG or PNG image');
   if (!(bytes > 0)) errors.push('thumbnail file is empty');
-  if (bytes > THUMBNAIL_MAX_BYTES) errors.push('thumbnail is too large (max 5MB)');
+  if (bytes > THUMBNAIL_MAX_BYTES) errors.push('thumbnail is too large (max 4MB)');
   return { ok: errors.length === 0, errors, value: errors.length === 0 ? { mime, bytes } : {} };
 }
 

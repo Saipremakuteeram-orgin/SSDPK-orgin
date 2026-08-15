@@ -1632,8 +1632,8 @@ function initDashboard() {
 // ══════════════════════════════════════════════════════════════════════════
 // WEEKLY MESSAGES (DISCOURSE) ADMIN
 // ══════════════════════════════════════════════════════════════════════════
-const WEEKLY_UPLOAD_MAX_BYTES = 50 * 1024 * 1024;
-const WEEKLY_THUMB_MAX_BYTES = 5 * 1024 * 1024;
+const WEEKLY_UPLOAD_MAX_BYTES = 4 * 1024 * 1024; // Vercel function body cap is 4.5MB
+const WEEKLY_THUMB_MAX_BYTES = 4 * 1024 * 1024; // keep under the 4.5MB Vercel body cap
 
 async function initWeeklyMessagesAdmin() {
   const form = document.getElementById('weeklyMessageForm');
@@ -1679,7 +1679,7 @@ async function initWeeklyMessagesAdmin() {
       return;
     }
     if (f.size > WEEKLY_THUMB_MAX_BYTES) {
-      setStatus('Thumbnail is larger than 5MB.', true);
+      setStatus('Thumbnail is larger than 4MB.', true);
       resetThumbUpload();
       return;
     }
@@ -1866,7 +1866,11 @@ async function initWeeklyMessagesAdmin() {
         await api('/api/telegram-upload', 'POST', { ...base, text });
       } else if (file) {
         if (file.size > WEEKLY_UPLOAD_MAX_BYTES) {
-          setStatus('File is larger than 50MB. Post it to the channel directly and use the message-link option instead.', true);
+          setStatus('File is larger than 4MB. Post it to the channel directly and use the message-link option instead.', true);
+          return;
+        }
+        if (thumbFile && (file.size + thumbFile.size) > WEEKLY_UPLOAD_MAX_BYTES) {
+          setStatus('File plus thumbnail must stay under 4MB. Post large files to the channel and use the message-link option instead.', true);
           return;
         }
         setStatus('Uploading…');
@@ -1883,7 +1887,9 @@ async function initWeeklyMessagesAdmin() {
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          const msg = data.error || (data.errors && data.errors.join(', ')) || ('Upload failed (' + res.status + ')');
+          const msg = res.status === 413
+            ? 'File is too large for direct upload (max 4MB). Post it to the channel and use the message-link option instead.'
+            : (data.error || (data.errors && data.errors.join(', ')) || ('Upload failed (' + res.status + ')'));
           throw new Error(msg);
         }
       } else if (telegramLink) {

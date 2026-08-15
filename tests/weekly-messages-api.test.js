@@ -61,12 +61,13 @@ describe('weekly-common helpers', () => {
   });
 
   it('validateFile accepts valid audio and rejects wrong/empty/oversized', () => {
+    expect(TELEGRAM_UPLOAD_MAX_BYTES).toBe(4 * 1024 * 1024);
     expect(validateFile({ mediaType: 'audio', filename: 'talk.mp3', bytes: 10 }).ok).toBe(true);
     expect(validateFile({ mediaType: 'audio', filename: 'talk.mp4', bytes: 10 }).ok).toBe(false);
     expect(validateFile({ mediaType: 'video', filename: 'talk.mp4', bytes: 0 }).ok).toBe(false);
     const big = validateFile({ mediaType: 'audio', filename: 'talk.mp3', bytes: TELEGRAM_UPLOAD_MAX_BYTES + 1 });
     expect(big.ok).toBe(false);
-    expect(big.errors[0]).toMatch(/50MB/);
+    expect(big.errors[0]).toMatch(/4MB/);
   });
 
   it('escapeHtml escapes special chars', () => {
@@ -80,7 +81,8 @@ describe('thumbnail helpers', () => {
     expect(validateThumbnail(undefined).ok).toBe(true);
   });
 
-  it('validateThumbnail accepts jpeg and png under 5MB', () => {
+  it('validateThumbnail accepts jpeg and png under 4MB', () => {
+    expect(THUMBNAIL_MAX_BYTES).toBe(4 * 1024 * 1024);
     expect(validateThumbnail({ mime: 'image/jpeg', buffer: Buffer.alloc(10) }).ok).toBe(true);
     expect(validateThumbnail({ mime: 'image/png', buffer: Buffer.alloc(10) }).ok).toBe(true);
   });
@@ -94,7 +96,7 @@ describe('thumbnail helpers', () => {
     expect(empty.errors).toContain('thumbnail file is empty');
     const big = validateThumbnail({ mime: 'image/jpeg', buffer: Buffer.alloc(THUMBNAIL_MAX_BYTES + 1) });
     expect(big.ok).toBe(false);
-    expect(big.errors[0]).toMatch(/5MB/);
+    expect(big.errors[0]).toMatch(/4MB/);
   });
 
   it('isTelegramEmbedUrl matches embed URLs only', () => {
