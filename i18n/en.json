@@ -5,6 +5,7 @@
     "trustees": "Trustees",
     "gallery": "Gallery",
     "events": "Events",
+    "discourse": "Discourses",
     "dashboard": "Dashboard",
     "signIn": "Sign In",
     "signUp": "Sign Up",
@@ -120,5 +121,9 @@
     "placeholder": "Enter text to translate...",
     "button": "Translate",
     "translating": "Translating..."
+  },
+  "discourse": {
+    "pageTitle": "Weekly Discourses",
+    "pageSubtitle": "The weekly teachings of Swami — listen, watch, or read."
   }
 }
