@@ -94,3 +94,22 @@ create policy "Admins manage weekly messages"
   to authenticated
   using (public.is_weekly_admin())
   with check (public.is_weekly_admin());
+
+-- ── Weekly media: Storage bucket + file_id columns ──────────────────────────
+-- Run this block in the Supabase SQL editor (idempotent; safe to re-run).
+alter table public.weekly_messages add column if not exists telegram_file_id text;
+alter table public.weekly_messages add column if not exists thumbnail_file_id text;
+
+-- Private bucket: files land here from the dashboard, are pushed to Telegram,
+-- then deleted from Storage (Telegram keeps the permanent copy).
+insert into storage.buckets (id, name, public)
+values ('weekly-messages', 'weekly-messages', false)
+on conflict (id) do nothing;
+
+-- Allow authenticated admins (server uses service role, which bypasses RLS)
+-- to insert objects into this bucket. Read/delete stay service-role only.
+drop policy if exists "Authenticated upload to weekly-messages" on storage.objects;
+create policy "Authenticated upload to weekly-messages"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'weekly-messages');
