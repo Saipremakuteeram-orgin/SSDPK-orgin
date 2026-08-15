@@ -2,7 +2,7 @@
 // The Vercel serverless functions run as CommonJS and must require() CommonJS
 // helpers (api/shared/*.cjs). These tests guard the shared helpers behind the
 // weekly discourse feature. No live Telegram/Supabase/network calls — fetch is mocked.
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   cors,
   telegramMethodFor,
@@ -107,5 +107,64 @@ describe('admin-auth', () => {
     const { authenticateAdmin } = await import('../api/shared/admin-auth.cjs');
     const sb = { auth: { getUser: async () => ({ data: null, error: { message: 'expired' } }) } };
     expect(await authenticateAdmin(sb, 'Bearer abc')).toBeNull();
+  });
+});
+
+describe('telegram-bot', () => {
+  const realFetch = global.fetch;
+
+  beforeEach(() => {
+    process.env.TELEGRAM_BOT_TOKEN = 'bot:test-token';
+    process.env.TELEGRAM_CHANNEL_ID = '@sspk_discourse';
+  });
+
+  afterEach(() => {
+    global.fetch = realFetch;
+    delete process.env.TELEGRAM_BOT_TOKEN;
+    delete process.env.TELEGRAM_CHANNEL_ID;
+  });
+
+  it('callTelegramApi returns error when token missing', async () => {
+    const { callTelegramApi } = await import('../api/shared/telegram-bot.cjs');
+    delete process.env.TELEGRAM_BOT_TOKEN;
+    const r = await callTelegramApi('sendMessage', new FormData());
+    expect(r).toEqual({ ok: false, error: 'TELEGRAM_BOT_TOKEN is not configured' });
+  });
+
+  it('sendTextToTelegram posts sendMessage and returns message_id', async () => {
+    const { sendTextToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, result: { message_id: 77 } })
+    }));
+    const r = await sendTextToTelegram({ text: 'Sai Ram' });
+    expect(r).toEqual({ ok: true, messageId: 77 });
+    const [url, opts] = global.fetch.mock.calls[0];
+    expect(url.startsWith('https://api.telegram.org/bot')).toBe(true);
+    expect(url.endsWith('/sendMessage')).toBe(true);
+    expect(opts.method).toBe('POST');
+  });
+
+  it('sendMediaToTelegram posts sendAudio for audio with chat_id', async () => {
+    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, result: { message_id: 12 } })
+    }));
+    const r = await sendMediaToTelegram({
+      mediaType: 'audio', buffer: Buffer.from('data'), filename: 'talk.mp3', mime: 'audio/mpeg', caption: 'T'
+    });
+    expect(r).toEqual({ ok: true, messageId: 12 });
+    expect(global.fetch.mock.calls[0][0].endsWith('/sendAudio')).toBe(true);
+  });
+
+  it('propagates Telegram error description', async () => {
+    const { callTelegramApi } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: false,
+      json: async () => ({ ok: false, description: 'chat not found' })
+    }));
+    const r = await callTelegramApi('sendMessage', new FormData());
+    expect(r).toEqual({ ok: false, error: 'chat not found' });
   });
 });
