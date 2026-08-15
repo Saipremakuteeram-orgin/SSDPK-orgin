@@ -376,7 +376,7 @@ git commit -m "feat: weekly-media storage bucket, RLS insert policy, file_id col
 - Test: `tests/weekly-messages-api.test.js` (proxy URL building already covered in Task 1; handler logic stays behind mocked network — see notes)
 
 **Interfaces:**
-- Consumes: `validateStoragePayload`, `buildMediaUrl`, `getMediaKind` (Task 1); `getTelegramFileStream`, `sendPhotoToTelegram`, `sendMediaToTelegram`, `getFileId` (Task 2); supabase service client `sb` (already created in the handler).
+- Consumes: `validateStoragePayload`, `buildMediaUrl` (Task 1); `getTelegramFileStream`, `sendPhotoToTelegram`, `sendMediaToTelegram`, `getFileId` (Task 2); supabase service client `sb` (already created in the handler).
 - Produces:
   - `POST /api/telegram-upload` JSON branch now accepts `storagePath` (media) + `thumbnailStoragePath`; stores `telegram_file_id` + `thumbnail_file_id`.
   - `GET /api/weekly-media` (public) — streams via `getTelegramFileStream`, sets `Content-Type` and `Content-Length` when available.
