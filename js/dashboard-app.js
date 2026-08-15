@@ -4,6 +4,15 @@
 // Bfcache fix: expose a re-init hook for pageshow event
 window._sspkReinit = null;
 
+function escapeHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function initDashboard() {
   // Elements
   const authView = document.getElementById('authView');
@@ -1620,10 +1629,228 @@ function initDashboard() {
 
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// WEEKLY MESSAGES (DISCOURSE) ADMIN
+// ══════════════════════════════════════════════════════════════════════════
+const WEEKLY_UPLOAD_MAX_BYTES = 50 * 1024 * 1024;
+
+async function initWeeklyMessagesAdmin() {
+  const form = document.getElementById('weeklyMessageForm');
+  const listEl = document.getElementById('weeklyMessageList');
+  const statusEl = document.getElementById('weeklyStatus');
+  const showBtn = document.getElementById('showAddWeeklyBtn');
+  const cancelBtn = document.getElementById('cancelWeeklyBtn');
+  const mediaTypeEl = document.getElementById('wmMediaType');
+  const fileWrap = document.getElementById('wmFileWrap');
+  const textWrap = document.getElementById('wmTextWrap');
+  const linkWrap = document.getElementById('wmLinkWrap');
+  if (!form || !listEl) return;
+
+  let editingId = null;
+
+  function setStatus(msg, isError) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.style.color = isError ? '#d9534f' : 'var(--accent-dark)';
+  }
+
+  async function getToken() {
+    const { data } = await supabase.auth.getSession();
+    return data.session ? data.session.access_token : null;
+  }
+
+  async function api(path, method, body) {
+    const token = await getToken();
+    if (!token) throw new Error('Not signed in. Please sign in again.');
+    const res = await fetch(path, {
+      method,
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.error || (data.errors && data.errors.join(', ')) || ('Request failed (' + res.status + ')');
+      throw new Error(msg);
+    }
+    return data;
+  }
+
+  function toggleMode() {
+    const t = mediaTypeEl.value;
+    if (fileWrap) fileWrap.style.display = (t === 'text') ? 'none' : '';
+    if (textWrap) textWrap.classList.toggle('hidden', t !== 'text');
+    if (linkWrap) linkWrap.style.display = (t === 'text') ? 'none' : '';
+  }
+
+  async function loadMessages() {
+    listEl.innerHTML = '<p style="color:var(--muted); font-size:13px;">Loading…</p>';
+    try {
+      const { data, error } = await supabase
+        .from('weekly_messages')
+        .select('*')
+        .order('date', { ascending: false });
+      if (error) throw error;
+      const messages = data || [];
+      if (messages.length === 0) {
+        listEl.innerHTML = '<p style="color:var(--muted); font-size:13px;">No weekly messages yet.</p>';
+        return;
+      }
+      listEl.innerHTML = messages.map((m) =>
+        '<div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px; border:1px solid var(--border); border-radius:6px; background:var(--surface);">' +
+          '<div style="flex:1; min-width:0;">' +
+            '<div style="font-weight:600; color:var(--accent-dark);">' + escapeHtml(m.title) + '</div>' +
+            '<div style="font-size:12px; color:var(--muted);">' + escapeHtml(m.date) + ' &bull; ' + escapeHtml(m.media_type) +
+              (m.category ? ' &bull; ' + escapeHtml(m.category) : '') + '</div>' +
+          '</div>' +
+          '<div style="display:flex; gap:8px;">' +
+            '<button class="btn btn-outline" data-wm-edit="' + m.id + '" style="padding:4px 12px; font-size:12px;">Edit</button>' +
+            '<button class="btn" data-wm-delete="' + m.id + '" style="padding:4px 12px; font-size:12px; background:#d9534f; border-color:#d9534f; color:#fff; cursor:pointer;">Delete</button>' +
+          '</div>' +
+        '</div>'
+      ).join('');
+
+      listEl.querySelectorAll('[data-wm-edit]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const m = messages.find((x) => x.id === btn.getAttribute('data-wm-edit'));
+          if (m) editMessage(m);
+        });
+      });
+      listEl.querySelectorAll('[data-wm-delete]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-wm-delete');
+          if (window.confirm('Delete this weekly message? The copy in the archive channel remains.')) deleteMessage(id);
+        });
+      });
+    } catch (e) {
+      listEl.innerHTML = '<p style="color:#d9534f; font-size:13px;">Failed to load: ' + escapeHtml(e.message) + '</p>';
+    }
+  }
+
+  function openForm() {
+    form.classList.remove('hidden');
+    if (showBtn) showBtn.classList.add('hidden');
+    toggleMode();
+  }
+
+  function closeForm() {
+    form.reset();
+    editingId = null;
+    document.getElementById('wmId').value = '';
+    form.classList.add('hidden');
+    if (showBtn) showBtn.classList.remove('hidden');
+  }
+
+  function editMessage(m) {
+    editingId = m.id;
+    document.getElementById('wmId').value = m.id;
+    document.getElementById('wmTitle').value = m.title || '';
+    document.getElementById('wmDate').value = m.date || '';
+    document.getElementById('wmMediaType').value = m.media_type || 'audio';
+    document.getElementById('wmDescription').value = m.description || '';
+    document.getElementById('wmText').value = (m.media_type === 'text') ? (m.description || '') : '';
+    document.getElementById('wmCategory').value = m.category || '';
+    document.getElementById('wmLanguage').value = m.language || '';
+    document.getElementById('wmDuration').value = m.duration || '';
+    document.getElementById('wmThumbnail').value = m.thumbnail_url || '';
+    document.getElementById('wmTelegramLink').value = '';
+    openForm();
+    form.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function deleteMessage(id) {
+    setStatus('Deleting…');
+    try {
+      await api('/api/weekly-messages', 'DELETE', { id });
+      setStatus('Deleted.');
+      await loadMessages();
+    } catch (e) {
+      setStatus(e.message, true);
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const base = {
+      title: document.getElementById('wmTitle').value.trim(),
+      date: document.getElementById('wmDate').value,
+      media_type: mediaTypeEl.value,
+      description: document.getElementById('wmDescription').value.trim(),
+      category: document.getElementById('wmCategory').value.trim(),
+      language: document.getElementById('wmLanguage').value.trim(),
+      duration: document.getElementById('wmDuration').value.trim(),
+      thumbnail_url: document.getElementById('wmThumbnail').value.trim()
+    };
+    if (!base.title || !base.date) { setStatus('Title and date are required.', true); return; }
+
+    try {
+      if (editingId) {
+        setStatus('Saving…');
+        await api('/api/weekly-messages', 'PATCH', { id: editingId, ...base });
+        setStatus('Saved.');
+        closeForm();
+        await loadMessages();
+        return;
+      }
+
+      const fileInput = document.getElementById('wmFile');
+      const file = fileInput && fileInput.files && fileInput.files[0];
+      const telegramLink = document.getElementById('wmTelegramLink').value.trim();
+      const text = document.getElementById('wmText').value.trim();
+
+      if (base.media_type === 'text') {
+        if (!text) { setStatus('Discourse text is required for text messages.', true); return; }
+        setStatus('Publishing text…');
+        await api('/api/telegram-upload', 'POST', { ...base, text });
+      } else if (file) {
+        if (file.size > WEEKLY_UPLOAD_MAX_BYTES) {
+          setStatus('File is larger than 50MB. Post it to the channel directly and use the message-link option instead.', true);
+          return;
+        }
+        setStatus('Uploading…');
+        const fd = new FormData();
+        Object.keys(base).forEach((k) => fd.append(k, base[k]));
+        fd.append('file', file, file.name);
+        const token = await getToken();
+        if (!token) throw new Error('Not signed in. Please sign in again.');
+        const res = await fetch('/api/telegram-upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token },
+          body: fd
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = data.error || (data.errors && data.errors.join(', ')) || ('Upload failed (' + res.status + ')');
+          throw new Error(msg);
+        }
+      } else if (telegramLink) {
+        setStatus('Creating from link…');
+        await api('/api/weekly-messages', 'POST', { ...base, telegram_link: telegramLink });
+      } else {
+        setStatus('Add a file, paste discourse text (text mode), or paste a channel message link.', true);
+        return;
+      }
+
+      setStatus('Created.');
+      closeForm();
+      await loadMessages();
+    } catch (err) {
+      setStatus(err.message || 'Failed.', true);
+    }
+  });
+
+  if (showBtn) showBtn.addEventListener('click', openForm);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeForm);
+  if (mediaTypeEl) mediaTypeEl.addEventListener('change', toggleMode);
+
+  await loadMessages();
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initDashboard);
+  document.addEventListener('DOMContentLoaded', initWeeklyMessagesAdmin);
 } else {
   initDashboard();
+  initWeeklyMessagesAdmin();
 }
 
 // ── Bfcache back-navigation fix ────────────────────────────────────────────────

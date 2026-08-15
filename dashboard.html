@@ -608,6 +608,62 @@
           <!-- Dynamic gallery list -->
         </div>
       </div>
+
+      <!-- Weekly Messages (Discourse) Management Panel -->
+      <div class="admin-panel">
+        <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Weekly Messages (Discourse)</h3>
+        <div style="margin-bottom: 20px;">
+          <button id="showAddWeeklyBtn" class="btn btn-primary" style="font-size:13px; padding:6px 14px;">+ Add Weekly Message</button>
+        </div>
+
+        <form id="weeklyMessageForm" class="hidden" style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom: 20px;">
+          <h4 style="margin-bottom:12px; font-weight:600;">Add/Edit Weekly Message</h4>
+          <input type="hidden" id="wmId">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <input type="text" id="wmTitle" placeholder="Title (e.g. Love All, Serve All)" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="date" id="wmDate" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <select id="wmMediaType" required class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+              <option value="audio">Audio</option>
+              <option value="video">Video</option>
+              <option value="text">Text</option>
+            </select>
+            <input type="text" id="wmCategory" placeholder="Category (e.g. Gita)" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="text" id="wmLanguage" placeholder="Language (e.g. Tamil)" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <input type="text" id="wmDuration" placeholder="Duration (e.g. 45:00)" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="text" id="wmThumbnail" placeholder="Thumbnail URL (optional)" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <textarea id="wmDescription" placeholder="Short description / excerpt" rows="2" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; margin-bottom:12px; background:var(--surface); color:var(--fg);"></textarea>
+
+          <div id="wmFileWrap" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">Audio / Video file (max 50MB)</label>
+            <input type="file" id="wmFile" accept="audio/*,video/*" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+
+          <div id="wmTextWrap" class="hidden" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">Discourse text</label>
+            <textarea id="wmText" rows="6" placeholder="Paste the discourse text here. It is posted to the archive channel and shown directly on the site." class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);"></textarea>
+          </div>
+
+          <div id="wmLinkWrap" style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">Already posted the media to the channel?</label>
+            <input type="text" id="wmTelegramLink" placeholder="Paste the message link (t.me/channel/123) instead of uploading" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary" style="padding:6px 14px; font-size:13px;">Save Message</button>
+            <button type="button" id="cancelWeeklyBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Cancel</button>
+          </div>
+          <div id="weeklyStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></div>
+        </form>
+
+        <div id="weeklyMessageList" style="display:flex; flex-direction:column; gap:12px;">
+          <!-- Dynamic weekly messages list -->
+        </div>
+      </div>
     </div>
 
   </div>
