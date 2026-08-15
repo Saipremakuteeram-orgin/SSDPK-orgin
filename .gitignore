@@ -28,6 +28,8 @@ api/*
 !api/_mail.js
 !api/notify-event.js
 !api/send-welcome.js
+!api/telegram-upload.js
+!api/weekly-messages.js
 bot.py
 dev_server.py
 decrypt_secret.py
