@@ -23,6 +23,11 @@
     return 'https://t.me/' + c + '/' + m + '?embed=1';
   }
 
+  function buildMediaUrl(id, kind) {
+    var base = '/api/weekly-media?id=' + encodeURIComponent(String(id == null ? '' : id));
+    return kind === 'thumb' ? base + '&kind=thumb' : base;
+  }
+
   function fallbackUrl(message) {
     var c = cleanChannel(message.telegram_channel);
     var m = Number(message.telegram_message_id);
@@ -86,14 +91,32 @@
     }
 
     var actionText = m.media_type === 'audio' ? 'Listen' : 'Watch';
-    var media =
-      '<div class="discourse-card-media">' +
-        '<div class="discourse-player">' +
-          renderThumbnail(m) +
-          '<iframe class="discourse-player-frame" src="' + escapeHtml(buildEmbedUrl(m)) + '" title="' + title + '" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
-          '<a class="discourse-fallback-link" href="' + escapeHtml(fallbackUrl(m)) + '" target="_blank" rel="noopener noreferrer">' + actionText + '</a>' +
-        '</div>' +
-      '</div>';
+    var media;
+    if (m.telegram_file_id) {
+      var src = buildMediaUrl(m.id, 'media');
+      var thumb = m.thumbnail_file_id
+        ? buildMediaUrl(m.id, 'thumb')
+        : (m.thumbnail_url && !isTelegramEmbedUrl(m.thumbnail_url) ? m.thumbnail_url : DEFAULT_THUMB);
+      var player = m.media_type === 'video'
+        ? '<video class="discourse-video" controls preload="metadata" poster="' + escapeHtml(thumb) + '" src="' + escapeHtml(src) + '"></video>'
+        : '<audio class="discourse-audio" controls preload="metadata" src="' + escapeHtml(src) + '"></audio>';
+      media =
+        '<div class="discourse-card-media">' +
+          '<div class="discourse-player">' +
+            player +
+            '<a class="discourse-fallback-link" href="' + escapeHtml(fallbackUrl(m)) + '" target="_blank" rel="noopener noreferrer">' + actionText + ' in Telegram</a>' +
+          '</div>' +
+        '</div>';
+    } else {
+      media =
+        '<div class="discourse-card-media">' +
+          '<div class="discourse-player">' +
+            renderThumbnail(m) +
+            '<iframe class="discourse-player-frame" src="' + escapeHtml(buildEmbedUrl(m)) + '" title="' + title + '" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
+            '<a class="discourse-fallback-link" href="' + escapeHtml(fallbackUrl(m)) + '" target="_blank" rel="noopener noreferrer">' + actionText + '</a>' +
+          '</div>' +
+        '</div>';
+    }
 
     return '<article class="discourse-card">' + media + body + '</div></article>';
   }
@@ -172,6 +195,7 @@
   window.SSPKD = {
     escapeHtml: escapeHtml,
     buildEmbedUrl: buildEmbedUrl,
+    buildMediaUrl: buildMediaUrl,
     fallbackUrl: fallbackUrl,
     filterMessages: filterMessages,
     renderCard: renderCard,

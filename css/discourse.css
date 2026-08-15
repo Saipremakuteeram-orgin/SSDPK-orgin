@@ -61,6 +61,7 @@
   height: 100%;
   border: 0;
 }
+.discourse-video, .discourse-audio { width: 100%; border-radius: 8px; display: block; }
 .discourse-thumb {
   position: absolute;
   inset: 0;
