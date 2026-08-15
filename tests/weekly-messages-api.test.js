@@ -202,4 +202,22 @@ describe('telegram-bot', () => {
     const r = await callTelegramApi('sendMessage', new FormData());
     expect(r).toEqual({ ok: false, error: 'chat not found' });
   });
+
+  it('sendPhotoToTelegram posts sendPhoto and returns message_id', async () => {
+    const { sendPhotoToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, result: { message_id: 99 } })
+    }));
+    const r = await sendPhotoToTelegram({ buffer: Buffer.from('img'), mime: 'image/jpeg', filename: 'thumb.jpg', caption: 'T' });
+    expect(r).toEqual({ ok: true, messageId: 99 });
+    expect(global.fetch.mock.calls[0][0].endsWith('/sendPhoto')).toBe(true);
+  });
+
+  it('sendPhotoToTelegram errors when channel missing', async () => {
+    const { sendPhotoToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    delete process.env.TELEGRAM_CHANNEL_ID;
+    const r = await sendPhotoToTelegram({ buffer: Buffer.from('img'), mime: 'image/jpeg', filename: 'thumb.jpg' });
+    expect(r).toEqual({ ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' });
+  });
 });

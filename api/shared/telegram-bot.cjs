@@ -49,4 +49,18 @@ async function sendTextToTelegram({ text }) {
   return { ok: true, messageId: Number(result.data.message_id) };
 }
 
-module.exports = { getBotToken, getChannelId, callTelegramApi, sendMediaToTelegram, sendTextToTelegram };
+async function sendPhotoToTelegram({ buffer, mime, filename, caption }) {
+  const channel = getChannelId();
+  if (!channel) return { ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' };
+
+  const form = new FormData();
+  form.append('chat_id', channel);
+  if (caption) form.append('caption', caption);
+  form.append('photo', new Blob([buffer], { type: mime || 'image/jpeg' }), filename || 'thumb.jpg');
+
+  const result = await callTelegramApi('sendPhoto', form);
+  if (!result.ok) return result;
+  return { ok: true, messageId: Number(result.data.message_id) };
+}
+
+module.exports = { getBotToken, getChannelId, callTelegramApi, sendMediaToTelegram, sendTextToTelegram, sendPhotoToTelegram };
