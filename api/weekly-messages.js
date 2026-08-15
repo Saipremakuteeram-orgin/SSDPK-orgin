@@ -254,12 +254,16 @@ async function handleMediaProxy(req, res, sb) {
   if (!body) return res.status(502).json({ error: 'Telegram returned no body' });
   const reader = body.getReader();
   res.on('close', () => { try { reader.cancel(); } catch (e) {} });
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    res.write(value);
+  res.flushHeaders();
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      res.write(value);
+    }
+  } finally {
+    try { res.end(); } catch (e) {}
   }
-  res.end();
 }
 
 // ── /api/weekly-messages (link-first) ───────────────────────────────────────
