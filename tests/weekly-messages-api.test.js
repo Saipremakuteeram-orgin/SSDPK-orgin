@@ -2,7 +2,7 @@
 // The Vercel serverless functions run as CommonJS and must require() CommonJS
 // helpers (api/shared/*.cjs). These tests guard the shared helpers behind the
 // weekly discourse feature. No live Telegram/Supabase/network calls — fetch is mocked.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   cors,
   telegramMethodFor,
@@ -68,5 +68,44 @@ describe('weekly-common helpers', () => {
 
   it('escapeHtml escapes special chars', () => {
     expect(escapeHtml('<a href="x">&\'')).toBe('&lt;a href=&quot;x&quot;&gt;&amp;&#39;');
+  });
+});
+
+describe('admin-auth', () => {
+  beforeEach(() => {
+    process.env.ADMIN_EMAILS = 'sk143sathya@gmail.com, Second@Example.com';
+  });
+
+  afterEach(() => {
+    delete process.env.ADMIN_EMAILS;
+  });
+
+  it('isAdminEmail is case-insensitive against env list', async () => {
+    const { isAdminEmail } = await import('../api/shared/admin-auth.cjs');
+    expect(isAdminEmail('SK143Sathya@Gmail.com')).toBe(true);
+    expect(isAdminEmail('second@example.com')).toBe(true);
+    expect(isAdminEmail('other@example.com')).toBe(false);
+    expect(isAdminEmail(null)).toBe(false);
+  });
+
+  it('authenticateAdmin returns null without a Bearer token', async () => {
+    const { authenticateAdmin } = await import('../api/shared/admin-auth.cjs');
+    const sb = { auth: { getUser: async () => ({ data: { user: { email: 'x@y.z' } }, error: null }) } };
+    expect(await authenticateAdmin(sb, undefined)).toBeNull();
+    expect(await authenticateAdmin(sb, 'token-no-bearer')).toBeNull();
+  });
+
+  it('authenticateAdmin returns user for a valid token', async () => {
+    const { authenticateAdmin } = await import('../api/shared/admin-auth.cjs');
+    const sb = {
+      auth: { getUser: async () => ({ data: { user: { id: 'u1', email: 'sk143sathya@gmail.com' } }, error: null }) }
+    };
+    expect(await authenticateAdmin(sb, 'Bearer abc')).toEqual({ id: 'u1', email: 'sk143sathya@gmail.com' });
+  });
+
+  it('authenticateAdmin returns null on auth error', async () => {
+    const { authenticateAdmin } = await import('../api/shared/admin-auth.cjs');
+    const sb = { auth: { getUser: async () => ({ data: null, error: { message: 'expired' } }) } };
+    expect(await authenticateAdmin(sb, 'Bearer abc')).toBeNull();
   });
 });
