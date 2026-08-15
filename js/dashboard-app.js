@@ -1892,7 +1892,8 @@ async function initWeeklyMessagesAdmin() {
         await api('/api/telegram-upload', 'POST', {
           ...base,
           storagePath,
-          thumbnailStoragePath: thumbnailStoragePath || undefined
+          thumbnailStoragePath: thumbnailStoragePath || undefined,
+          fileMime: file.type || undefined
         });
       } else if (telegramLink) {
         if (thumbFile) {

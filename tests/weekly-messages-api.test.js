@@ -63,11 +63,14 @@ describe('weekly-common helpers', () => {
     expect(ok.value.category).toBe('Bhagavad Gita');
   });
 
-  it('validateFile accepts valid audio and rejects wrong/empty/oversized', () => {
+  it('validateFile accepts all formats for audio/video and rejects empty/oversized/wrong-type', () => {
     expect(TELEGRAM_UPLOAD_MAX_BYTES).toBe(48 * 1024 * 1024);
     expect(validateFile({ mediaType: 'audio', filename: 'talk.mp3', bytes: 10 }).ok).toBe(true);
-    expect(validateFile({ mediaType: 'audio', filename: 'talk.mp4', bytes: 10 }).ok).toBe(false);
+    expect(validateFile({ mediaType: 'audio', filename: 'WhatsApp Audio 2026-08-13 at 11.16.20 AM.mpeg', bytes: 10 }).ok).toBe(true);
+    expect(validateFile({ mediaType: 'audio', filename: 'talk.mp4', bytes: 10 }).ok).toBe(true);
+    expect(validateFile({ mediaType: 'video', filename: 'talk.avi', bytes: 10 }).ok).toBe(true);
     expect(validateFile({ mediaType: 'video', filename: 'talk.mp4', bytes: 0 }).ok).toBe(false);
+    expect(validateFile({ mediaType: 'text', filename: 'a.mp3', bytes: 10 }).ok).toBe(false);
     const big = validateFile({ mediaType: 'audio', filename: 'talk.mp3', bytes: TELEGRAM_UPLOAD_MAX_BYTES + 1 });
     expect(big.ok).toBe(false);
     expect(big.errors[0]).toMatch(/48MB/);
@@ -100,6 +103,13 @@ describe('weekly storage upload', () => {
     const r = validateStoragePayload({ storagePath: 'a/b.mp3' });
     expect(r.ok).toBe(true);
     expect(r.value.thumbnailStoragePath).toBeUndefined();
+  });
+
+  it('validateStoragePayload captures optional fileMime', () => {
+    const r = validateStoragePayload({ storagePath: 'a/b.mpeg', fileMime: 'audio/mpeg' });
+    expect(r.ok).toBe(true);
+    expect(r.value.fileMime).toBe('audio/mpeg');
+    expect(validateStoragePayload({ storagePath: 'a/b.mpeg' }).value.fileMime).toBeUndefined();
   });
 
   it('buildMediaUrl builds media and thumb urls', () => {
@@ -224,8 +234,43 @@ describe('telegram-bot', () => {
     const r = await sendMediaToTelegram({
       mediaType: 'audio', buffer: Buffer.from('data'), filename: 'talk.mp3', mime: 'audio/mpeg', caption: 'T'
     });
-    expect(r).toEqual({ ok: true, messageId: 12, fileId: '' });
+    expect(r).toEqual({ ok: true, messageId: 12, fileId: '', kind: 'audio' });
     expect(global.fetch.mock.calls[0][0].endsWith('/sendAudio')).toBe(true);
+  });
+
+  it('sendMediaToTelegram falls back to sendDocument when sendAudio fails', async () => {
+    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, json: async () => ({ ok: false, description: 'can not be played' }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, result: { message_id: 55, document: { file_id: 'DOC123' } } }) });
+    const r = await sendMediaToTelegram({
+      mediaType: 'audio', buffer: Buffer.from('x'), filename: 'WhatsApp Audio.mpeg', mime: 'audio/mpeg'
+    });
+    expect(r).toEqual({ ok: true, messageId: 55, fileId: 'DOC123', kind: 'document' });
+    const urls = global.fetch.mock.calls.map((c) => c[0]);
+    expect(urls[0].endsWith('/sendAudio')).toBe(true);
+    expect(urls[1].endsWith('/sendDocument')).toBe(true);
+  });
+
+  it('sendMediaToTelegram falls back to sendDocument for video too', async () => {
+    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: false, json: async () => ({ ok: false, description: 'bad format' }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, result: { message_id: 66, document: { file_id: 'DOC66' } } }) });
+    const r = await sendMediaToTelegram({
+      mediaType: 'video', buffer: Buffer.from('x'), filename: 'v.mpeg', mime: 'video/mpeg'
+    });
+    expect(r).toEqual({ ok: true, messageId: 66, fileId: 'DOC66', kind: 'document' });
+    expect(global.fetch.mock.calls[0][0].endsWith('/sendVideo')).toBe(true);
+    expect(global.fetch.mock.calls[1][0].endsWith('/sendDocument')).toBe(true);
+  });
+
+  it('sendMediaToTelegram propagates error when document fallback also fails', async () => {
+    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({ ok: false, json: async () => ({ ok: false, description: 'chat not found' }) }));
+    const r = await sendMediaToTelegram({ mediaType: 'audio', buffer: Buffer.from('x'), filename: 'a.mp3', mime: 'audio/mpeg' });
+    expect(r).toEqual({ ok: false, error: 'chat not found' });
+    expect(global.fetch.mock.calls).toHaveLength(2);
   });
 
   it('propagates Telegram error description', async () => {
@@ -278,7 +323,7 @@ describe('telegram-bot file_id + getFile', () => {
       json: async () => ({ ok: true, result: { message_id: 1, audio: { file_id: 'AUDIO123' } } })
     }));
     const r = await sendMediaToTelegram({ mediaType: 'audio', buffer: Buffer.from('x'), filename: 'a.mp3', mime: 'audio/mpeg' });
-    expect(r).toEqual({ ok: true, messageId: 1, fileId: 'AUDIO123' });
+    expect(r).toEqual({ ok: true, messageId: 1, fileId: 'AUDIO123', kind: 'audio' });
   });
 
   it('sendMediaToTelegram returns fileId for video', async () => {
@@ -288,7 +333,7 @@ describe('telegram-bot file_id + getFile', () => {
       json: async () => ({ ok: true, result: { message_id: 2, video: { file_id: 'VIDEO456' } } })
     }));
     const r = await sendMediaToTelegram({ mediaType: 'video', buffer: Buffer.from('x'), filename: 'v.mp4', mime: 'video/mp4' });
-    expect(r).toEqual({ ok: true, messageId: 2, fileId: 'VIDEO456' });
+    expect(r).toEqual({ ok: true, messageId: 2, fileId: 'VIDEO456', kind: 'video' });
   });
 
   it('sendPhotoToTelegram returns fileId from the largest photo size', async () => {
@@ -326,6 +371,7 @@ describe('telegram-bot file_id + getFile', () => {
     const { getFileId } = await import('../api/shared/telegram-bot.cjs');
     expect(getFileId({ audio: { file_id: 'X' } })).toBe('X');
     expect(getFileId({ video: { file_id: 'Y' } })).toBe('Y');
+    expect(getFileId({ document: { file_id: 'D' } })).toBe('D');
     expect(getFileId({ photo: [{ file_id: 'Z' }] })).toBe('Z');
     expect(getFileId({})).toBe('');
   });

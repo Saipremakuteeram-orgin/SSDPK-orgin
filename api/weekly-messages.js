@@ -109,7 +109,7 @@ async function handleTelegramUpload(req, res, sb, admin) {
       mediaType: v.value.media_type,
       buffer: mediaBuffer,
       filename: fv.value.filename,
-      mime: v.value.media_type === 'video' ? 'video/mp4' : 'audio/mpeg',
+      mime: sv.value.fileMime || (v.value.media_type === 'video' ? 'video/mp4' : 'audio/mpeg'),
       caption: v.value.title
     });
     if (!sent.ok) return res.status(502).json({ error: sent.error });

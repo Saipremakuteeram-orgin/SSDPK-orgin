@@ -34,8 +34,20 @@ async function sendMediaToTelegram({ mediaType, buffer, filename, mime, caption 
   form.append(field, new Blob([buffer], { type: mime || 'application/octet-stream' }), filename);
 
   const result = await callTelegramApi(method, form);
-  if (!result.ok) return result;
-  return { ok: true, messageId: Number(result.data.message_id), fileId: getFileId(result.data) };
+  if (result.ok) {
+    return { ok: true, messageId: Number(result.data.message_id), fileId: getFileId(result.data), kind: isVideo ? 'video' : 'audio' };
+  }
+
+  // Exotic/unrecognized media types (e.g. WhatsApp .mpeg audio) can be rejected
+  // by sendAudio/sendVideo — retry as a generic document so any file still uploads.
+  const docForm = new FormData();
+  docForm.append('chat_id', channel);
+  if (caption) docForm.append('caption', caption);
+  docForm.append('document', new Blob([buffer], { type: mime || 'application/octet-stream' }), filename);
+
+  const docResult = await callTelegramApi('sendDocument', docForm);
+  if (!docResult.ok) return result;
+  return { ok: true, messageId: Number(docResult.data.message_id), fileId: getFileId(docResult.data), kind: 'document' };
 }
 
 async function sendTextToTelegram({ text }) {
@@ -67,6 +79,7 @@ function getFileId(result) {
   const r = result || {};
   if (r.audio && r.audio.file_id) return r.audio.file_id;
   if (r.video && r.video.file_id) return r.video.file_id;
+  if (r.document && r.document.file_id) return r.document.file_id;
   if (Array.isArray(r.photo) && r.photo.length) {
     let best = r.photo[0];
     r.photo.forEach((p) => { if (Number(p.file_size) > Number(best.file_size)) best = p; });

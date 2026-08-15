@@ -7,8 +7,7 @@ const TELEGRAM_UPLOAD_MAX_BYTES = 48 * 1024 * 1024; // Telegram Bot API caps med
 const THUMBNAIL_MAX_BYTES = 4 * 1024 * 1024; // keep under the 4.5MB Vercel body cap
 const THUMBNAIL_MIMES = new Set(['image/jpeg', 'image/png']);
 
-const AUDIO_EXT = new Set(['mp3', 'm4a', 'ogg', 'oga', 'opus', 'flac', 'wav', 'aac']);
-const VIDEO_EXT = new Set(['mp4', 'm4v', 'mov', 'mkv', 'webm', 'avi']);
+
 
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -73,13 +72,11 @@ function validateFile({ mediaType, filename, bytes }) {
   const errors = [];
   const name = typeof filename === 'string' ? filename : '';
   const ext = name.split('.').pop().toLowerCase();
-  const allowed = mediaType === 'audio' ? AUDIO_EXT : mediaType === 'video' ? VIDEO_EXT : null;
 
-  if (!allowed) {
+  if (!['audio', 'video'].includes(mediaType)) {
     errors.push('media_type must be audio or video for file uploads');
-  } else if (!allowed.has(ext)) {
-    errors.push('unsupported file type .' + ext + ' for ' + mediaType);
   }
+  if (!name) errors.push('filename is required');
   if (!(bytes > 0)) errors.push('file is empty');
   if (bytes > TELEGRAM_UPLOAD_MAX_BYTES) {
     errors.push('file is too large (max 48MB)');
@@ -122,7 +119,9 @@ function validateStoragePayload(payload) {
   const value = {};
   const storagePath = typeof p.storagePath === 'string' ? p.storagePath.trim() : '';
   const thumbPath = typeof p.thumbnailStoragePath === 'string' ? p.thumbnailStoragePath.trim() : '';
+  const fileMime = typeof p.fileMime === 'string' ? p.fileMime.trim() : '';
   if (!storagePath) errors.push('storagePath is required');
+  if (fileMime) value.fileMime = fileMime;
   if (thumbPath) value.thumbnailStoragePath = thumbPath;
   value.storagePath = storagePath;
   return { ok: errors.length === 0, errors, value };
