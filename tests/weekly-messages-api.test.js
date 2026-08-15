@@ -224,7 +224,7 @@ describe('telegram-bot', () => {
     const r = await sendMediaToTelegram({
       mediaType: 'audio', buffer: Buffer.from('data'), filename: 'talk.mp3', mime: 'audio/mpeg', caption: 'T'
     });
-    expect(r).toEqual({ ok: true, messageId: 12 });
+    expect(r).toEqual({ ok: true, messageId: 12, fileId: '' });
     expect(global.fetch.mock.calls[0][0].endsWith('/sendAudio')).toBe(true);
   });
 
@@ -245,7 +245,7 @@ describe('telegram-bot', () => {
       json: async () => ({ ok: true, result: { message_id: 99 } })
     }));
     const r = await sendPhotoToTelegram({ buffer: Buffer.from('img'), mime: 'image/jpeg', filename: 'thumb.jpg', caption: 'T' });
-    expect(r).toEqual({ ok: true, messageId: 99 });
+    expect(r).toEqual({ ok: true, messageId: 99, fileId: '' });
     expect(global.fetch.mock.calls[0][0].endsWith('/sendPhoto')).toBe(true);
   });
 
@@ -254,5 +254,79 @@ describe('telegram-bot', () => {
     delete process.env.TELEGRAM_CHANNEL_ID;
     const r = await sendPhotoToTelegram({ buffer: Buffer.from('img'), mime: 'image/jpeg', filename: 'thumb.jpg' });
     expect(r).toEqual({ ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' });
+  });
+});
+
+describe('telegram-bot file_id + getFile', () => {
+  const realFetch = global.fetch;
+
+  beforeEach(() => {
+    process.env.TELEGRAM_BOT_TOKEN = 'bot:test-token';
+    process.env.TELEGRAM_CHANNEL_ID = '@sspk_discourse';
+  });
+
+  afterEach(() => {
+    global.fetch = realFetch;
+    delete process.env.TELEGRAM_BOT_TOKEN;
+    delete process.env.TELEGRAM_CHANNEL_ID;
+  });
+
+  it('sendMediaToTelegram returns fileId for audio', async () => {
+    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, result: { message_id: 1, audio: { file_id: 'AUDIO123' } } })
+    }));
+    const r = await sendMediaToTelegram({ mediaType: 'audio', buffer: Buffer.from('x'), filename: 'a.mp3', mime: 'audio/mpeg' });
+    expect(r).toEqual({ ok: true, messageId: 1, fileId: 'AUDIO123' });
+  });
+
+  it('sendMediaToTelegram returns fileId for video', async () => {
+    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, result: { message_id: 2, video: { file_id: 'VIDEO456' } } })
+    }));
+    const r = await sendMediaToTelegram({ mediaType: 'video', buffer: Buffer.from('x'), filename: 'v.mp4', mime: 'video/mp4' });
+    expect(r).toEqual({ ok: true, messageId: 2, fileId: 'VIDEO456' });
+  });
+
+  it('sendPhotoToTelegram returns fileId from the largest photo size', async () => {
+    const { sendPhotoToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, result: { message_id: 3, photo: [{ file_id: 'small', file_size: 10 }, { file_id: 'big', file_size: 100 }] } })
+    }));
+    const r = await sendPhotoToTelegram({ buffer: Buffer.from('i'), mime: 'image/jpeg', filename: 't.jpg' });
+    expect(r).toEqual({ ok: true, messageId: 3, fileId: 'big' });
+  });
+
+  it('getTelegramFileStream calls getFile then streams the file url', async () => {
+    const { getTelegramFileStream } = await import('../api/shared/telegram-bot.cjs');
+    const fakeStream = { ok: true, body: 'STREAM' };
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, result: { file_path: 'docs/file_1.mp3' } }) })
+      .mockResolvedValueOnce(fakeStream);
+    const r = await getTelegramFileStream('AUDIO123');
+    expect(r).toEqual({ ok: true, stream: fakeStream });
+    const urls = global.fetch.mock.calls.map((c) => c[0]);
+    expect(urls[0]).toContain('/botbot:test-token/getFile');
+    expect(urls[1]).toBe('https://api.telegram.org/file/botbot:test-token/docs/file_1.mp3');
+  });
+
+  it('getTelegramFileStream returns error when getFile fails', async () => {
+    const { getTelegramFileStream } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({ ok: false, json: async () => ({ ok: false, description: 'bad file_id' }) }));
+    const r = await getTelegramFileStream('NOPE');
+    expect(r.ok).toBe(false);
+    expect(r.error).toBe('bad file_id');
+  });
+
+  it('sendMediaToTelegram fileId falls back to empty string', async () => {
+    const { getFileId } = await import('../api/shared/telegram-bot.cjs');
+    expect(getFileId({ audio: { file_id: 'X' } })).toBe('X');
+    expect(getFileId({ video: { file_id: 'Y' } })).toBe('Y');
+    expect(getFileId({ photo: [{ file_id: 'Z' }] })).toBe('Z');
+    expect(getFileId({})).toBe('');
   });
 });

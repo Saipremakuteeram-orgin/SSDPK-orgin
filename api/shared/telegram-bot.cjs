@@ -35,7 +35,7 @@ async function sendMediaToTelegram({ mediaType, buffer, filename, mime, caption 
 
   const result = await callTelegramApi(method, form);
   if (!result.ok) return result;
-  return { ok: true, messageId: Number(result.data.message_id) };
+  return { ok: true, messageId: Number(result.data.message_id), fileId: getFileId(result.data) };
 }
 
 async function sendTextToTelegram({ text }) {
@@ -60,7 +60,39 @@ async function sendPhotoToTelegram({ buffer, mime, filename, caption }) {
 
   const result = await callTelegramApi('sendPhoto', form);
   if (!result.ok) return result;
-  return { ok: true, messageId: Number(result.data.message_id) };
+  return { ok: true, messageId: Number(result.data.message_id), fileId: getFileId(result.data) };
 }
 
-module.exports = { getBotToken, getChannelId, callTelegramApi, sendMediaToTelegram, sendTextToTelegram, sendPhotoToTelegram };
+function getFileId(result) {
+  const r = result || {};
+  if (r.audio && r.audio.file_id) return r.audio.file_id;
+  if (r.video && r.video.file_id) return r.video.file_id;
+  if (Array.isArray(r.photo) && r.photo.length) {
+    let best = r.photo[0];
+    r.photo.forEach((p) => { if (Number(p.file_size) > Number(best.file_size)) best = p; });
+    return best.file_id || '';
+  }
+  return '';
+}
+
+function makeJsonForm(obj) {
+  const form = new FormData();
+  Object.keys(obj).forEach((k) => form.append(k, String(obj[k])));
+  return form;
+}
+
+async function getTelegramFileStream(fileId) {
+  const token = getBotToken();
+  if (!token) return { ok: false, error: 'TELEGRAM_BOT_TOKEN is not configured' };
+  if (!fileId) return { ok: false, error: 'file_id is missing' };
+  const info = await callTelegramApi('getFile', makeJsonForm({ file_id: fileId }));
+  if (!info.ok) return info;
+  const filePath = info.data && info.data.file_path;
+  if (!filePath) return { ok: false, error: 'Telegram returned no file_path' };
+  const url = 'https://api.telegram.org/file/bot' + token + '/' + filePath;
+  const res = await fetch(url, { method: 'GET' });
+  if (!res.ok) return { ok: false, error: 'Telegram file download failed (' + res.status + ')' };
+  return { ok: true, stream: res };
+}
+
+module.exports = { getBotToken, getChannelId, callTelegramApi, sendMediaToTelegram, sendTextToTelegram, sendPhotoToTelegram, getTelegramFileStream, getFileId };
