@@ -66,4 +66,23 @@ describe('js/discourse.js', () => {
     expect(html).toContain('>Watch</a>');
     expect(html).toContain('images/sathya_sai_baba.png');
   });
+
+  it('renderCard renders an iframe thumb for a t.me embed thumbnail_url', () => {
+    const html = S.renderCard({
+      title: 'Talk', date: '2026-08-14', media_type: 'audio',
+      telegram_channel: 'sspk_discourse', telegram_message_id: 42,
+      thumbnail_url: 'https://t.me/sspk_discourse/50?embed=1'
+    });
+    expect(html).toContain('<iframe class="discourse-thumb"');
+    expect(html).not.toContain('<img class="discourse-thumb"');
+  });
+
+  it('renderCard renders an img thumb for a direct image URL', () => {
+    const html = S.renderCard({
+      title: 'Talk', date: '2026-08-14', media_type: 'video',
+      telegram_channel: 'sspk_discourse', telegram_message_id: 7,
+      thumbnail_url: 'https://example.com/photo.jpg'
+    });
+    expect(html).toContain('<img class="discourse-thumb" src="https://example.com/photo.jpg"');
+  });
 });

@@ -29,6 +29,18 @@
     return 'https://t.me/' + c + '/' + m;
   }
 
+  function isTelegramEmbedUrl(url) {
+    return /^https:\/\/t\.me\/[A-Za-z0-9_]+\/\d+\?embed=1$/.test(String(url || ''));
+  }
+
+  function renderThumbnail(message) {
+    var url = String((message && message.thumbnail_url) || '').trim();
+    if (isTelegramEmbedUrl(url)) {
+      return '<iframe class="discourse-thumb" src="' + escapeHtml(url) + '" title="' + escapeHtml(message.title || '') + '" loading="lazy" allowfullscreen></iframe>';
+    }
+    return '<img class="discourse-thumb" src="' + escapeHtml(url || DEFAULT_THUMB) + '" alt="" loading="lazy">';
+  }
+
   function filterMessages(messages, filters) {
     var f = filters || {};
     var category = (f.category || '').trim().toLowerCase();
@@ -77,7 +89,7 @@
     var media =
       '<div class="discourse-card-media">' +
         '<div class="discourse-player">' +
-          '<img class="discourse-thumb" src="' + escapeHtml(m.thumbnail_url || DEFAULT_THUMB) + '" alt="" loading="lazy">' +
+          renderThumbnail(m) +
           '<iframe class="discourse-player-frame" src="' + escapeHtml(buildEmbedUrl(m)) + '" title="' + title + '" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
           '<a class="discourse-fallback-link" href="' + escapeHtml(fallbackUrl(m)) + '" target="_blank" rel="noopener noreferrer">' + actionText + '</a>' +
         '</div>' +
@@ -163,6 +175,7 @@
     fallbackUrl: fallbackUrl,
     filterMessages: filterMessages,
     renderCard: renderCard,
+    renderThumbnail: renderThumbnail,
     fetchMessages: fetchMessages,
     init: init
   };
