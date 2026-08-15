@@ -1633,6 +1633,7 @@ function initDashboard() {
 // WEEKLY MESSAGES (DISCOURSE) ADMIN
 // ══════════════════════════════════════════════════════════════════════════
 const WEEKLY_UPLOAD_MAX_BYTES = 50 * 1024 * 1024;
+const WEEKLY_THUMB_MAX_BYTES = 5 * 1024 * 1024;
 
 async function initWeeklyMessagesAdmin() {
   const form = document.getElementById('weeklyMessageForm');
@@ -1644,6 +1645,13 @@ async function initWeeklyMessagesAdmin() {
   const fileWrap = document.getElementById('wmFileWrap');
   const textWrap = document.getElementById('wmTextWrap');
   const linkWrap = document.getElementById('wmLinkWrap');
+  const thumbFileEl = document.getElementById('wmThumbnailFile');
+  const thumbPreviewEl = document.getElementById('wmThumbnailPreview');
+  const thumbPreviewWrap = document.getElementById('wmThumbnailPreviewWrap');
+  const thumbRemoveBtn = document.getElementById('wmThumbnailRemove');
+  const thumbUrlEl = document.getElementById('wmThumbnail');
+  let thumbPreviewUrl = null;
+  let thumbRemoveRequested = false;
   if (!form || !listEl) return;
 
   let editingId = null;
@@ -1652,6 +1660,34 @@ async function initWeeklyMessagesAdmin() {
     if (!statusEl) return;
     statusEl.textContent = msg;
     statusEl.style.color = isError ? '#d9534f' : 'var(--accent-dark)';
+  }
+
+  function resetThumbUpload() {
+    if (thumbFileEl) thumbFileEl.value = '';
+    if (thumbPreviewUrl) { URL.revokeObjectURL(thumbPreviewUrl); thumbPreviewUrl = null; }
+    if (thumbPreviewEl) thumbPreviewEl.src = '';
+    if (thumbPreviewWrap) thumbPreviewWrap.style.display = 'none';
+    thumbRemoveRequested = false;
+  }
+
+  function showThumbPreview() {
+    const f = thumbFileEl && thumbFileEl.files && thumbFileEl.files[0];
+    if (!f) return;
+    if (f.type !== 'image/jpeg' && f.type !== 'image/png') {
+      setStatus('Thumbnail must be a JPEG or PNG image.', true);
+      resetThumbUpload();
+      return;
+    }
+    if (f.size > WEEKLY_THUMB_MAX_BYTES) {
+      setStatus('Thumbnail is larger than 5MB.', true);
+      resetThumbUpload();
+      return;
+    }
+    if (thumbPreviewUrl) URL.revokeObjectURL(thumbPreviewUrl);
+    thumbPreviewUrl = URL.createObjectURL(f);
+    if (thumbPreviewEl) thumbPreviewEl.src = thumbPreviewUrl;
+    if (thumbPreviewWrap) thumbPreviewWrap.style.display = 'flex';
+    thumbRemoveRequested = false;
   }
 
   async function getToken() {
@@ -1734,6 +1770,7 @@ async function initWeeklyMessagesAdmin() {
 
   function closeForm() {
     form.reset();
+    resetThumbUpload();
     editingId = null;
     document.getElementById('wmId').value = '';
     form.classList.add('hidden');
@@ -1753,6 +1790,7 @@ async function initWeeklyMessagesAdmin() {
     document.getElementById('wmDuration').value = m.duration || '';
     document.getElementById('wmThumbnail').value = m.thumbnail_url || '';
     document.getElementById('wmTelegramLink').value = '';
+    resetThumbUpload();
     openForm();
     form.scrollIntoView({ behavior: 'smooth' });
   }
@@ -1782,10 +1820,35 @@ async function initWeeklyMessagesAdmin() {
     };
     if (!base.title || !base.date) { setStatus('Title and date are required.', true); return; }
 
+    const thumbFile = thumbFileEl && thumbFileEl.files && thumbFileEl.files[0];
+
     try {
       if (editingId) {
-        setStatus('Saving…');
-        await api('/api/weekly-messages', 'PATCH', { id: editingId, ...base });
+        if (thumbFile) {
+          setStatus('Saving…');
+          const fd = new FormData();
+          Object.keys(base).forEach((k) => fd.append(k, base[k]));
+          fd.append('id', editingId);
+          fd.append('thumbnail', thumbFile, thumbFile.name);
+          const token = await getToken();
+          if (!token) throw new Error('Not signed in. Please sign in again.');
+          const res = await fetch('/api/weekly-messages', {
+            method: 'PATCH',
+            headers: { 'Authorization': 'Bearer ' + token },
+            body: fd
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg = data.error || (data.errors && data.errors.join(', ')) || ('Save failed (' + res.status + ')');
+            throw new Error(msg);
+          }
+        } else if (thumbRemoveRequested) {
+          setStatus('Saving…');
+          await api('/api/weekly-messages', 'PATCH', { id: editingId, thumbnail_url: null });
+        } else {
+          setStatus('Saving…');
+          await api('/api/weekly-messages', 'PATCH', { id: editingId, ...base });
+        }
         setStatus('Saved.');
         closeForm();
         await loadMessages();
@@ -1810,6 +1873,7 @@ async function initWeeklyMessagesAdmin() {
         const fd = new FormData();
         Object.keys(base).forEach((k) => fd.append(k, base[k]));
         fd.append('file', file, file.name);
+        if (thumbFile) fd.append('thumbnail', thumbFile, thumbFile.name);
         const token = await getToken();
         if (!token) throw new Error('Not signed in. Please sign in again.');
         const res = await fetch('/api/telegram-upload', {
@@ -1823,8 +1887,28 @@ async function initWeeklyMessagesAdmin() {
           throw new Error(msg);
         }
       } else if (telegramLink) {
-        setStatus('Creating from link…');
-        await api('/api/weekly-messages', 'POST', { ...base, telegram_link: telegramLink });
+        if (thumbFile) {
+          setStatus('Creating from link…');
+          const fd = new FormData();
+          Object.keys(base).forEach((k) => fd.append(k, base[k]));
+          fd.append('telegram_link', telegramLink);
+          fd.append('thumbnail', thumbFile, thumbFile.name);
+          const token = await getToken();
+          if (!token) throw new Error('Not signed in. Please sign in again.');
+          const res = await fetch('/api/weekly-messages', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token },
+            body: fd
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg = data.error || (data.errors && data.errors.join(', ')) || ('Create failed (' + res.status + ')');
+            throw new Error(msg);
+          }
+        } else {
+          setStatus('Creating from link…');
+          await api('/api/weekly-messages', 'POST', { ...base, telegram_link: telegramLink });
+        }
       } else {
         setStatus('Add a file, paste discourse text (text mode), or paste a channel message link.', true);
         return;
@@ -1841,6 +1925,16 @@ async function initWeeklyMessagesAdmin() {
   if (showBtn) showBtn.addEventListener('click', openForm);
   if (cancelBtn) cancelBtn.addEventListener('click', closeForm);
   if (mediaTypeEl) mediaTypeEl.addEventListener('change', toggleMode);
+
+  if (thumbFileEl) thumbFileEl.addEventListener('change', showThumbPreview);
+  if (thumbRemoveBtn) thumbRemoveBtn.addEventListener('click', function() {
+    resetThumbUpload();
+    thumbRemoveRequested = true;
+    if (thumbUrlEl) thumbUrlEl.value = '';
+  });
+  if (thumbUrlEl) thumbUrlEl.addEventListener('input', function() {
+    if (thumbUrlEl.value.trim() !== '') thumbRemoveRequested = false;
+  });
 
   await loadMessages();
 }

@@ -634,7 +634,17 @@
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
             <input type="text" id="wmDuration" placeholder="Duration (e.g. 45:00)" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
-            <input type="text" id="wmThumbnail" placeholder="Thumbnail URL (optional)" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <input type="text" id="wmThumbnail" placeholder="Thumbnail URL (advanced)" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:4px;">Thumbnail image (JPEG/PNG, max 5MB)</label>
+            <input type="file" id="wmThumbnailFile" accept="image/jpeg,image/png" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+          </div>
+          <div id="wmThumbnailPreviewWrap" style="display:none; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <img id="wmThumbnailPreview" alt="Thumbnail preview" style="width:80px; height:45px; object-fit:cover; border-radius:6px; border:1px solid var(--border);">
+              <button type="button" id="wmThumbnailRemove" class="btn btn-outline" style="padding:4px 12px; font-size:12px;">Remove thumbnail</button>
+            </div>
           </div>
           <textarea id="wmDescription" placeholder="Short description / excerpt" rows="2" class="input-group input" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; margin-bottom:12px; background:var(--surface); color:var(--fg);"></textarea>
 
