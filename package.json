@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.0",
-    "@vercel/analytics": "^2.0.1"
+    "@vercel/analytics": "^2.0.1",
+    "busboy": "^1.6.0"
   },
   "devDependencies": {
     "jsdom": "^25.0.1",
