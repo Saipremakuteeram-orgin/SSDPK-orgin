@@ -12,10 +12,17 @@ const {
   cors,
   validateWeeklyPayload,
   validateFile,
-  parseTelegramLink
+  parseTelegramLink,
+  validateThumbnail,
+  buildEmbedUrl
 } = require('./shared/weekly-common.cjs');
 const { authenticateAdmin } = require('./shared/admin-auth.cjs');
-const { sendMediaToTelegram, sendTextToTelegram, getChannelId } = require('./shared/telegram-bot.cjs');
+const {
+  sendMediaToTelegram,
+  sendTextToTelegram,
+  sendPhotoToTelegram,
+  getChannelId
+} = require('./shared/telegram-bot.cjs');
 
 const OPTIONAL_FIELDS = ['description', 'category', 'language', 'duration', 'thumbnail_url'];
 
@@ -94,6 +101,9 @@ async function handleTelegramUpload(req, res, sb, admin) {
   });
   if (!fv.ok) return res.status(400).json({ errors: fv.errors });
 
+  const tv = validateThumbnail(parts.thumbnail);
+  if (!tv.ok) return res.status(400).json({ errors: tv.errors });
+
   const sent = await sendMediaToTelegram({
     mediaType: v.value.media_type,
     buffer: file.buffer,
@@ -103,12 +113,25 @@ async function handleTelegramUpload(req, res, sb, admin) {
   });
   if (!sent.ok) return res.status(502).json({ error: sent.error });
 
+  let thumbnailUrl = v.value.thumbnail_url;
+  if (parts.thumbnail) {
+    const sentThumb = await sendPhotoToTelegram({
+      buffer: parts.thumbnail.buffer,
+      mime: parts.thumbnail.mime,
+      filename: parts.thumbnail.filename,
+      caption: v.value.title
+    });
+    if (!sentThumb.ok) return res.status(502).json({ error: sentThumb.error });
+    thumbnailUrl = buildEmbedUrl(normalizeChannel(getChannelId()), sentThumb.messageId);
+  }
+
   const row = {
     ...v.value,
     telegram_channel: normalizeChannel(getChannelId()),
     telegram_message_id: sent.messageId,
     created_by: admin.id
   };
+  if (thumbnailUrl) row.thumbnail_url = thumbnailUrl;
   const { data, error } = await sb.from('weekly_messages').insert(row).select().single();
   if (error) return res.status(500).json({ error: error.message });
   return res.status(201).json({
@@ -127,7 +150,10 @@ async function handleMessages(req, res, sb, admin) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const body = parseJson(await readBody(req));
+  const contentType = req.headers['content-type'] || '';
+  const isMultipart = contentType.startsWith('multipart/form-data');
+  const parts = isMultipart ? await parseMultipart(req) : null;
+  const body = parts ? parts.fields : parseJson(await readBody(req));
 
   if (req.method === 'POST') {
     const v = validateWeeklyPayload(body);
@@ -144,6 +170,18 @@ async function handleMessages(req, res, sb, admin) {
       telegram_message_id: link.messageId,
       created_by: admin.id
     };
+    if (parts && parts.thumbnail) {
+      const tv = validateThumbnail(parts.thumbnail);
+      if (!tv.ok) return res.status(400).json({ errors: tv.errors });
+      const sentThumb = await sendPhotoToTelegram({
+        buffer: parts.thumbnail.buffer,
+        mime: parts.thumbnail.mime,
+        filename: parts.thumbnail.filename,
+        caption: v.value.title
+      });
+      if (!sentThumb.ok) return res.status(502).json({ error: sentThumb.error });
+      row.thumbnail_url = buildEmbedUrl(normalizeChannel(getChannelId()), sentThumb.messageId);
+    }
     const { data, error } = await sb.from('weekly_messages').insert(row).select().single();
     if (error) return res.status(500).json({ error: error.message });
     return res.status(201).json({ id: data.id });
@@ -180,6 +218,19 @@ async function handleMessages(req, res, sb, admin) {
     return res.status(400).json({ error: 'No updatable fields provided' });
   }
 
+  if (parts && parts.thumbnail) {
+    const tv = validateThumbnail(parts.thumbnail);
+    if (!tv.ok) return res.status(400).json({ errors: tv.errors });
+    const sentThumb = await sendPhotoToTelegram({
+      buffer: parts.thumbnail.buffer,
+      mime: parts.thumbnail.mime,
+      filename: parts.thumbnail.filename,
+      caption: updates.title || undefined
+    });
+    if (!sentThumb.ok) return res.status(502).json({ error: sentThumb.error });
+    updates.thumbnail_url = buildEmbedUrl(normalizeChannel(getChannelId()), sentThumb.messageId);
+  }
+
   const { data, error } = await sb.from('weekly_messages').update(updates).eq('id', id).select().single();
   if (error) return res.status(500).json({ error: error.message });
   return res.status(200).json({ ok: true, id: data.id });
@@ -205,17 +256,17 @@ function parseMultipart(req) {
   return new Promise((resolve, reject) => {
     const bb = busboy({ headers: req.headers });
     const fields = {};
-    let file = null;
+    const files = {};
 
     bb.on('field', (name, value) => { fields[name] = value; });
     bb.on('file', (name, stream, info) => {
       const chunks = [];
       stream.on('data', (c) => chunks.push(c));
       stream.on('end', () => {
-        file = { filename: info.filename, mime: info.mimeType, buffer: Buffer.concat(chunks) };
+        files[name] = { filename: info.filename, mime: info.mimeType, buffer: Buffer.concat(chunks) };
       });
     });
-    bb.on('close', () => resolve({ fields, file }));
+    bb.on('close', () => resolve({ fields, file: files.file, thumbnail: files.thumbnail }));
     bb.on('error', (e) => reject(e));
     req.pipe(bb);
   });
