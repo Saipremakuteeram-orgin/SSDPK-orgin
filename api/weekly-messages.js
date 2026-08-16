@@ -17,7 +17,7 @@ const {
   validateThumbnail,
   buildEmbedUrl,
   validateStoragePayload,
-  mediaContentType
+  sniffMediaContentType
 } = require('./shared/weekly-common.cjs');
 const { authenticateAdmin } = require('./shared/admin-auth.cjs');
 const {
@@ -260,8 +260,45 @@ if (!sent.ok) {
 }
 
 // ── GET /api/weekly-media (public) ──────────────────────────────────────────
-// Streams media/thumbnail bytes back from Telegram by stored file_id.
+// Serves media/thumbnail bytes back from Telegram by stored file_id.
+// Supports HTTP Range requests (so <audio>/<video> can seek) and sniffs the
+// real container so browsers pick the right decoder (e.g. .mpeg files that are
+// actually M4A/AAC are served as audio/mp4, not audio/mpeg).
 // Runs before admin auth — intentionally public so <audio>/<video> embeds work.
+const mediaCache = new Map();
+let mediaCacheBytes = 0;
+const MEDIA_CACHE_MAX_BYTES = 64 * 1024 * 1024;
+
+function cacheMedia(key, entry) {
+  mediaCache.set(key, entry);
+  mediaCacheBytes += entry.buffer.length;
+  while (mediaCacheBytes > MEDIA_CACHE_MAX_BYTES && mediaCache.size > 0) {
+    const k = mediaCache.keys().next().value;
+    mediaCacheBytes -= mediaCache.get(k).buffer.length;
+    mediaCache.delete(k);
+  }
+}
+
+function parseRangeHeader(rangeHeader, total) {
+  const raw = String(rangeHeader || '').trim();
+  if (!raw || raw.indexOf('bytes=') !== 0) return null;
+  const m = raw.slice(6).trim().match(/^(\d*)-(\d*)$/);
+  if (!m) return null;
+  const s = m[1] === '' ? -1 : Number(m[1]);
+  const e = m[2] === '' ? -1 : Number(m[2]);
+  if (s === -1 && e === -1) return null;
+  if (s === -1) {
+    const len = Number(e);
+    if (!(len > 0)) return null;
+    return { start: Math.max(0, total - len), end: total - 1 };
+  }
+  if (s >= total) return { unsatisfiable: true };
+  const start = s;
+  const end = e === -1 ? total - 1 : Math.min(e, total - 1);
+  if (start > end) return { unsatisfiable: true };
+  return { start, end };
+}
+
 async function handleMediaProxy(req, res, sb) {
   const url = new URL(req.url, 'https://example.invalid');
   const id = String(url.searchParams.get('id') || '').trim();
@@ -276,28 +313,40 @@ async function handleMediaProxy(req, res, sb) {
   if (error) return res.status(500).json({ error: error.message });
   if (!data || !data[column]) return res.status(404).json({ error: 'Media not found' });
 
-  const got = await getTelegramFileStream(data[column]);
-  if (!got.ok) return res.status(502).json({ error: got.error });
-
-  const upstreamType = got.stream.headers ? got.stream.headers.get('content-type') : '';
-  const contentType = mediaContentType(kind, data.media_type, upstreamType);
-  res.setHeader('Content-Type', contentType);
-  const len = got.stream.headers && got.stream.headers.get('content-length');
-  if (len) res.setHeader('Content-Length', len);
-  const body = got.stream.body;
-  if (!body) return res.status(502).json({ error: 'Telegram returned no body' });
-  const reader = body.getReader();
-  res.on('close', () => { try { reader.cancel(); } catch (e) {} });
-  res.flushHeaders();
-  try {
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      res.write(value);
-    }
-  } finally {
-    try { res.end(); } catch (e) {}
+  const cacheKey = kind + ':' + id;
+  let entry = mediaCache.get(cacheKey);
+  if (!entry) {
+    const got = await getTelegramFileStream(data[column]);
+    if (!got.ok) return res.status(502).json({ error: got.error });
+    const stream = got.stream;
+    if (!stream || !stream.body) return res.status(502).json({ error: 'Telegram returned no body' });
+    const buffer = Buffer.from(await stream.arrayBuffer());
+    const upstreamType = stream.headers ? stream.headers.get('content-type') : '';
+    entry = {
+      buffer,
+      contentType: sniffMediaContentType(kind, data.media_type, buffer, upstreamType)
+    };
+    cacheMedia(cacheKey, entry);
   }
+  const total = entry.buffer.length;
+  const range = parseRangeHeader(req.headers.range, total);
+
+  res.setHeader('Content-Type', entry.contentType);
+  res.setHeader('Accept-Ranges', 'bytes');
+  if (!range) {
+    res.setHeader('Content-Length', String(total));
+    res.flushHeaders();
+    return res.end(entry.buffer);
+  }
+  if (range.unsatisfiable) {
+    res.setHeader('Content-Range', 'bytes */' + total);
+    return res.status(416).end();
+  }
+  res.status(206);
+  res.setHeader('Content-Range', 'bytes ' + range.start + '-' + range.end + '/' + total);
+  res.setHeader('Content-Length', String(range.end - range.start + 1));
+  res.flushHeaders();
+  res.end(entry.buffer.subarray(range.start, range.end + 1));
 }
 
 // ── /api/weekly-messages (link-first) ───────────────────────────────────────

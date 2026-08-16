@@ -18,6 +18,7 @@ import {
   buildMediaUrl,
   validateStoragePayload,
   mediaContentType,
+  sniffMediaContentType,
   TELEGRAM_UPLOAD_MAX_BYTES as UPLOAD_MAX
 } from '../api/shared/weekly-common.cjs';
 
@@ -89,6 +90,36 @@ describe('weekly-common helpers', () => {
     expect(mediaContentType('media', 'video', 'video/webm')).toBe('video/mp4');
     expect(mediaContentType('thumb', 'video', 'video/webm')).toBe('image/jpeg');
     expect(mediaContentType('thumb', 'audio', 'audio/ogg')).toBe('image/jpeg');
+  });
+
+  it('sniffMediaContentType detects M4A audio behind an ID3 tag', () => {
+    const id3 = Buffer.from([0x49, 0x44, 0x33, 0x04, 0x00, 0x00, 0x00, 0x00]);
+    const ftyp = Buffer.from('ftypisom', 'latin1');
+    const m4a = Buffer.concat([id3, Buffer.alloc(400, 0), ftyp]);
+    expect(sniffMediaContentType('media', 'audio', m4a, 'audio/mpeg')).toBe('audio/mp4');
+    expect(sniffMediaContentType('media', 'video', m4a, 'video/mp4')).toBe('video/mp4');
+  });
+
+  it('sniffMediaContentType detects ogg and webm containers', () => {
+    expect(sniffMediaContentType('media', 'audio', Buffer.from('OggS', 'latin1'), 'audio/mpeg')).toBe('audio/ogg');
+    expect(sniffMediaContentType('media', 'video', Buffer.from([0x1A, 0x45, 0xDF, 0xA3, 0x01, 0x00]), 'video/mp4')).toBe('video/webm');
+  });
+
+  it('sniffMediaContentType treats bare ID3 and MPEG frame sync as MP3', () => {
+    expect(sniffMediaContentType('media', 'audio', Buffer.from([0x49, 0x44, 0x33, 0x04]), 'audio/mpeg')).toBe('audio/mpeg');
+    expect(sniffMediaContentType('media', 'audio', Buffer.from([0xFF, 0xFB, 0x90, 0x00]), 'audio/mpeg')).toBe('audio/mpeg');
+  });
+
+  it('sniffMediaContentType detects thumbnail images', () => {
+    expect(sniffMediaContentType('thumb', 'video', Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A]), 'image/jpeg')).toBe('image/png');
+    expect(sniffMediaContentType('thumb', 'audio', Buffer.from([0xFF, 0xD8, 0xFF, 0xE0]), 'image/png')).toBe('image/jpeg');
+  });
+
+  it('sniffMediaContentType falls back to mediaContentType for unknown bytes', () => {
+    const junk = Buffer.from('random opaque bytes', 'latin1');
+    expect(sniffMediaContentType('media', 'audio', junk, '')).toBe('audio/mpeg');
+    expect(sniffMediaContentType('media', 'video', junk, '')).toBe('video/mp4');
+    expect(sniffMediaContentType('thumb', 'audio', junk, '')).toBe('image/jpeg');
   });
 });
 

@@ -140,6 +140,27 @@ function mediaContentType(kind, mediaType, upstreamType) {
   return 'audio/mpeg';
 }
 
+function sniffMediaContentType(kind, mediaType, buffer, upstreamType) {
+  const b = buffer || Buffer.alloc(0);
+  if (kind === 'thumb') {
+    if (b.length >= 4 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47) return 'image/png';
+    return 'image/jpeg';
+  }
+  const head = b.subarray(0, 1024);
+  for (let i = 4; i <= head.length - 4; i++) {
+    if (head[i] === 0x66 && head[i + 1] === 0x74 && head[i + 2] === 0x79 && head[i + 3] === 0x70) {
+      return mediaType === 'video' ? 'video/mp4' : 'audio/mp4';
+    }
+  }
+  if (b.length >= 4 && b[0] === 0x4F && b[1] === 0x67 && b[2] === 0x67 && b[3] === 0x53) return 'audio/ogg';
+  if (b.length >= 4 && b[0] === 0x1A && b[1] === 0x45 && b[2] === 0xDF && b[3] === 0xA3) {
+    return mediaType === 'video' ? 'video/webm' : 'audio/webm';
+  }
+  if (b.length >= 3 && b[0] === 0x49 && b[1] === 0x44 && b[2] === 0x33) return 'audio/mpeg';
+  if (b.length >= 2 && b[0] === 0xFF && (b[1] & 0xE0) === 0xE0) return 'audio/mpeg';
+  return mediaContentType(kind, mediaType, upstreamType);
+}
+
 module.exports = {
   cors,
   TELEGRAM_UPLOAD_MAX_BYTES,
@@ -154,5 +175,6 @@ module.exports = {
   escapeHtml,
   validateStoragePayload,
   buildMediaUrl,
-  mediaContentType
+  mediaContentType,
+  sniffMediaContentType
 };
