@@ -28,12 +28,6 @@
     return kind === 'thumb' ? base + '&kind=thumb' : base;
   }
 
-  function fallbackUrl(message) {
-    var c = cleanChannel(message.telegram_channel);
-    var m = Number(message.telegram_message_id);
-    return 'https://t.me/' + c + '/' + m;
-  }
-
   function isTelegramEmbedUrl(url) {
     return /^https:\/\/t\.me\/[A-Za-z0-9_]+\/\d+\?embed=1$/.test(String(url || ''));
   }
@@ -90,30 +84,34 @@
       return '<article class="discourse-card">' + body + '</div></article>';
     }
 
-    var actionText = m.media_type === 'audio' ? 'Listen' : 'Watch';
     var media;
     if (m.telegram_file_id) {
       var src = buildMediaUrl(m.id, 'media');
       var thumb = m.thumbnail_file_id
         ? buildMediaUrl(m.id, 'thumb')
         : (m.thumbnail_url && !isTelegramEmbedUrl(m.thumbnail_url) ? m.thumbnail_url : DEFAULT_THUMB);
-      var player = m.media_type === 'video'
-        ? '<video class="discourse-video" controls preload="metadata" poster="' + escapeHtml(thumb) + '" src="' + escapeHtml(src) + '"></video>'
-        : '<audio class="discourse-audio" controls preload="metadata" src="' + escapeHtml(src) + '"></audio>';
-      media =
-        '<div class="discourse-card-media">' +
-          '<div class="discourse-player">' +
-            player +
-            '<a class="discourse-fallback-link" href="' + escapeHtml(fallbackUrl(m)) + '" target="_blank" rel="noopener noreferrer">' + actionText + ' in Telegram</a>' +
-          '</div>' +
-        '</div>';
+      if (m.media_type === 'video') {
+        media =
+          '<div class="discourse-card-media">' +
+            '<div class="discourse-player">' +
+              '<video class="discourse-video" controls preload="metadata" poster="' + escapeHtml(thumb) + '" src="' + escapeHtml(src) + '"></video>' +
+            '</div>' +
+          '</div>';
+      } else {
+        media =
+          '<div class="discourse-card-media discourse-media-audio">' +
+            '<img class="discourse-art" src="' + escapeHtml(thumb) + '" alt="' + title + '" loading="lazy">' +
+            '<div class="discourse-player">' +
+              '<audio class="discourse-audio" controls preload="metadata" src="' + escapeHtml(src) + '"></audio>' +
+            '</div>' +
+          '</div>';
+      }
     } else {
       media =
         '<div class="discourse-card-media">' +
           '<div class="discourse-player">' +
             renderThumbnail(m) +
             '<iframe class="discourse-player-frame" src="' + escapeHtml(buildEmbedUrl(m)) + '" title="' + title + '" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
-            '<a class="discourse-fallback-link" href="' + escapeHtml(fallbackUrl(m)) + '" target="_blank" rel="noopener noreferrer">' + actionText + '</a>' +
           '</div>' +
         '</div>';
     }
@@ -196,7 +194,6 @@
     escapeHtml: escapeHtml,
     buildEmbedUrl: buildEmbedUrl,
     buildMediaUrl: buildMediaUrl,
-    fallbackUrl: fallbackUrl,
     filterMessages: filterMessages,
     renderCard: renderCard,
     renderThumbnail: renderThumbnail,

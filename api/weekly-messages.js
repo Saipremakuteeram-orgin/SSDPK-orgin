@@ -16,7 +16,8 @@ const {
   parseTelegramLink,
   validateThumbnail,
   buildEmbedUrl,
-  validateStoragePayload
+  validateStoragePayload,
+  mediaContentType
 } = require('./shared/weekly-common.cjs');
 const { authenticateAdmin } = require('./shared/admin-auth.cjs');
 const {
@@ -70,7 +71,13 @@ async function handleTelegramUpload(req, res, sb, admin) {
 
     if (v.value.media_type === 'text') {
       const sent = await sendTextToTelegram({ text: v.value.description });
-      if (!sent.ok) return res.status(502).json({ error: sent.error });
+if (!sent.ok) {
+      const errMsg = sent.error || 'Telegram API error';
+      // If the error mentions "bot is not a participant" or "chat not found", it's an auth/channel issue
+      // If the error mentions "FILE_SIZE", it's a size issue
+      // Otherwise, surface the original error
+      return res.status(502).json({ error: errMsg });
+    }
 
       const row = {
         ...v.value,
@@ -93,8 +100,22 @@ async function handleTelegramUpload(req, res, sb, admin) {
     const { data: mediaObj, error: mediaErr } = await sb.storage
       .from('weekly-messages')
       .download(sv.value.storagePath);
-    if (mediaErr || !mediaObj) {
-      return res.status(502).json({ error: 'Could not read uploaded file from storage' });
+    if (mediaErr) {
+      // Specific diagnosis for the most common 502 causes:
+      if (mediaErr.message && mediaErr.message.includes('Bucket not found')) {
+        return res.status(502).json({ 
+          error: 'Storage bucket `weekly-messages` not found. Run the SQL migration in supabase_donations.sql (lines 98-115).' 
+        });
+      }
+      if (mediaErr.message && mediaErr.message.includes('PGRST301')) {
+        return res.status(502).json({ 
+          error: 'Storage access denied — ensure the bucket `weekly-messages` has RLS policy `Authenticated upload to weekly-messages` and the user is signed in as admin.' 
+        });
+      }
+      return res.status(502).json({ error: 'Storage download failed: ' + mediaErr.message });
+    }
+    if (!mediaObj) {
+      return res.status(502).json({ error: 'Uploaded file not found in storage bucket' });
     }
     const mediaBuffer = Buffer.from(await mediaObj.arrayBuffer());
 
@@ -112,7 +133,21 @@ async function handleTelegramUpload(req, res, sb, admin) {
       mime: sv.value.fileMime || (v.value.media_type === 'video' ? 'video/mp4' : 'audio/mpeg'),
       caption: v.value.title
     });
-    if (!sent.ok) return res.status(502).json({ error: sent.error });
+if (!sent.ok) {
+      // Differentiate the 502 cause so you can fix it precisely:
+      const tgError = sent.error || 'Telegram API error';
+      // If Telegram rejected the format, the sendDocument fallback should handle it.
+      // If both sendAudio/sendVideo AND sendDocument failed, this is a channel/auth/size issue.
+      return res.status(502).json({ 
+        error: tgError,
+        // Include these diagnostic hints:
+        hints: {
+          channel: 'Verify TELEGRAM_CHANNEL_ID = -1003621082703 and bot is admin',
+          size: 'File must be < 50MB (Telegram cap) and < 48MB (your cap)',
+          format: '.sendDocument fallback handles .mpeg/.exotic formats; ensure caption is present'
+        }
+      });
+    }
 
     let thumbnailUrl = v.value.thumbnail_url;
     let thumbFileId = null;
@@ -244,9 +279,8 @@ async function handleMediaProxy(req, res, sb) {
   const got = await getTelegramFileStream(data[column]);
   if (!got.ok) return res.status(502).json({ error: got.error });
 
-  const contentType = kind === 'thumb'
-    ? (data.media_type === 'video' ? 'image/jpeg' : 'image/jpeg')
-    : (data.media_type === 'video' ? 'video/mp4' : 'audio/mpeg');
+  const upstreamType = got.stream.headers ? got.stream.headers.get('content-type') : '';
+  const contentType = mediaContentType(kind, data.media_type, upstreamType);
   res.setHeader('Content-Type', contentType);
   const len = got.stream.headers && got.stream.headers.get('content-length');
   if (len) res.setHeader('Content-Length', len);

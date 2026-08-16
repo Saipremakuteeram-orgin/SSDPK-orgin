@@ -70,23 +70,19 @@
   object-fit: cover;
   border: 0;
 }
-.discourse-fallback-link {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 24px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: var(--shadow-md);
+.discourse-media-audio {
+  aspect-ratio: auto;
 }
-.discourse-fallback-link:hover {
-  background: var(--accent-dark);
+.discourse-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #1a1a1a;
+}
+.discourse-media-audio .discourse-player {
+  padding: 12px 16px;
+  box-sizing: border-box;
 }
 .discourse-card-body {
   padding: 18px 20px 20px;

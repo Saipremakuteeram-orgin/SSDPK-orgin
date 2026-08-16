@@ -132,6 +132,14 @@ function buildMediaUrl(id, kind) {
   return kind === 'thumb' ? base + '&kind=thumb' : base;
 }
 
+function mediaContentType(kind, mediaType, upstreamType) {
+  const up = String(upstreamType || '').split(';')[0].trim().toLowerCase();
+  if (kind === 'thumb') return 'image/jpeg';
+  if (mediaType === 'video') return 'video/mp4';
+  if (up && up.indexOf('audio/') === 0) return up;
+  return 'audio/mpeg';
+}
+
 module.exports = {
   cors,
   TELEGRAM_UPLOAD_MAX_BYTES,
@@ -145,5 +153,6 @@ module.exports = {
   isTelegramEmbedUrl,
   escapeHtml,
   validateStoragePayload,
-  buildMediaUrl
+  buildMediaUrl,
+  mediaContentType
 };

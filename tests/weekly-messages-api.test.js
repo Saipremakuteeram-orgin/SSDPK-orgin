@@ -17,6 +17,7 @@ import {
   isTelegramEmbedUrl,
   buildMediaUrl,
   validateStoragePayload,
+  mediaContentType,
   TELEGRAM_UPLOAD_MAX_BYTES as UPLOAD_MAX
 } from '../api/shared/weekly-common.cjs';
 
@@ -78,6 +79,16 @@ describe('weekly-common helpers', () => {
 
   it('escapeHtml escapes special chars', () => {
     expect(escapeHtml('<a href="x">&\'')).toBe('&lt;a href=&quot;x&quot;&gt;&amp;&#39;');
+  });
+
+  it('mediaContentType passes through real audio mime and falls back safely', () => {
+    expect(mediaContentType('media', 'audio', 'audio/ogg')).toBe('audio/ogg');
+    expect(mediaContentType('media', 'audio', 'audio/ogg; charset=binary')).toBe('audio/ogg');
+    expect(mediaContentType('media', 'audio', 'application/octet-stream')).toBe('audio/mpeg');
+    expect(mediaContentType('media', 'audio', '')).toBe('audio/mpeg');
+    expect(mediaContentType('media', 'video', 'video/webm')).toBe('video/mp4');
+    expect(mediaContentType('thumb', 'video', 'video/webm')).toBe('image/jpeg');
+    expect(mediaContentType('thumb', 'audio', 'audio/ogg')).toBe('image/jpeg');
   });
 });
 
