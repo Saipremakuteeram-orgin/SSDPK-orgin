@@ -46,7 +46,9 @@
   background: #1a1a1a;
 }
 .discourse-card-media:not(.discourse-media-audio) {
-  aspect-ratio: 16 / 9;
+  width: 320px;
+  height: 180px;
+  margin: 0 auto;
 }
 .discourse-player {
   position: relative;
@@ -81,9 +83,9 @@
 }
 .discourse-art {
   display: block;
-  width: 100%;
-  height: auto;
-  max-height: 320px;
+  width: 320px;
+  height: 180px;
+  margin: 0 auto;
   object-fit: contain;
   object-position: center;
   background: #1a1a1a;
