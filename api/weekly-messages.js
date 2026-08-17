@@ -17,11 +17,15 @@ const {
   validateThumbnail,
   buildEmbedUrl,
   validateStoragePayload,
-  sniffMediaContentType
+  sniffMediaContentType,
+  validateEventReport,
+  reportContentType,
+  reportDisposition
 } = require('./shared/weekly-common.cjs');
 const { authenticateAdmin } = require('./shared/admin-auth.cjs');
 const {
   sendMediaToTelegram,
+  sendDocumentToTelegram,
   sendTextToTelegram,
   sendPhotoToTelegram,
   getChannelId,
@@ -43,6 +47,16 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET' && (req.url || '').indexOf('/weekly-media') !== -1) {
     return handleMediaProxy(req, res, sb);
+  }
+
+  if ((req.url || '').indexOf('/event-report') !== -1) {
+    if (req.method === 'GET') return handleEventReportDownload(req, res, sb);
+    if (req.method === 'POST') {
+      const admin = await authenticateAdmin(sb, req.headers.authorization);
+      if (!admin) return res.status(401).json({ error: 'Not authorized' });
+      return handleEventReportUpload(req, res);
+    }
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const admin = await authenticateAdmin(sb, req.headers.authorization);
@@ -347,6 +361,68 @@ async function handleMediaProxy(req, res, sb) {
   res.setHeader('Content-Length', String(range.end - range.start + 1));
   res.flushHeaders();
   res.end(entry.buffer.subarray(range.start, range.end + 1));
+}
+
+// ── /api/event-report ────────────────────────────────────────────────────────
+// POST   admin uploads an event report to the Telegram channel (sendDocument),
+//        responds with the Telegram file_id + original name (no DB write).
+// GET    public download proxy: serves the report bytes with Content-Disposition
+//        attachment so the browser auto-downloads. Runs before admin auth.
+async function handleEventReportUpload(req, res) {
+  const contentType = req.headers['content-type'] || '';
+  if (!contentType.startsWith('multipart/form-data')) {
+    return res.status(400).json({ error: 'Content-Type must be multipart/form-data' });
+  }
+  const parts = await parseMultipart(req);
+  const file = parts.file;
+  if (!file) return res.status(400).json({ error: 'file is required' });
+
+  const fv = validateEventReport({ filename: file.filename, bytes: file.buffer.length });
+  if (!fv.ok) return res.status(400).json({ errors: fv.errors });
+
+  const sent = await sendDocumentToTelegram({
+    buffer: file.buffer,
+    filename: file.filename,
+    mime: file.mime || reportContentType(file.filename, file.buffer),
+    caption: typeof parts.fields.title === 'string' ? parts.fields.title : undefined
+  });
+  if (!sent.ok) return res.status(502).json({ error: sent.error });
+
+  return res.status(201).json({ file_id: sent.fileId, name: fv.value.filename });
+}
+
+async function handleEventReportDownload(req, res, sb) {
+  const url = new URL(req.url, 'https://example.invalid');
+  const id = String(url.searchParams.get('id') || '').trim();
+  if (!id) return res.status(400).json({ error: 'id is required' });
+
+  const { data, error } = await sb.from('events')
+    .select('title, report_file_id, report_name')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data || !data.report_file_id) return res.status(404).json({ error: 'Report not found' });
+
+  const cacheKey = 'report:' + id;
+  let entry = mediaCache.get(cacheKey);
+  if (!entry) {
+    const got = await getTelegramFileStream(data.report_file_id);
+    if (!got.ok) return res.status(502).json({ error: got.error });
+    const stream = got.stream;
+    if (!stream || !stream.body) return res.status(502).json({ error: 'Telegram returned no body' });
+    const buffer = Buffer.from(await stream.arrayBuffer());
+    const upstreamType = stream.headers ? stream.headers.get('content-type') : '';
+    const name = String(data.report_name || 'report');
+    entry = { buffer, name, contentType: reportContentType(name, buffer, upstreamType) };
+    cacheMedia(cacheKey, entry);
+  }
+
+  res.setHeader('Content-Type', entry.contentType);
+  res.setHeader('Content-Length', String(entry.buffer.length));
+  res.setHeader('Content-Disposition', reportDisposition(entry.name));
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.flushHeaders();
+  res.end(entry.buffer);
 }
 
 // ── /api/weekly-messages (link-first) ───────────────────────────────────────

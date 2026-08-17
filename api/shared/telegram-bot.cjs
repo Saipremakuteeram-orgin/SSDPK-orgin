@@ -50,6 +50,20 @@ async function sendMediaToTelegram({ mediaType, buffer, filename, mime, caption 
   return { ok: true, messageId: Number(docResult.data.message_id), fileId: getFileId(docResult.data), kind: 'document' };
 }
 
+async function sendDocumentToTelegram({ buffer, filename, mime, caption }) {
+  const channel = getChannelId();
+  if (!channel) return { ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' };
+
+  const form = new FormData();
+  form.append('chat_id', channel);
+  if (caption) form.append('caption', caption);
+  form.append('document', new Blob([buffer], { type: mime || 'application/octet-stream' }), filename || 'report');
+
+  const result = await callTelegramApi('sendDocument', form);
+  if (!result.ok) return result;
+  return { ok: true, messageId: Number(result.data.message_id), fileId: getFileId(result.data) };
+}
+
 async function sendTextToTelegram({ text }) {
   const channel = getChannelId();
   if (!channel) return { ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' };
@@ -108,4 +122,4 @@ async function getTelegramFileStream(fileId) {
   return { ok: true, stream: res };
 }
 
-module.exports = { getBotToken, getChannelId, callTelegramApi, sendMediaToTelegram, sendTextToTelegram, sendPhotoToTelegram, getTelegramFileStream, getFileId };
+module.exports = { getBotToken, getChannelId, callTelegramApi, sendMediaToTelegram, sendDocumentToTelegram, sendTextToTelegram, sendPhotoToTelegram, getTelegramFileStream, getFileId };

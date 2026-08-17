@@ -918,6 +918,15 @@
           '</div>';
       }
 
+      var reportHtml = '';
+      if (evt.report_file_id) {
+        var reportName = evt.report_name || 'Event Report';
+        reportHtml =
+          '<a class="btn btn-primary" href="/api/event-report?id=' + evt.id + '" download style="display:flex; align-items:center; justify-content:center; width:100%; gap:10px; margin:16px 0 4px; background-color:#16a34a; border:none;">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download Event Report</a>' +
+          '<div style="font-size:12px; color:var(--muted); text-align:center; margin-bottom:4px;">' + reportName + '</div>';
+      }
+
       var separatorHtml = (index > 0) ? '<hr style="border: 0; border-top: 1px dashed var(--border); margin: 24px 0;">' : '';
 
       contentHtml += separatorHtml +
@@ -941,7 +950,7 @@
             '</div>' +
           '</div>' +
           '<div class="drawer-description">' + descText + '</div>' +
-          brochureHtml +
+          brochureHtml + reportHtml +
           '<div id="eventPhotos_' + evt.id + '"></div>' +
           '<div class="drawer-coordinator-card" style="margin-top: 16px;">' +
             '<h4>Event Coordinator</h4>' +
@@ -1050,6 +1059,15 @@
           '</div>';
       }
 
+      var reportHtml = '';
+      if (evt.report_file_id) {
+        var reportName = evt.report_name || 'Event Report';
+        reportHtml =
+          '<a class="btn btn-primary" href="/api/event-report?id=' + evt.id + '" download style="display:flex; align-items:center; justify-content:center; width:100%; gap:10px; margin:16px 0 4px; background-color:#16a34a; border:none;">' +
+            '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download Event Report</a>' +
+          '<div style="font-size:12px; color:var(--muted); text-align:center; margin-bottom:4px;">' + reportName + '</div>';
+      }
+
       var separatorHtml = (index > 0) ? '<hr style="border: 0; border-top: 1px dashed var(--border); margin: 24px 0;">' : '';
 
       contentHtml += separatorHtml +
@@ -1073,7 +1091,7 @@
             '</div>' +
           '</div>' +
           '<div class="drawer-description" style="font-size:16px;">' + descText + '</div>' +
-          brochureHtml +
+          brochureHtml + reportHtml +
           '<div id="modalPhotos_' + evt.id + '"></div>' +
           '<div class="drawer-coordinator-card" style="margin-top: 16px;">' +
             '<h4>Event Coordinator</h4>' +

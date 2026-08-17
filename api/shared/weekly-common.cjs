@@ -161,6 +161,61 @@ function sniffMediaContentType(kind, mediaType, buffer, upstreamType) {
   return mediaContentType(kind, mediaType, upstreamType);
 }
 
+const REPORT_EXTENSIONS = new Set([
+  'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+  'txt', 'rtf', 'zip', 'jpg', 'jpeg', 'png', 'gif', 'webp'
+]);
+
+const REPORT_EXT_MIMES = {
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  xls: 'application/vnd.ms-excel',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ppt: 'application/vnd.ms-powerpoint',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  txt: 'text/plain',
+  rtf: 'application/rtf',
+  zip: 'application/zip',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp'
+};
+
+function validateEventReport({ filename, bytes }) {
+  const errors = [];
+  const name = typeof filename === 'string' ? filename.trim() : '';
+  const ext = name.split('.').pop().toLowerCase();
+  if (!name) errors.push('filename is required');
+  if (!(bytes > 0)) errors.push('file is empty');
+  if (bytes > TELEGRAM_UPLOAD_MAX_BYTES) errors.push('file is too large (max 48MB)');
+  if (name && !REPORT_EXTENSIONS.has(ext)) {
+    errors.push('file type .' + ext + ' is not allowed');
+  }
+  return { ok: errors.length === 0, errors, value: { filename: name, extension: ext, bytes: typeof bytes === 'number' ? bytes : 0 } };
+}
+
+function reportContentType(filename, buffer, upstreamType) {
+  const b = buffer || Buffer.alloc(0);
+  const ext = String(filename || '').split('.').pop().toLowerCase();
+  if (b.length >= 4 && b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46) return 'application/pdf';
+  if (b.length >= 4 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47) return 'image/png';
+  if (b.length >= 3 && b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) return 'image/jpeg';
+  if (b.length >= 6 && b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38) return 'image/gif';
+  if (REPORT_EXT_MIMES[ext]) return REPORT_EXT_MIMES[ext];
+  const up = String(upstreamType || '').split(';')[0].trim().toLowerCase();
+  if (up) return up;
+  return 'application/octet-stream';
+}
+
+function reportDisposition(filename) {
+  const base = String(filename || '').replace(/[\\/]/g, '-').replace(/["\r\n\x00-\x1f]/g, '').trim();
+  const name = base || 'report';
+  return 'attachment; filename="' + name + '"';
+}
+
 module.exports = {
   cors,
   TELEGRAM_UPLOAD_MAX_BYTES,
@@ -176,5 +231,8 @@ module.exports = {
   validateStoragePayload,
   buildMediaUrl,
   mediaContentType,
-  sniffMediaContentType
+  sniffMediaContentType,
+  validateEventReport,
+  reportContentType,
+  reportDisposition
 };

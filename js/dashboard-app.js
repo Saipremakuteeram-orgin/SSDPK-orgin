@@ -813,6 +813,9 @@ function initDashboard() {
     document.getElementById('eventBrochureUrl').value = '';
     document.getElementById('eventBrochurePath').value = '';
     document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
+    document.getElementById('eventReportFileId').value = '';
+    document.getElementById('eventReportName').value = '';
+    document.getElementById('eventReportPreviewContainer')?.classList.add('hidden');
     addEventForm.classList.remove('hidden');
     showAddEventBtn.classList.add('hidden');
   });
@@ -828,6 +831,32 @@ function initDashboard() {
     document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
     document.getElementById('eventBrochureInput').value = '';
   });
+
+  document.getElementById('removeEventReportBtn')?.addEventListener('click', () => {
+    document.getElementById('eventReportFileId').value = '';
+    document.getElementById('eventReportName').value = '';
+    document.getElementById('eventReportPreviewContainer')?.classList.add('hidden');
+    document.getElementById('eventReportInput').value = '';
+  });
+
+  async function uploadEventReport(file, title) {
+    const token = await getToken();
+    if (!token) throw new Error('Not signed in. Please sign in again.');
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    if (title) fd.append('title', title);
+    const res = await fetch('/api/event-report', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: fd
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.error || (data.errors && data.errors.join(', ')) || ('Upload failed (' + res.status + ')');
+      throw new Error(msg);
+    }
+    return { file_id: data.file_id, name: data.name || file.name };
+  }
 
   async function renderAdminEvents() {
     if (!adminEventList) return;
@@ -916,6 +945,22 @@ function initDashboard() {
           }
         }
 
+        const reportFileId = evt.report_file_id || '';
+        const reportName = evt.report_name || '';
+        document.getElementById('eventReportFileId').value = reportFileId;
+        document.getElementById('eventReportName').value = reportName;
+        document.getElementById('eventReportInput').value = '';
+        const reportPreview = document.getElementById('eventReportPreviewContainer');
+        const reportNameLabel = document.getElementById('eventReportNameLabel');
+        if (reportPreview && reportNameLabel) {
+          if (reportFileId && reportName) {
+            reportNameLabel.textContent = reportName;
+            reportPreview.classList.remove('hidden');
+          } else {
+            reportPreview.classList.add('hidden');
+          }
+        }
+
         document.getElementById('eventCoord').value = evt.coordinator || '';
         document.getElementById('eventContact').value = evt.contact || '';
         addEventForm.classList.remove('hidden');
@@ -991,6 +1036,16 @@ function initDashboard() {
         }
       }
 
+      let reportFileId = document.getElementById('eventReportFileId').value || '';
+      let reportName = document.getElementById('eventReportName').value || '';
+      const reportFile = document.getElementById('eventReportInput').files[0];
+
+      if (reportFile) {
+        const uploaded = await uploadEventReport(reportFile, document.getElementById('eventTitle').value);
+        reportFileId = uploaded.file_id;
+        reportName = uploaded.name;
+      }
+
       const descInput = document.getElementById('eventDesc').value.trim();
       const finalDesc = brochureUrl ? `${descInput} ||| ${brochureUrl} ||| ${brochurePath}` : descInput;
 
@@ -1002,7 +1057,9 @@ function initDashboard() {
         venue: document.getElementById('eventVenue').value,
         description: finalDesc,
         coordinator: document.getElementById('eventCoord').value,
-        contact: document.getElementById('eventContact').value
+        contact: document.getElementById('eventContact').value,
+        report_file_id: reportFileId || null,
+        report_name: reportName || null
       };
 
       let error;
@@ -1040,6 +1097,9 @@ function initDashboard() {
         document.getElementById('eventBrochureUrl').value = '';
         document.getElementById('eventBrochurePath').value = '';
         document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
+        document.getElementById('eventReportFileId').value = '';
+        document.getElementById('eventReportName').value = '';
+        document.getElementById('eventReportPreviewContainer')?.classList.add('hidden');
         addEventForm.classList.add('hidden');
         showAddEventBtn.classList.remove('hidden');
         selectedEventIds.clear();

@@ -19,7 +19,10 @@ import {
   validateStoragePayload,
   mediaContentType,
   sniffMediaContentType,
-  TELEGRAM_UPLOAD_MAX_BYTES as UPLOAD_MAX
+  TELEGRAM_UPLOAD_MAX_BYTES as UPLOAD_MAX,
+  validateEventReport,
+  reportContentType,
+  reportDisposition
 } from '../api/shared/weekly-common.cjs';
 
 describe('weekly-common helpers', () => {
@@ -342,6 +345,28 @@ describe('telegram-bot', () => {
     const r = await sendPhotoToTelegram({ buffer: Buffer.from('img'), mime: 'image/jpeg', filename: 'thumb.jpg' });
     expect(r).toEqual({ ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' });
   });
+
+  it('sendDocumentToTelegram posts sendDocument and returns message_id + file_id', async () => {
+    const { sendDocumentToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ ok: true, result: { message_id: 31, document: { file_id: 'DOCREPORT1' } } })
+    }));
+    const r = await sendDocumentToTelegram({
+      buffer: Buffer.from('%PDF report'), filename: 'report.pdf', mime: 'application/pdf', caption: 'Event'
+    });
+    expect(r).toEqual({ ok: true, messageId: 31, fileId: 'DOCREPORT1' });
+    const [url, opts] = global.fetch.mock.calls[0];
+    expect(url.endsWith('/sendDocument')).toBe(true);
+    expect(opts.method).toBe('POST');
+  });
+
+  it('sendDocumentToTelegram errors when channel missing', async () => {
+    const { sendDocumentToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    delete process.env.TELEGRAM_CHANNEL_ID;
+    const r = await sendDocumentToTelegram({ buffer: Buffer.from('x'), filename: 'report.pdf', mime: 'application/pdf' });
+    expect(r).toEqual({ ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' });
+  });
 });
 
 describe('telegram-bot file_id + getFile', () => {
@@ -416,5 +441,52 @@ describe('telegram-bot file_id + getFile', () => {
     expect(getFileId({ document: { file_id: 'D' } })).toBe('D');
     expect(getFileId({ photo: [{ file_id: 'Z' }] })).toBe('Z');
     expect(getFileId({})).toBe('');
+  });
+});
+
+describe('event-report helpers', () => {
+  it('validateEventReport accepts documents and images under 48MB', () => {
+    expect(validateEventReport({ filename: 'report.pdf', bytes: 100 }).ok).toBe(true);
+    expect(validateEventReport({ filename: 'notes.docx', bytes: 100 }).ok).toBe(true);
+    expect(validateEventReport({ filename: 'photo.PNG', bytes: 100 }).ok).toBe(true);
+    expect(validateEventReport({ filename: 'data.xlsx', bytes: UPLOAD_MAX }).ok).toBe(true);
+  });
+
+  it('validateEventReport rejects disallowed types and oversize files', () => {
+    const bad = validateEventReport({ filename: 'virus.exe', bytes: 100 });
+    expect(bad.ok).toBe(false);
+    expect(bad.errors.join(' ')).toContain('not allowed');
+    const big = validateEventReport({ filename: 'big.pdf', bytes: UPLOAD_MAX + 1 });
+    expect(big.ok).toBe(false);
+    expect(big.errors.join(' ')).toContain('too large');
+    expect(validateEventReport({ filename: '', bytes: 0 }).ok).toBe(false);
+  });
+
+  it('reportContentType sniffs magic bytes over extension', () => {
+    expect(reportContentType('a.bin', Buffer.from('%PDF-1.7 ...'), '')).toBe('application/pdf');
+    expect(reportContentType('a.bin', Buffer.from([0x89, 0x50, 0x4E, 0x47]), '')).toBe('image/png');
+    expect(reportContentType('a.bin', Buffer.from([0xFF, 0xD8, 0xFF, 0xE0]), '')).toBe('image/jpeg');
+  });
+
+  it('reportContentType maps known extensions and falls back', () => {
+    expect(reportContentType('report.pdf', Buffer.from('x'), '')).toBe('application/pdf');
+    expect(reportContentType('notes.docx', Buffer.from('x'), '')).toBe(
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
+    expect(reportContentType('data.xlsx', Buffer.from('x'), '')).toBe(
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    expect(reportContentType('notes.txt', Buffer.from('x'), '')).toBe('text/plain');
+    expect(reportContentType('slide.ppt', Buffer.from('x'), '')).toBe('application/vnd.ms-powerpoint');
+    expect(reportContentType('photo.jpg', Buffer.from('x'), '')).toBe('image/jpeg');
+    expect(reportContentType('unknown.zzz', Buffer.from('x'), 'application/octet-stream')).toBe('application/octet-stream');
+    expect(reportContentType('unknown.zzz', Buffer.from('x'), '')).toBe('application/octet-stream');
+  });
+
+  it('reportDisposition sanitizes filenames and keeps the extension', () => {
+    expect(reportDisposition('report.pdf')).toBe('attachment; filename="report.pdf"');
+    expect(reportDisposition('a"b\r\nc.pdf')).toBe('attachment; filename="abc.pdf"');
+    expect(reportDisposition('../secret.txt')).toBe('attachment; filename="..-secret.txt"');
+    expect(reportDisposition('')).toBe('attachment; filename="report"');
   });
 });
