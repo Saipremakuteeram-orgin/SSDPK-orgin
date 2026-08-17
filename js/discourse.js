@@ -76,9 +76,11 @@
         '<h3 class="discourse-card-title">' + title + '</h3>' +
         (badges ? '<div class="discourse-badges">' + badges + '</div>' : '') +
         (duration ? '<span class="discourse-duration">' + duration + '</span>' : '') +
-        (m.media_type === 'text'
-          ? '<div class="discourse-text">' + excerpt + '</div>'
-          : '<p class="discourse-excerpt">' + excerpt + '</p>');
+        (excerpt
+          ? (m.media_type === 'text'
+              ? '<div class="discourse-text">' + excerpt + '</div>'
+              : '<p class="discourse-excerpt">' + excerpt + '</p>')
+          : '');
 
     if (m.media_type === 'text') {
       return '<article class="discourse-card">' + body + '</div></article>';
