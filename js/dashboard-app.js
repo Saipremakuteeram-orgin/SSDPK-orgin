@@ -538,11 +538,14 @@ function initDashboard() {
   function initAdminTabs(defaultTab) {
     const tabs = document.querySelectorAll('.admin-tab');
     const sections = document.querySelectorAll('.admin-tab-section');
-    const active = defaultTab || 'overview';
+    const stored = localStorage.getItem('adminActiveTab');
+    const validStored = stored && Array.from(tabs).some((t) => t.getAttribute('data-tab') === stored);
+    const active = validStored ? stored : (defaultTab || 'overview');
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
         const target = tab.getAttribute('data-tab');
+        localStorage.setItem('adminActiveTab', target);
         tabs.forEach((t) => t.classList.toggle('active', t === tab));
         sections.forEach((s) => s.classList.toggle('active', s.id === 'tab-' + target));
       });
