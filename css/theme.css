@@ -111,7 +111,7 @@ nav .container {
   align-items: center;
   width: 100%;
 }
-nav .container > * {
+nav .container > .nav-links {
   flex: 1;
 }
 .nav-brand {
