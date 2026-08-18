@@ -841,7 +841,7 @@
         catTd.innerHTML = '<span class="drawer-category-badge ' + badgeClass + '" style="margin-bottom:0;">' + badgeText + '</span>';
 
         var infoTd = document.createElement('td');
-        infoTd.innerHTML = '<div>' + evt.time + '</div><div style="font-size:12px;color:var(--muted);">' + evt.venue + '</div>';
+        infoTd.innerHTML = '<div>' + evt.time + '</div><div style="font-size:12px;color:var(--muted);">' + (evt.location ? evt.location + ' &middot; ' : '') + evt.venue + '</div>';
 
         var actionTd = document.createElement('td');
         var viewBtn = document.createElement('button');
@@ -949,6 +949,13 @@
               '<div>' +
                 '<div class="drawer-meta-label">Venue</div>' +
                 '<div>' + evt.venue + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="drawer-meta-item">' +
+              '<div class="drawer-meta-icon">&#x1F4CC;</div>' +
+              '<div>' +
+                '<div class="drawer-meta-label">Location</div>' +
+                '<div>' + (evt.location || '') + '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -1090,6 +1097,13 @@
               '<div>' +
                 '<div class="drawer-meta-label">Venue</div>' +
                 '<div>' + evt.venue + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="drawer-meta-item">' +
+              '<div class="drawer-meta-icon">&#x1F4CC;</div>' +
+              '<div>' +
+                '<div class="drawer-meta-label">Location</div>' +
+                '<div>' + (evt.location || '') + '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +

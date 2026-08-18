@@ -729,6 +729,15 @@ function initDashboard() {
           </div>
         </div>
 
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">Location</label>
+          <select class="dup-location input" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--fg);">
+            <option value="">Select Location</option>
+            <option value="Chennai" ${evt.location === 'Chennai' ? 'selected' : ''}>Chennai</option>
+            <option value="Karur" ${evt.location === 'Karur' ? 'selected' : ''}>Karur</option>
+          </select>
+        </div>
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
           <div>
             <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px; color: var(--accent-dark);">Coordinator Name (Different)</label>
@@ -764,6 +773,7 @@ function initDashboard() {
       const date = row.querySelector('.dup-date').value;
       const time = row.querySelector('.dup-time').value.trim();
       const venue = row.querySelector('.dup-venue').value.trim();
+      const location = row.querySelector('.dup-location').value;
       const coordinator = row.querySelector('.dup-coordinator').value.trim();
       const contact = row.querySelector('.dup-contact').value.trim();
       const descText = row.querySelector('.dup-desc').value.trim();
@@ -778,6 +788,7 @@ function initDashboard() {
         date,
         time,
         venue,
+        location,
         coordinator,
         contact,
         description: finalDesc
@@ -883,7 +894,7 @@ function initDashboard() {
           <div>
             <strong style="color:var(--fg);">${evt.title}</strong>
             <span style="display:inline-block; margin-left:8px; padding:2px 6px; background:#e0f2fe; color:#0369a1; border-radius:4px; font-size:11px; font-family:monospace; font-weight:bold;" title="Type 'Event_${evt.id}' in Telegram caption to upload photos to this event">Telegram ID: Event_${evt.id}</span><br>
-            <small style="color:var(--muted);">${evt.date} &middot; ${evt.time || ''} &middot; ${evt.venue || ''}</small>
+            <small style="color:var(--muted);">${evt.date} &middot; ${evt.location ? evt.location + ' &middot; ' : ''}${evt.time || ''} &middot; ${evt.venue || ''}</small>
           </div>
         </div>
         <div style="display:flex; gap:8px;">
@@ -919,6 +930,7 @@ function initDashboard() {
         document.getElementById('eventDate').value = evt.date;
         document.getElementById('eventTime').value = evt.time || '';
         document.getElementById('eventVenue').value = evt.venue || '';
+        document.getElementById('eventLocation').value = evt.location || '';
         
         let descText = evt.description || '';
         let brochureUrl = '';
@@ -1055,6 +1067,7 @@ function initDashboard() {
         date: document.getElementById('eventDate').value,
         time: document.getElementById('eventTime').value,
         venue: document.getElementById('eventVenue').value,
+        location: document.getElementById('eventLocation').value,
         description: finalDesc,
         coordinator: document.getElementById('eventCoord').value,
         contact: document.getElementById('eventContact').value,
