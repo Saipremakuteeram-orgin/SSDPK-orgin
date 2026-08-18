@@ -274,6 +274,50 @@
     align-items: center;
   }
   .admin-user-row:last-child { border-bottom: none; }
+  .admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--border);
+  }
+  .admin-tab {
+    padding: 10px 18px;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .admin-tab:hover { color: var(--accent-dark); }
+  .admin-tab.active {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    border-color: var(--accent);
+  }
+  .admin-tab-section { display: none; }
+  .admin-tab-section.active { display: block; }
+  .admin-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .admin-overview-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .admin-overview-card .ov-icon { font-size: 28px; margin-bottom: 8px; }
+  .admin-overview-card .ov-count { font-size: 30px; font-weight: 800; color: var(--accent-dark); font-family: var(--font-heading); }
+  .admin-overview-card .ov-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -502,15 +546,39 @@
         <span id="adminPwdStatus" style="margin-left:12px; font-size:13px;"></span>
       </div>
 
+      <!-- Admin Section Tabs -->
+      <div class="admin-tabs" role="tablist">
+        <button type="button" class="admin-tab" data-tab="overview">&#128202; Overview</button>
+        <button type="button" class="admin-tab" data-tab="users">&#128101; Users</button>
+        <button type="button" class="admin-tab" data-tab="events">&#128197; Events</button>
+        <button type="button" class="admin-tab" data-tab="gallery">&#128444;&#65039; Gallery</button>
+        <button type="button" class="admin-tab" data-tab="weekly">&#127908; Weekly Messages</button>
+        <button type="button" class="admin-tab" data-tab="categories">&#127991; Categories</button>
+      </div>
+
+      <!-- Overview Section -->
+      <section class="admin-tab-section" id="tab-overview">
+        <div class="admin-panel">
+          <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Overview</h3>
+          <div id="adminOverviewStats" class="admin-overview-grid">
+            <!-- Stat cards rendered by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Users Section -->
+      <section class="admin-tab-section" id="tab-users">
       <div class="admin-panel">
         <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Registered Members</h3>
         <div id="adminUserList">
           <!-- Dynamic user list -->
         </div>
       </div>
+      </section>
 
       
       <!-- Event Management Panel -->
+      <section class="admin-tab-section" id="tab-events">
       <div class="admin-panel">
         <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Event Management</h3>
         <div style="margin-bottom: 20px;">
@@ -595,8 +663,10 @@
           <!-- Dynamic event list -->
         </div>
       </div>
+      </section>
 
       <!-- Category Management Panel -->
+      <section class="admin-tab-section" id="tab-categories">
       <div class="admin-panel">
         <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Category Management</h3>
         <form id="addCategoryForm" style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom: 20px;">
@@ -611,8 +681,10 @@
           <!-- Dynamic category list -->
         </div>
       </div>
+      </section>
 
       <!-- Gallery Management Panel -->
+      <section class="admin-tab-section" id="tab-gallery">
       <div class="admin-panel">
         <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Gallery Management</h3>
         <form id="addGalleryForm" style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--border); margin-bottom: 20px;">
@@ -631,8 +703,10 @@
           <!-- Dynamic gallery list -->
         </div>
       </div>
+      </section>
 
       <!-- Weekly Messages (Discourse) Management Panel -->
+      <section class="admin-tab-section" id="tab-weekly">
       <div class="admin-panel">
         <h3 style="margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">Weekly Messages (Discourse)</h3>
         <div style="margin-bottom: 20px;">
@@ -697,6 +771,7 @@
           <!-- Dynamic weekly messages list -->
         </div>
       </div>
+      </section>
     </div>
 
   </div>

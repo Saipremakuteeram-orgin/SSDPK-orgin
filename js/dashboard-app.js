@@ -535,10 +535,62 @@ function initDashboard() {
   // ============================================================
   // ADMIN DASHBOARD — all queries run in PARALLEL for speed
   // ============================================================
+  function initAdminTabs(defaultTab) {
+    const tabs = document.querySelectorAll('.admin-tab');
+    const sections = document.querySelectorAll('.admin-tab-section');
+    const active = defaultTab || 'overview';
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+        tabs.forEach((t) => t.classList.toggle('active', t === tab));
+        sections.forEach((s) => s.classList.toggle('active', s.id === 'tab-' + target));
+      });
+    });
+
+    tabs.forEach((t) => t.classList.toggle('active', t.getAttribute('data-tab') === active));
+    sections.forEach((s) => s.classList.toggle('active', s.id === 'tab-' + active));
+  }
+
+  async function renderAdminOverview() {
+    const el = document.getElementById('adminOverviewStats');
+    if (!el) return;
+    el.innerHTML = '';
+
+    const queries = [
+      { key: 'members', icon: '\u{1F465}', label: 'Members', table: 'members' },
+      { key: 'events', icon: '\u{1F4C5}', label: 'Events', table: 'events' },
+      { key: 'gallery', icon: '\u{1F5BC}\u{FE0F}', label: 'Gallery Items', table: 'gallery' },
+      { key: 'weekly', icon: '\u{1F3A4}', label: 'Weekly Messages', table: 'weekly_messages' },
+      { key: 'categories', icon: '\u{1F3F7}\u{FE0F}', label: 'Categories', table: 'event_categories' }
+    ];
+
+    const counts = {};
+    await Promise.all(queries.map(async (q) => {
+      try {
+        const { count, error } = await supabase.from(q.table).select('*', { count: 'exact', head: true });
+        counts[q.key] = error ? 0 : (count || 0);
+      } catch (e) {
+        counts[q.key] = 0;
+      }
+    }));
+
+    queries.forEach((q) => {
+      const card = document.createElement('div');
+      card.className = 'admin-overview-card';
+      card.innerHTML =
+        '<div class="ov-icon">' + q.icon + '</div>' +
+        '<div class="ov-count">' + counts[q.key] + '</div>' +
+        '<div class="ov-label">' + q.label + '</div>';
+      el.appendChild(card);
+    });
+  }
+
   async function renderAdminDashboard() {
     // Fire all independent fetches simultaneously instead of serially
     await Promise.all([
       loadCategories(),
+      renderAdminOverview(),
       renderAdminUsers(),
       renderAdminEvents(),
       renderAdminGallery(),
@@ -546,6 +598,7 @@ function initDashboard() {
     ]);
     // Categories must be loaded for the category list UI — render after
     renderAdminCategories();
+    initAdminTabs('overview');
   }
 
   async function renderAdminUsers() {
