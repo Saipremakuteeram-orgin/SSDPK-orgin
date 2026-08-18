@@ -186,16 +186,15 @@
       @media (max-width: 768px) {
         .language-switcher {
           order: 10;
-          margin-left: 0;
-          margin-top: 8px;
-          width: 100%;
+          margin-left: auto;
+          width: auto;
           background: transparent;
           border: none;
           box-shadow: none;
           padding: 0;
         }
         .lang-select {
-          width: 100%;
+          width: auto;
         }
       }
     `;
