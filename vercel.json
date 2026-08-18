@@ -28,6 +28,8 @@
     { "source": "/privacy.html", "destination": "/pages/privacy" },
     { "source": "/terms", "destination": "/pages/terms" },
     { "source": "/terms.html", "destination": "/pages/terms" },
+    { "source": "/contact", "destination": "/pages/contact" },
+    { "source": "/contact.html", "destination": "/pages/contact" },
     { "source": "/api/config", "destination": "/api/config.js" },
     { "source": "/api/notify-event", "destination": "/api/notify-event.js" },
     { "source": "/api/send-welcome", "destination": "/api/send-welcome.js" },

@@ -194,3 +194,14 @@ blockquote footer{margin-top:8px;font-size:13px;color:var(--muted);font-style:no
 .takeaways-list li::marker{color:var(--divine-gold)}
 @media(max-width:768px){.grid-2{grid-template-columns:1fr}}
 figcaption{text-align:center;color:var(--muted);font-size:13px;margin-top:10px}
+
+/* TOC */
+.toc{max-width:680px;margin:0 auto;padding:20px 24px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.toc-title{margin:0 0 10px;font-size:16px;font-weight:700;color:var(--divine-maroon)}
+.toc-list{margin:0;padding-left:0;list-style:none}
+.toc-list li{margin:6px 0}
+.toc-list a{color:var(--accent);text-decoration:none;font-size:14px}
+.toc-list a:hover{text-decoration:underline}
+pre{max-width:680px;margin:0 auto;background:#1e2430;color:#e8ecf3;border-radius:12px;padding:18px 20px;overflow-x:auto;font-size:13px;line-height:1.6;font-family:ui-monospace,'Cascadia Code',Consolas,monospace}
+code{font-family:ui-monospace,'Cascadia Code',Consolas,monospace}
+video{max-width:720px;width:100%;border-radius:12px;display:block;margin:0 auto}
