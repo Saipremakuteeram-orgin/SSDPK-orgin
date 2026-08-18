@@ -6,7 +6,23 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sathya Sai Trust — Sign In</title>
+<title>Sathya Sai Trust â€” Sign In</title>
+<meta name="description" content="Sign in to your Sathya Sai Prema Kuterram member dashboard.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://saidharmasamrakshanapremakuteeram.qzz.io/login">
+<link rel="alternate" type="application/rss+xml" title="Sathya Sai Prema Kuterram Feed" href="/feed.xml">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Sri Sai Dharma Samrakshana Prema Kuteeram",
+  "alternateName": "Sathya Sai Prema Kuterram",
+  "url": "https://saidharmasamrakshanapremakuteeram.qzz.io/",
+  "logo": "https://saidharmasamrakshanapremakuteeram.qzz.io/logo.jpg"
+}
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -106,7 +122,7 @@
 <nav>
   <div class="container">
     <a href="index.html" class="nav-brand">
-      <img src="/logo.jpg" alt="SSPK" class="nav-logo-img">
+      <img src="/logo.webp" alt="Sathya Sai Prema Kuterram trust logo" class="nav-logo-img">
       SSPK
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
@@ -143,7 +159,7 @@
             <input type="text" id="loginIdentifier" placeholder="Enter phone or email address" required autocomplete="username">
             <p class="field-error" id="identifierError"></p>
           </div>
-          <!-- Password field — shown only for email logins -->
+          <!-- Password field â€” shown only for email logins -->
           <div class="input-group hidden" id="passwordGroup">
             <label for="loginPassword" data-i18n="login.password">Password <span class="required-asterisk">*</span></label>
             <div class="pwd-wrap">
@@ -295,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ── Forgot Password ───────────────────────────────────────────────────────
+  // â”€â”€ Forgot Password â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   forgotPasswordLink?.addEventListener('click', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginIdentifier').value.trim();
@@ -309,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (error) {
       alert('Could not send reset email: ' + error.message);
     } else {
-      alert('✅ Password reset link sent to ' + email + '\nCheck your inbox and follow the link to set a new password.');
+      alert('âœ… Password reset link sent to ' + email + '\nCheck your inbox and follow the link to set a new password.');
     }
   });
 
@@ -418,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isEmail = identifier.includes('@');
 
       if (isEmail) {
-        // ── Email path: use inline password field ─────────────────────────────
+        // â”€â”€ Email path: use inline password field â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const pwd = document.getElementById('loginPassword').value;
         if (!pwd) {
           setError(passwordGroup, passwordError, 'Please enter your password.');
@@ -453,10 +469,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (isAdmin) {
-          // ✅ Admin verified via Supabase Auth + site_admins table/fallback
+          // âœ… Admin verified via Supabase Auth + site_admins table/fallback
           localStorage.setItem('sspk_session', JSON.stringify({ role: 'admin', identifier }));
         } else {
-          // ✅ Regular member via Supabase Auth
+          // âœ… Regular member via Supabase Auth
           localStorage.setItem('sspk_session', JSON.stringify({ role: 'user', identifier }));
         }
 
@@ -464,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // ── Phone path: look up member by phone ──────────────────────────────
+      // â”€â”€ Phone path: look up member by phone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const { data, error } = await supabase
         .from('members')
         .select('id, fname, lname, member_id, phone, email')

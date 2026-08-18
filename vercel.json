@@ -24,6 +24,10 @@
     { "source": "/signup.html", "destination": "/pages/signup" },
     { "source": "/trustees", "destination": "/pages/trustees" },
     { "source": "/trustees.html", "destination": "/pages/trustees" },
+    { "source": "/privacy", "destination": "/pages/privacy" },
+    { "source": "/privacy.html", "destination": "/pages/privacy" },
+    { "source": "/terms", "destination": "/pages/terms" },
+    { "source": "/terms.html", "destination": "/pages/terms" },
     { "source": "/api/config", "destination": "/api/config.js" },
     { "source": "/api/notify-event", "destination": "/api/notify-event.js" },
     { "source": "/api/send-welcome", "destination": "/api/send-welcome.js" },
@@ -38,5 +42,17 @@
     { "source": "/api/telegram-upload", "destination": "/api/weekly-messages" },
     { "source": "/api/weekly-media", "destination": "/api/weekly-messages" },
     { "source": "/api/event-report", "destination": "/api/weekly-messages" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://checkout.razorpay.com https://cdn.razorpay.com https://api.stripe.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://db.onlinewebfonts.com; img-src 'self' data: blob: https://zkzotagctwqthxypczej.supabase.co; font-src 'self' data: https://db.onlinewebfonts.com; connect-src 'self' https://zkzotagctwqthxypczej.supabase.co https://api.razorpay.com https://checkout.razorpay.com https://api.stripe.com; frame-src https://checkout.razorpay.com https://api.stripe.com; media-src 'self' https://zkzotagctwqthxypczej.supabase.co blob:" }
+      ]
+    }
   ]
 }

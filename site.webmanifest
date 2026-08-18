@@ -1,0 +1,33 @@
+{
+  "name": "Sathya Sai Prema Kuterram",
+  "short_name": "SSPK",
+  "description": "Sri Sai Dharma Samrakshana Prema Kuteeram — a spiritual trust serving with love.",
+  "lang": "en",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FCF7EE",
+  "theme_color": "#802C1E",
+  "icons": [
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.webp",
+      "sizes": "1024x1024",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ]
+}

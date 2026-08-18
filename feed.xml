@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sathya Sai Prema Kuterram</title>
+    <link>https://saidharmasamrakshanapremakuteeram.qzz.io/</link>
+    <description>Sri Sai Dharma Samrakshana Prema Kuteeram — events, discourses, and seva updates from Sathya Sai Prema Kuterram.</description>
+    <language>en</language>
+    <atom:link href="https://saidharmasamrakshanapremakuteeram.qzz.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Weekly Discourse &amp; Message</title>
+      <link>https://saidharmasamrakshanapremakuteeram.qzz.io/discourse</link>
+      <description>Fresh weekly messages and discourses from Sathya Sai Prema Kuterram for devotion and daily guidance.</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Upcoming Events &amp; Seva Activities</title>
+      <link>https://saidharmasamrakshanapremakuteeram.qzz.io/events</link>
+      <description>Bhajans, seva drives, study circles, and community programs.</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+    </item>
+  </channel>
+</rss>
