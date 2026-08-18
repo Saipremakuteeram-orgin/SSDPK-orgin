@@ -28,12 +28,15 @@
 
 | Page | File | Description |
 |------|------|-------------|
-| 🏠 **Home** | `index.html` | Mission overview with animated flow tree |
-| 📖 **About** | `about.html` | Trust background & philosophy |
-| 🖼️ **Gallery** | `gallery.html` | Event & seva photos |
-| 📅 **Events** | `events.html` | Bhajans, seva, study circle calendar & bookings |
-| 📊 **Dashboard** | `dashboard.html` | Member portal (membership card, daily blessings, Razorpay) |
-| 🔐 **Login / Signup / Reset** | `login.html` / `signup.html` / `reset-password.html` | Email or Phone OTP-based authentication |
+| 🏠 **Home** | `pages/index.html` | Mission overview with animated flow tree |
+| 📖 **About** | `pages/about.html` | Trust background & philosophy |
+| 🖼️ **Gallery** | `pages/gallery.html` | Event & seva photos |
+| 📅 **Events** | `pages/events.html` | Bhajans, seva, study circle calendar & bookings |
+| 📊 **Dashboard** | `pages/dashboard.html` | Member portal (membership card, daily blessings, admin console) |
+| 🎙️ **Discourses** | `pages/discourse.html` | Weekly messages archive |
+| 🙏 **Seva** | `pages/seva.html` | Donations & monthly subscriptions (Razorpay) |
+| 🧑‍🤝‍🧑 **Trustees** | `pages/trustees.html` | Board of Trustees |
+| 🔐 **Login / Signup / Reset** | `pages/login.html` / `pages/signup.html` / `pages/reset-password.html` | Email or Phone OTP-based authentication |
 
 ---
 
@@ -66,27 +69,32 @@
 
 ```
 SSDPK-orgin/
-├── index.html / about.html / events.html / gallery.html / dashboard.html
-├── login.html / signup.html / reset-password.html
-├── api/                  ← Vercel serverless functions
+├── pages/              ← All HTML pages
+│   ├── index.html / about.html / events.html / gallery.html
+│   └── dashboard.html / discourse.html / seva.html / trustees.html
+│   └── login.html / signup.html / reset-password.html
+├── api/                ← Vercel serverless functions
 │   ├── config.js
-│   ├── send-notification.js
-│   └── send-welcome.js
+│   ├── notify-event.js
+│   ├── send-welcome.js
+│   ├── weekly-messages.js
+│   ├── razorpay/       ← Orders, subscriptions, webhooks
+│   └── shared/         ← Admin auth, Telegram bot, validators
 ├── css/
-│   ├── theme.css         ← Global theme (3D Morph & Glass Neon)
+│   ├── theme.css       ← Global theme
 │   └── chatbot.css
 ├── js/
 │   ├── main.js
 │   ├── supabase-client.js
-│   └── dashboard-app.js
-├── quote/                ← Daily quotes seed data & SQL
-├── images/               ← Site images & assets
-├── image_for_quote/      ← Quote background images
-├── audio/                ← Audio files
-├── logo.jpg              ← Trust logo
-├── bot.py                ← Telegram bot
-├── *.sql                 ← Supabase schema setup
-├── vercel.json           ← Vercel routing config
+│   ├── dashboard-app.js
+│   └── i18n.js         ← 6 languages
+├── i18n/               ← Locale JSON files
+├── tests/              ← Vitest suite
+├── images/             ← Site images & assets
+├── image_for_quote/    ← Quote background images
+├── audio/              ← Audio files
+├── logo.jpg            ← Trust logo
+├── vercel.json         ← Vercel routing config
 └── package.json
 ```
 

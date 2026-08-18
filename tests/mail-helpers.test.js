@@ -83,7 +83,7 @@ describe('mail helpers', () => {
 
     it('links to events.html?id when event id present', () => {
       const { html } = buildEventEmail(event, 'https://example.org');
-      expect(html).toContain('https://example.org/events.html?id=42');
+      expect(html).toContain('https://example.org/pages/events.html?id=42');
     });
 
     it('embeds the logo inline in the footer (not as an attachment)', () => {
@@ -101,7 +101,7 @@ describe('mail helpers', () => {
 
     it('builds a details link even without an id', () => {
       const { html } = buildEventEmail({ title: 'Seva Day', date: '2026-08-01' }, 'https://example.org');
-      expect(html).toContain('https://example.org/events.html');
+      expect(html).toContain('https://example.org/pages/events.html');
     });
   });
 

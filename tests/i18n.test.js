@@ -55,9 +55,9 @@ describe('i18n module', () => {
 
     originalFetch = global.fetch;
     global.fetch = mockFetch({
-      'i18n/en.json': { data: translations.en },
-      'i18n/ta.json': { data: translations.ta },
-      'i18n/hi.json': { data: translations.hi },
+      '/i18n/en.json': { data: translations.en },
+      '/i18n/ta.json': { data: translations.ta },
+      '/i18n/hi.json': { data: translations.hi },
     });
 
     originalLocation = window.location;
@@ -102,7 +102,7 @@ describe('i18n module', () => {
       if (translationCache[lang]) {
         return translationCache[lang];
       }
-      const response = await fetch('i18n/' + lang + '.json');
+      const response = await fetch('/i18n/' + lang + '.json');
       if (!response.ok) {
         if (lang !== DEFAULT_LANG) {
           console.warn('Failed to load ' + lang + '.json, falling back to English');
@@ -241,8 +241,8 @@ describe('i18n module', () => {
 
     it('should fall back to English if language file is not found', async () => {
       global.fetch = mockFetch({
-        'i18n/en.json': { data: translations.en },
-        'i18n/zz.json': { ok: false, data: {} }
+        '/i18n/en.json': { data: translations.en },
+        '/i18n/zz.json': { ok: false, data: {} }
       });
 
       const { getLanguage } = simulateI18nModule();

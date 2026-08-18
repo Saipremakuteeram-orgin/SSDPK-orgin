@@ -15,13 +15,15 @@ Sri Sai Dharma Samrakshana Prema Kuteeram is a Public Charitable Trust registere
 
 ## Pages
 
-- **Home:** index.html — Mission overview with animated flow tree of trustees and activities
-- **About:** about.html — Trust background, philosophy, and guiding principles
-- **Trustees:** trustees.html — Interactive tree view of all 12 Board of Trustees and their responsibilities
-- **Gallery:** gallery.html — Event and seva photo documentation
-- **Events:** events.html — Bhajans, seva, study circle calendar and event bookings
-- **Dashboard:** dashboard.html — Member portal with membership card, daily blessings, and donations
-- **Login / Signup / Reset:** login.html / signup.html / reset-password.html — Authentication pages
+- **Home:** pages/index.html — Mission overview with animated flow tree of trustees and activities
+- **About:** pages/about.html — Trust background, philosophy, and guiding principles
+- **Trustees:** pages/trustees.html — Interactive tree view of all 12 Board of Trustees and their responsibilities
+- **Gallery:** pages/gallery.html — Event and seva photo documentation
+- **Events:** pages/events.html — Bhajans, seva, study circle calendar and event bookings
+- **Discourses:** pages/discourse.html — Weekly messages archive
+- **Seva:** pages/seva.html — Donations and monthly subscriptions
+- **Dashboard:** pages/dashboard.html — Member portal with membership card, daily blessings, and donations
+- **Login / Signup / Reset:** pages/login.html / pages/signup.html / pages/reset-password.html — Authentication pages
 
 ## Board of Trustees (12 Members)
 

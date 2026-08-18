@@ -1,67 +1,79 @@
 # Project Directory Structure — Sathya Sai Prema Kuteeram
 
-This document provides a step-by-step overview of the files and directories in the Sathya Sai Prema Kuteeram website project to help developers navigate and maintain the repository.
+This document describes the files and directories of the Sathya Sai Prema Kuteeram website project to help developers navigate and maintain the repository.
 
 ---
 
 ## 📂 Core Folder Structure
 
 ```text
-sathya-sai-website_new/
-├── .env                  # Local development environment configuration
-├── .gitignore            # Git exclusion patterns
-├── STRUCTURE.md          # Project folder & layout documentation (this file)
-├── IMPLEMENTATION.md     # Logo / tree rendering historical plan
-├── about.html            # "About Us" information page
-├── dashboard.html        # Member portal dashboard (membership card & daily blessings)
-├── events.html           # Events calendar & physical study circle bookings
-├── gallery.html          # Interactive image gallery linked to events
-├── index.html            # Homepage (featuring the interactive animated flow tree)
-├── login.html            # Member sign-in page (accepting Email or Phone OTP)
-├── signup.html           # Member registration/signup page
-├── vercel.json           # Vercel serverless routing and Clean URLs configuration
-├── logo.jpg              # Primary trust logo
-├── api/                  # Vercel Serverless Functions
-│   ├── config.js         # Serves publishable Supabase credentials dynamically
-│   ├── notify-event.js   # Sends automated email notifications for upcoming events
-│   └── send-welcome.js   # Sends automated welcome email upon user registration
-├── css/                  # Layout & Theme Styling
-│   ├── theme.css         # Main stylesheet (color variables, fonts, components)
-│   └── chatbot.css       # Floating AI chatbot support layout styling
-├── js/                   # Frontend JavaScript Logic
-│   ├── main.js           # Shared DOM layouts (navigation bar, mobile menus, state)
-│   ├── supabase-client.js# Supabase client helper initialization
-│   └── dashboard-app.js  # Member dashboard logic, cards, & quotes daily limit system
-├── image_for_quote/      # Optimized assets for daily blessings quote display
-│   ├── sathya_sai_baba.jpg
-│   └── Maha Periyava.jpg
-├── images/               # High-res master images & visual assets
-│   ├── sathya_sai_baba.png
-│   └── maha_periyava.png
-└── quote/                # Database configuration & quotes seed SQL data
-    ├── quotes_setup.sql  # SQL schema definition & 200 seed insert statement for quotes table
-    ├── sathya_sai_baba_100_quotes.txt
-    └── kanchi_maha_periyava_100_quotes.txt
+SSDPK-orgin/
+├── pages/                     # All HTML pages (served via Vercel rewrites)
+│   ├── index.html             # Homepage (hero, flow tree, contact forms)
+│   ├── about.html             # Mission, gurus, activities
+│   ├── events.html            # Events calendar, brochures, reports, location
+│   ├── gallery.html           # Interactive image gallery linked to events
+│   ├── dashboard.html         # Member portal (digital card, daily blessings, admin console)
+│   ├── discourse.html         # Weekly messages (Discourse) public view
+│   ├── seva.html              # Seva contributions & Razorpay subscriptions
+│   ├── trustees.html          # Board of Trustees
+│   ├── login.html             # Sign-in (email/phone OTP, password)
+│   ├── signup.html            # Member registration
+│   └── reset-password.html    # Password recovery
+├── api/                       # Vercel Serverless Functions
+│   ├── config.js              # Serves publishable Supabase credentials
+│   ├── notify-event.js        # Email notifications for upcoming events
+│   ├── send-welcome.js        # Welcome email on registration
+│   ├── weekly-messages.js     # Weekly media upload/download, event report upload
+│   ├── razorpay/              # Order, subscription, plans, webhook, history, etc.
+│   └── shared/                # Shared helpers (admin auth, Telegram bot, validators)
+├── css/                       # Theme & page styles
+│   ├── theme.css              # Main stylesheet (tokens, components)
+│   ├── divine.css             # Sacred/typography extras
+│   ├── discourse.css          # Weekly message card styling
+│   ├── chatbot.css            # Floating AI chatbot layout
+│   └── trustees.css           # Trustees page styling
+├── js/                        # Frontend logic
+│   ├── main.js                # Shared nav, auth redirects, DOM upgrades
+│   ├── supabase-client.js     # Supabase client singleton
+│   ├── dashboard-app.js       # Member dashboard + admin console
+│   ├── discourse.js           # Weekly messages rendering
+│   ├── seva.js                # Seva page logic
+│   ├── i18n.js                # Internationalization (6 languages)
+│   ├── chatbot.js             # AI chatbot
+│   ├── razorpay-helpers.js    # Razorpay checkout helpers
+│   └── mail-helpers.js        # Email HTML builders
+├── i18n/                      # Locale JSON files (en, ta, hi, te, kn, ml)
+├── audio/                     # Audio assets
+├── images/                    # High-res images
+├── image_for_quote/           # Optimized daily-blessings images
+├── tests/                     # Vitest test suite (175 tests)
+├── docs/superpowers/          # Plans & design specs (agent-generated)
+├── .github/workflows/         # CI tests + Supabase keep-alive
+├── vercel.json                # Rewrites (pages + API) and clean URLs
+├── package.json               # Dependencies & test scripts
+├── vitest.config.mjs          # Vitest config
+├── .gitignore                 # Git exclusion patterns
+├── README.md                  # Project overview
+├── STRUCTURE.md               # This file
+├── supabase_donations.sql     # Donations schema (public reference)
+├── logo.jpg                   # Primary trust logo
+├── favicon-16.png             # Browser favicon
+├── favicon-32.png             # Browser favicon
+├── apple-touch-icon.png       # Mobile home-screen icon
+└── llms.txt                   # LLM-readable site summary
 ```
 
 ---
 
-## 📑 File Walkthrough & Purpose
+## 📑 Routing Notes
 
-### 1. Root Pages (`*.html`)
-- **`index.html`**: The home page. Displays general details of the trust, contact forms, and the interactive SVG **Flow Tree** which dynamically animates when clicking the root node.
-- **`about.html`**: Details the mission, gurus, and background of the trust.
-- **`gallery.html`**: Displays user-contributed and official images. Integrates with the `events` table to show event-based images and categories.
-- **`events.html`**: Lists upcoming study circles, bhajans, and celebrations, pulling directly from Supabase.
-- **`dashboard.html`**: The membership landing page. Renders the custom ATM-styled membership card and includes the **Daily Blessings** section.
+- Pages live in `pages/` but are reachable at both the new paths (`/about`, `/about.html`) and any legacy URLs via `vercel.json` rewrites.
+- All API routes (`/api/...`) are mapped to their function files in `vercel.json`.
 
-### 2. Assets (`images/` & `image_for_quote/`)
-- **`images/`**: Contains original web assets.
-- **`image_for_quote/`**: Contains performance-optimized, compressed JPG images (`sathya_sai_baba.jpg` and `Maha Periyava.jpg`) for the daily blessings section, ensuring low bandwidth overhead.
+## 🧪 Testing
 
-### 3. Serverless Backend (`api/`)
-- **`api/config.js`**: Resolves Supabase credentials from server-side environment variables on Vercel to protect keys while permitting dynamic runtime integration.
-- **`api/send-welcome.js`**: Integrates with standard mail endpoints to email members as soon as they sign up or register.
-
-### 4. Database Setup (`quote/`)
-- **`quotes_setup.sql`**: Schema definition and 200 insert statements containing quotes from Sathya Sai Baba and Maha Periyava in English and Tamil. This SQL can be executed in the Supabase SQL editor to populate the DB.
+```bash
+npm install
+npm test
+```

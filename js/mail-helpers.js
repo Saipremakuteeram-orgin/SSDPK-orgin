@@ -63,7 +63,7 @@ function buildEventEmail(event, baseUrl, fromEmail) {
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
 
   const base = (baseUrl || '').replace(/\/+$/, '');
-  const detailsUrl = evt.id ? base + '/events.html?id=' + encodeURIComponent(evt.id) : (base || 'https://sathyasaipremakuterram.org') + '/events.html';
+  const detailsUrl = evt.id ? base + '/pages/events.html?id=' + encodeURIComponent(evt.id) : (base || 'https://sathyasaipremakuterram.org') + '/pages/events.html';
 
   const lines = [
     'Sai Ram!',

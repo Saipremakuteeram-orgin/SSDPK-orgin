@@ -32,7 +32,7 @@ export function buildPaymentLinkPayload(amount, purpose, donor = {}) {
       donor_email: donor.email || '',
       donor_phone: donor.phone || ''
     },
-    callback_url: typeof window !== 'undefined' ? window.location.origin + '/dashboard.html' : '',
+    callback_url: typeof window !== 'undefined' ? window.location.origin + '/pages/dashboard.html' : '',
     callback_method: 'get'
   };
 }

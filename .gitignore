@@ -49,6 +49,11 @@ CHECKLIST.md
 IMPLEMENTATION.md
 *.patch
 
+# ── Agent Work Artifacts (CONFIDENTIAL) ─────────────────────
+.superpowers/
+docs/superpowers/plans/2026-08-03-*
+docs/superpowers/specs/2026-08-03-*
+
 # ── Dependencies & Build Artifacts ──────────────────────────
 node_modules/
 package-lock.json
