@@ -240,6 +240,9 @@ nav {
   box-shadow: 0 1px 12px oklch(72% 0.14 85 / 0.05);
 }
 .nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--font-sacred);
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -272,6 +275,20 @@ nav {
   background: oklch(96% 0.02 80);
   color: var(--divine-maroon);
   border-radius: var(--radius-sm);
+}
+.nav-links {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+#langSwitcher {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  text-align: right;
+  margin-left: 16px;
+  padding-left: 16px;
 }
 
 /* ── Footer Divine Style ──────────────────────────────────── */

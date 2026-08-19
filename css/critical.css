@@ -24,7 +24,7 @@ h1,h2,h3,h4{font-family:var(--font-sacred);font-weight:600;line-height:1.2}
 nav{position:fixed;top:0;left:0;right:0;height:64px;background:oklch(98% 0.005 80 / 0.85);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border-bottom:1px solid oklch(72% 0.14 85 / 0.08);z-index:100;display:flex;align-items:center;transition:box-shadow .3s}
 nav.scrolled{box-shadow:0 4px 20px oklch(72% 0.14 85 / 0.1)}
 nav .container{display:flex;align-items:center;width:100%}.nav-brand,.nav-toggle{flex:0 0 auto}.nav-links{flex:1;justify-content:center;text-align:center}#langSwitcher{flex:0 0 auto;justify-content:flex-end;text-align:right;margin-left:12px;padding-left:12px}
-.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-sacred);font-size:16px;font-weight:700;color:var(--divine-maroon);letter-spacing:.03em;text-decoration:none;transition:transform .3s}
+.nav-brand{display:flex;align-items:center;gap:12px;font-family:var(--font-sacred);font-size:16px;font-weight:700;color:var(--divine-maroon);letter-spacing:.03em;text-decoration:none;transition:transform .3s}
 .nav-brand:hover{animation:brandBounce .5s ease}
 @keyframes brandBounce{0%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}60%{transform:translateY(-2px)}}
 .nav-logo-img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2.5px solid var(--divine-gold);box-shadow:0 0 12px oklch(72% 0.14 85 / 0.4);transition:transform .3s,box-shadow .3s}

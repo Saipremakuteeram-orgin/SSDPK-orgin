@@ -123,23 +123,12 @@ nav .container {
   align-items: center;
   gap: 20px;
 }
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  color: #333;
-  text-decoration: none;
-}
-.nav-brand img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
 .nav-links {
   display: flex;
-  gap: 16px;
-  margin-left: auto;
+  flex: 1;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
 }
 .nav-links a {
   color: #333;
@@ -152,7 +141,11 @@ nav .container {
   background: #e9ecef;
 }
 #langSwitcher {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  text-align: right;
   margin-left: 16px;
+  padding-left: 16px;
 }
 
 /* ---- Neon Glow Animations ---- */
