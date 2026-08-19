@@ -13,6 +13,11 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+async function getToken() {
+  const { data } = await supabase.auth.getSession();
+  return data.session ? data.session.access_token : null;
+}
+
 function initDashboard() {
   // Elements
   const authView = document.getElementById('authView');
@@ -1817,11 +1822,6 @@ async function initWeeklyMessagesAdmin() {
     if (thumbPreviewEl) thumbPreviewEl.src = thumbPreviewUrl;
     if (thumbPreviewWrap) thumbPreviewWrap.style.display = 'flex';
     thumbRemoveRequested = false;
-  }
-
-  async function getToken() {
-    const { data } = await supabase.auth.getSession();
-    return data.session ? data.session.access_token : null;
   }
 
   async function api(path, method, body) {
