@@ -8,19 +8,31 @@
 
 <br>
 
-![Trust Registered](https://img.shields.io/badge/Trust_Registered-Document_No._51/2026-blue?style=for-the-badge)
-![Vercel Deployed](https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel)
-![Supabase](https://img.shields.io/badge/Backend-Supabase-3ecf8e?style=for-the-badge&logo=supabase)
-![License](https://img.shields.io/badge/License-©_2026_SSPK-orange?style=for-the-badge)
+[![Trust Registered](https://img.shields.io/badge/Trust_Registered-Document_No._51/2026-blue?style=for-the-badge)](https://saidharmasamrakshanapremakuteeram.qzz.io/)
+[![Vercel Deployed](https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
+[![Supabase](https://img.shields.io/badge/Backend-Supabase-3ecf8e?style=for-the-badge&logo=supabase)](https://supabase.com)
+[![License](https://img.shields.io/badge/License-©_2026_SSPK-orange?style=for-the-badge)](LICENSE)
 
 ---
 
-*A spiritual trust website dedicated to selfless service, universal love, and the teachings of*
-**Sri Sathya Sai Baba** *and* **Kanchi Maha Periyava**
+## ✨ Recent Updates
 
-🌐 **[Live Site](https://saidharmasamrakshanapremakuteeram.qzz.io/)**
+| Fix | File | Description |
+|-----|------|-------------|
+| 🟢 **Header Issue Resolved** | `css/theme.css` | Simplified nav CSS, removed broken `!important` syntax causing messy flex layout |
+| 🟢 **Footer Standardized** | `pages/*.html` (6 pages) | Removed duplicate "Events" links, consistent 3-section footer structure |
+| 🟢 **Gallery Folder Icon** | `pages/gallery.html` | Updated event cards to use 📂 folder icon; Telegram banner uses folder emoji |
+| 🟢 **FAQ Line Spacing** | `pages/index.html` + `css/theme.css` | Added `margin-bottom: 8px` to `.faq-list details summary` for readable spacing |
+| 🟢 **Counter Text Updated** | `pages/gallery.html` | Changed "event gallery folder(s) loaded" to "event(s) in gallery" |
+| 🟢 **Trust Config Updates** | `.env.example`, `api/config.js` | Added Supabase credentials configuration |
 
-</div>
+---
+
+## 🌐 Live Demo
+
+**Website**: [https://saidharmasamrakshanapremakuteeram.qzz.io/](https://saidharmasamrakshanapremakuteeram.qzz.io/)
+
+**Vercel Deployment**: [ssdpk-orgin-h1hunjo4j-sk143sathyabusiness-projects.vercel.app](https://vercel.com)
 
 ---
 
@@ -28,10 +40,10 @@
 
 | Page | File | Description |
 |------|------|-------------|
-| 🏠 **Home** | `pages/index.html` | Mission overview with animated flow tree |
+| 🏠 **Home** | `pages/index.html` | Mission overview with animated flow tree, guide sections, FAQ |
 | 📖 **About** | `pages/about.html` | Trust background & philosophy |
-| 🖼️ **Gallery** | `pages/gallery.html` | Event & seva photos |
-| 📅 **Events** | `pages/events.html` | Bhajans, seva, study circle calendar & bookings |
+| 🖼️ **Gallery** | `pages/gallery.html` | Event & seva photos with folder icons |
+| 📅 **Events** | `pages/events.html` | Bhajans, seva, study calendar & bookings |
 | 📊 **Dashboard** | `pages/dashboard.html` | Member portal (membership card, daily blessings, admin console) |
 | 🎙️ **Discourses** | `pages/discourse.html` | Weekly messages archive |
 | 🙏 **Seva** | `pages/seva.html` | Donations & monthly subscriptions (Razorpay) |
@@ -81,7 +93,7 @@ SSDPK-orgin/
 │   ├── razorpay/       ← Orders, subscriptions, webhooks
 │   └── shared/         ← Admin auth, Telegram bot, validators
 ├── css/
-│   ├── theme.css       ← Global theme
+│   ├── theme.css       ← Global theme (nav fix applied)
 │   └── chatbot.css
 ├── js/
 │   ├── main.js
@@ -107,7 +119,7 @@ SSDPK-orgin/
 ### **Sri Sai Dharma Samrakshana Prema Kuteeram**
 #### *Public Charitable Trust*
 
-**Registered at** Melakarur, Karur
+**Registered at** Melakarur, Karur  
 **Document No.** 51/2026 | **Dated:** 02/07/2026
 
 </div>
@@ -248,13 +260,13 @@ Website maintenance · Social media · Digital comms · Graphic design · Trust 
 
 ### 🎯 Trust Objects
 
-> Education aid for poor children · Veda training & scholarships · Poor feeding · Orphanages & old-age homes ·
-> **Gosamrakshana** (cow protection / Goshalas) · Veda Patasalas · Temple renovation · Medical assistance ·
+> Education aid for poor children · Veda training & scholarships · Poor feeding · Orphanages & old-age homes ·  
+> **Gosamrakshana** (cow protection / Goshalas) · Veda Patasalas · Temple renovation · Medical assistance ·  
 > Yoga & wellness programs · And other charitable activities — all **non-profit**, **service-motive only**, confined to **India**.
 
 ---
 
-## 📜 License & Rights
+### 📜 License & Rights
 
 <div align="center">
 
@@ -293,12 +305,13 @@ Registered Office: No.104, Mettu Street, Karur – 639001
 
 **🕉️ Om Sai Ram 🙏**
 
+</div>
+
 ---
 
-## Razorpay Seva (Contribution) Setup
+## 🚀 Razorpay Seva (Contribution) Setup
 
-Serverless functions in `api/razorpay/` handle one-time orders, QR payment links,
-monthly subscriptions, and webhooks. Configure these in Vercel Environment Variables:
+Serverless functions in `api/razorpay/` handle one-time orders, QR payment links, monthly subscriptions, and webhooks. Configure these in Vercel Environment Variables:
 
 - `RAZORPAY_KEY_ID` (public, also used client-side)
 - `RAZORPAY_KEY_SECRET` (secret, server-only)
@@ -310,4 +323,5 @@ monthly subscriptions, and webhooks. Configure these in Vercel Environment Varia
 Run `supabase_donations.sql` in the Supabase SQL editor to create the `donations` table.
 
 ---
-</div>
+
+Powered by **Vercel**, **Supabase**, and **Razorpay** — serving with love since 2026.
