@@ -440,12 +440,14 @@
       card.className = 'gallery-event-card';
       
       // Select visual icon based on category
-      let icon = 'ðŸ“‚';
+      let icon = '📂';
       const catLower = event.category.toLowerCase();
-      if (catLower.includes('seva') || catLower.includes('service')) icon = 'ðŸ¤';
-      else if (catLower.includes('bhajan') || catLower.includes('devotion')) icon = 'ðŸŽ¶';
-      else if (catLower.includes('study') || catLower.includes('circle')) icon = 'ðŸ“–';
-      else if (catLower.includes('celebration') || catLower.includes('festival')) icon = 'âœ¨';
+      // Use folder icon for all events, with category-specific variants
+      if (catLower.includes('seva') || catLower.includes('service')) icon = '📂';
+      else if (catLower.includes('bhajan') || catLower.includes('devotion')) icon = '🕯️';
+      else if (catLower.includes('study') || catLower.includes('circle')) icon = '📂';
+      else if (catLower.includes('celebration') || catLower.includes('festival')) icon = '🎉';
+      else icon = '📂';
 
       card.innerHTML = `
         <div class="gallery-event-icon">${icon}</div>
