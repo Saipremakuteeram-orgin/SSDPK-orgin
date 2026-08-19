@@ -11,12 +11,26 @@
  * - Project linked: vercel link
  *
  * Usage:
+ *   npm run purge-cache
  *   node scripts/purge-vercel-cache.js
- *   node scripts/purge-vercel-cache.js --debug
  *
- * Or with Vercel CLI directly:
- *   vercel --debug
- *   # Then go to: https://vercel.com/<team>/<project>/settings#edge-cache
+ * Automatic cache purge on every push:
+ *   The GitHub Action in .github/workflows/ci.yml automatically purges the Vercel
+ *   cache on every push to main. To enable:
+ *   1. Get a Vercel token: https://vercel.com/account/tokens
+ *   2. Add GitHub secrets:
+ *      - VERCEL_TOKEN: your-vercel-token
+ *      - VERCEL_SCOPE: your-team-or-username
+ *      - VERCEL_PROJECT: your-project-name
+ *
+ * Manual purge via API:
+ *   curl -X POST "https://api.vercel.com/v1/projects/<project>/cache/clear" \
+ *     -H "Authorization: Bearer <token>" \
+ *     -H "Content-Type: application/json" \
+ *     -d '{}'
+ *
+ * Manual purge via Dashboard:
+ *   https://vercel.com/<scope>/<project>/settings#edge-cache
  */
 
 const { execSync } = require('child_process');
