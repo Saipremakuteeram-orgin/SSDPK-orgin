@@ -11,10 +11,25 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not configured on server' });
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+  const geminiApiKey = process.env.GEMINI_API_KEY;
+
+  const result = {};
+
+  if (supabaseUrl && supabaseAnonKey) {
+    result.SUPABASE_URL = supabaseUrl;
+    result.SUPABASE_ANON_KEY = supabaseAnonKey;
   }
 
-  return res.status(200).json({ GEMINI_API_KEY: key });
+  if (geminiApiKey) {
+    result.GEMINI_API_KEY = geminiApiKey;
+  }
+
+  const hasKeys = Object.keys(result).length > 0;
+  if (!hasKeys) {
+    return res.status(500).json({ error: 'No API keys (SUPABASE or GEMINI) configured on server' });
+  }
+
+  return res.status(200).json(result);
 };
