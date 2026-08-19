@@ -34,10 +34,13 @@
 
   function renderThumbnail(message) {
     var url = String((message && message.thumbnail_url) || '').trim();
+    var thumbWidth = 200;
+    var thumbHeight = 200;
+    var defaultThumb = 'images/sathya_sai_baba.png';
     if (isTelegramEmbedUrl(url)) {
-      return '<iframe class="discourse-thumb" src="' + escapeHtml(url) + '" title="' + escapeHtml(message.title || '') + '" loading="lazy" allowfullscreen></iframe>';
+      return '<iframe class="discourse-thumb" src="' + escapeHtml(url) + '" title="' + escapeHtml(message.title || '') + '" loading="lazy" allowfullscreen width="' + thumbWidth + '" height="' + thumbHeight + '"></iframe>';
     }
-    return '<img class="discourse-thumb" src="' + escapeHtml(url || DEFAULT_THUMB) + '" alt="" loading="lazy">';
+    return '<img class="discourse-thumb" src="' + escapeHtml(url || defaultThumb) + '" alt="' + escapeHtml(message.title || '') + '" loading="lazy" width="' + thumbWidth + '" height="' + thumbHeight + '" onerror="this.onerror=null;this.src=\'' + defaultThumb + '\'">';
   }
 
   function filterMessages(messages, filters) {
