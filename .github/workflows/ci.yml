@@ -22,3 +22,26 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+  purge-vercel-cache:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Purge Vercel Edge Cache
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
+          VERCEL_PROJECT: ${{ secrets.VERCEL_PROJECT }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "VERCEL_TOKEN secret is not set. Skipping cache purge."
+            echo "Set VERCEL_TOKEN, VERCEL_SCOPE, and VERCEL_PROJECT in GitHub Secrets to enable auto-purge."
+          else
+            echo "Purging Vercel edge cache..."
+            curl -X POST "https://api.vercel.com/v1/projects/${VERCEL_PROJECT}/cache/clear" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{}' \
+              || echo "Failed to purge Vercel cache (non-blocking)"
+          fi
