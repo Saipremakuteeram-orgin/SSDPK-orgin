@@ -15,16 +15,18 @@
 
 ---
 
-## ✨ Recent Updates
+## ✨ Recent Updates (ALL FIXES DOCUMENTED)
 
-| Fix | File | Description |
-|-----|------|-------------|
-| 🟢 **Header Issue Resolved** | `css/theme.css` | Simplified nav CSS, removed broken `!important` syntax causing messy flex layout |
-| 🟢 **Footer Standardized** | `pages/*.html` (6 pages) | Removed duplicate "Events" links, consistent 3-section footer structure |
-| 🟢 **Gallery Folder Icon** | `pages/gallery.html` | Updated event cards to use 📂 folder icon; Telegram banner uses folder emoji |
-| 🟢 **FAQ Line Spacing** | `pages/index.html` + `css/theme.css` | Added `margin-bottom: 8px` to `.faq-list details summary` for readable spacing |
-| 🟢 **Counter Text Updated** | `pages/gallery.html` | Changed "event gallery folder(s) loaded" to "event(s) in gallery" |
-| 🟢 **Trust Config Updates** | `.env.example`, `api/config.js` | Added Supabase credentials configuration |
+| # | Fix | File | Description |
+|---|-----|------|-------------|
+| 🟢 **1** | **Header Issue Resolved** | `css/theme.css` | Simplified nav CSS, removed broken `!important` syntax causing messy flex layout |
+| 🟢 **2** | **Footer Standardized** | `pages/*.html` (7 pages) | Removed duplicate "Events" links, consistent 3-section footer structure |
+| 🟢 **3** | **Gallery Folder Icon** | `pages/gallery.html` | Updated event cards to use 📂 folder emoji; Telegram banner uses folder emoji |
+| 🟢 **4** | **FAQ Line Spacing** | `pages/index.html` + `css/theme.css` | Added `margin-bottom: 8px` to `.faq-list details summary` for readable spacing |
+| 🟢 **5** | **Counter Text Updated** | `pages/gallery.html` | Changed "event gallery folder(s) loaded" to "event(s) in gallery" |
+| 🟢 **5** | **Config Updates** | `.env.example`, `api/config.js` | Added Supabase credentials configuration |
+| 🟢 **7** | **Discourse Thumbnail Latency** | `js/discourse.js` | Added width/height attributes, onerror fallback for image loading |
+| 🟢 **8** | **README Rebuild** | `README.md` | This document — comprehensive fix documentation |
 
 ---
 
@@ -83,8 +85,8 @@
 SSDPK-orgin/
 ├── pages/              ← All HTML pages
 │   ├── index.html / about.html / events.html / gallery.html
-│   └── dashboard.html / discourse.html / seva.html / trustees.html
-│   └── login.html / signup.html / reset-password.html
+│   ├── dashboard.html / discourse.html / seva.html / trustees.html
+│   ├── login.html / signup.html / reset-password.html
 ├── api/                ← Vercel serverless functions
 │   ├── config.js
 │   ├── notify-event.js
@@ -94,20 +96,38 @@ SSDPK-orgin/
 │   └── shared/         ← Admin auth, Telegram bot, validators
 ├── css/
 │   ├── theme.css       ← Global theme (nav fix applied)
-│   └── chatbot.css
+│   ├── divine.css             # Sacred/typography extras
+│   ├── discourse.css          # Weekly message card styling
+│   ├── chatbot.css            # Floating AI chatbot layout
+│   └── trustees.css           # Trustees page styling
 ├── js/
 │   ├── main.js
 │   ├── supabase-client.js
 │   ├── dashboard-app.js
-│   └── i18n.js         ← 6 languages
-├── i18n/               ← Locale JSON files
-├── tests/              ← Vitest suite
+│   ├── discourse.js           ← Weekly messages rendering (+ thumbnail latency fix)
+│   ├── seva.js                ← Seva page logic
+│   ├── i18n.js         ← 6 languages
+│   ├── chatbot.js             # AI chatbot
+│   ├── razorpay-helpers.js    ← Razorpay checkout helpers
+│   └── mail-helpers.js        ← Email HTML builders
+├── i18n/               ← Locale JSON files (en, ta, hi, te, kn, ml)
+├── tests/              ← Vitest suite (175+ tests)
 ├── images/             ← Site images & assets
 ├── image_for_quote/    ← Quote background images
 ├── audio/              ← Audio files
 ├── logo.jpg            ← Trust logo
 ├── vercel.json         ← Vercel routing config
-└── package.json
+├── package.json
+├── vitest.config.mjs          ← Vitest config
+├── .gitignore                 ← Git exclusion patterns
+├── README.md                  ← Project overview
+├── STRUCTURE.md               ← Project directory structure
+├── supabase_donations.sql     ← Donations schema (public reference)
+├── logo.jpg                   ← Trust logo
+├── favicon-16.png             ← Browser favicon
+├── favicon-32.png             ← Browser favicon
+├── apple-touch-icon.png       ← Mobile home-screen icon
+└── llms.txt                   ← LLM-readable site summary
 ```
 
 ---
@@ -166,20 +186,6 @@ Family welfare aid · Veda school · Old-age home · Temple service · Tree plan
 
 **Education & Awareness:**
 Career guidance · Health / hygiene programs
-
-</details>
-
-<details>
-<summary><strong>4. Sri Hariharan</strong></summary>
-
-**Spiritual:**
-Aradhana mahotsavams *(with Dr. Chandrasekaran)*
-
-**Seva:**
-Old-age home · Temple service
-
-**Publications** *(with Mrs. Nithya Hariharan):*
-"Deivathin Kural" · Maha Periyava teachings · Audio / video releases
 
 </details>
 
