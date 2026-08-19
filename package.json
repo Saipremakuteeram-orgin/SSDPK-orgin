@@ -6,7 +6,8 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "purge-cache": "node scripts/purge-vercel-cache.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.0",
