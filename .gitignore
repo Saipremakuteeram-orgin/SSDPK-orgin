@@ -30,7 +30,6 @@ api/*
 !api/notify-event.js
 !api/send-welcome.js
 !api/weekly-messages.js
-bot.py
 dev_server.py
 decrypt_secret.py
 encrypt_secret.py
