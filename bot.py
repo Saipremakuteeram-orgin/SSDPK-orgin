@@ -477,7 +477,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "📅 /events — View upcoming events\n"
         "💬 /info — Spiritual guidance via AI\n"
         "❓ /help — Show all commands\n\n"
-        "_Try typing `@bot_username bhajan` in any chat to search events/photos!_"
+        "Try typing `@bot_username bhajan` in any chat to search events/photos!_"
     )
     await update.message.reply_text(msg, parse_mode="Markdown")
 
