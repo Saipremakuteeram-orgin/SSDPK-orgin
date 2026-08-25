@@ -1,3 +1,11 @@
 docs/
 .vercel/
 graphify-out/
+graphify-tool/
+tests/
+.superpowers/
+.worktrees/
+.github/
+video/
+.swp
+*.log
