@@ -1182,4 +1182,7 @@ footer a:hover { color: white; text-decoration: none; }
 }
 .donation-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:12px}
 @media(max-width:480px){.donation-tiers{grid-template-columns:1fr}}
+.seva-sticky-bar{position:sticky;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -4px 16px oklch(0 0 0 / 0.06);z-index:90;font-size:13px}
+@media(min-width:768px){.seva-sticky-bar{display:none}}
+@media(max-width:480px){.seva-sticky-bar{flex-direction:column;text-align:center}}
 
