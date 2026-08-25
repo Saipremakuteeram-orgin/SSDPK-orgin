@@ -6,8 +6,8 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sathya Sai Trust Ã¢â‚¬â€ Dashboard</title>
-<meta name="description" content="Sathya Sai Prema Kuterram member dashboard â€” digital card, daily blessings, and seva history.">
+<title>Sathya Sai Trust — Dashboard</title>
+<meta name="description" content="Sathya Sai Prema Kuterram member dashboard — digital card, daily blessings, and seva history.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://saidharmasamrakshanapremakuteeram.qzz.io/dashboard">
 <link rel="alternate" type="application/rss+xml" title="Sathya Sai Prema Kuterram Feed" href="/feed.xml">
@@ -23,12 +23,12 @@
 }
 </script>
 
-<!-- DNS Preconnect Ã¢â‚¬â€ resolves domain before scripts request them -->
+<!-- DNS Preconnect — resolves domain before scripts request them -->
 <link rel="preconnect" href="https://zkzotagctwqthxypczej.supabase.co" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
 
-<!-- Tailwind config (inline only Ã¢â‚¬â€ runtime loaded async below) -->
+<!-- Tailwind config (inline only — runtime loaded async below) -->
 <script>
   tailwind = { config: { theme: { extend: { colors: { saffron: { light: '#fdf2e9', DEFAULT: '#e8954a', dark: '#c46a1a' } } } } } };
 </script>
@@ -534,15 +534,15 @@
       </div>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:16px;">
         <div style="background: var(--bg); border:1px solid var(--border); border-radius: var(--radius-sm); padding:16px; text-align:center;">
-          <div id="sevaPayCount" style="font-size:28px; font-weight:700; color: var(--accent-dark);">Ã¢â‚¬â€</div>
+          <div id="sevaPayCount" style="font-size:28px; font-weight:700; color: var(--accent-dark);">—</div>
           <div style="font-size:12px; color: var(--muted); font-weight:600; margin-top:4px;">Total Contributions</div>
         </div>
         <div style="background: var(--bg); border:1px solid var(--border); border-radius: var(--radius-sm); padding:16px; text-align:center;">
-          <div id="sevaAutopayStatus" style="font-size:14px; font-weight:700; color: var(--muted); margin-top:6px;">CheckingÃ¢â‚¬Â¦</div>
+          <div id="sevaAutopayStatus" style="font-size:14px; font-weight:700; color: var(--muted); margin-top:6px;">Checking…</div>
           <div style="font-size:12px; color: var(--muted); font-weight:600; margin-top:4px;">Monthly Seva (Autopay)</div>
         </div>
       </div>
-      <div id="sevaHistoryList" style="font-size:13px; color: var(--muted);">Loading your contribution historyÃ¢â‚¬Â¦</div>
+      <div id="sevaHistoryList" style="font-size:13px; color: var(--muted);">Loading your contribution history…</div>
     </div>
 
     <!-- VIEW 3: Admin Dashboard -->
@@ -550,7 +550,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
         <h2 style="font-family:var(--font-heading); color:var(--accent-dark);">Admin Console</h2>
         <div style="display:flex; gap:8px; align-items:center;">
-          <button id="toggleChangePwdBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Ã°Å¸â€â€˜ Change Password</button>
+          <button id="toggleChangePwdBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">🔑 Change Password</button>
           <button id="adminLogoutBtn" class="btn btn-outline" style="padding:6px 14px; font-size:13px;">Logout Admin</button>
         </div>
       </div>
@@ -846,12 +846,12 @@
 </div>
 
 
-<!-- Scripts Ã¢â‚¬â€ deferred so they never block HTML parse -->
+<!-- Scripts — deferred so they never block HTML parse -->
 <!-- Tailwind CSS runtime (async, non-critical render path) -->
 <script async src="https://cdn.tailwindcss.com"></script>
 <!-- Supabase JS SDK -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- App scripts Ã¢â‚¬â€ defer preserves execution order -->
+<!-- App scripts — defer preserves execution order -->
 <script defer src="/js/main.js?v=1.4.1"></script>
 <script defer src="/js/supabase-client.js?v=1.1.1"></script>
 <script defer src="/js/dashboard-app.js?v=1.7.1"></script>
