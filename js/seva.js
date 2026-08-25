@@ -130,6 +130,7 @@ async function handleOnce(doc, btn) {
       prefill: { name: donor.name, email: donor.email, contact: donor.phone },
       theme: { color: '#C07A3E' },
       handler: function(response) {
+        if(response && response.razorpay_payment_id){ const w=document.getElementById('receiptLinkWrap'); const a=document.getElementById('receiptLink'); if(w&&a){ a.href=`https://dashboard.razorpay.com/app/payments/${response.razorpay_payment_id}`; w.classList.remove('hidden'); } }
         alert('Sai Ram! Thank you for your seva. Payment ID: ' + response.razorpay_payment_id);
       }
     });
@@ -284,8 +285,18 @@ export function getImpactText(amount){
   if(amount>0) return `₹${amount} — Every rupee sustains seva`;
   return 'Choose an amount to see impact';
 }
-if(typeof module!=='undefined' && module.exports) module.exports.getImpactText=getImpactText;
-if(typeof window!=='undefined'){ window.SevaCalc={getImpactText}; if(window.Seva) window.Seva.getImpactText=getImpactText; }
+export function formatSocialProof(count){ count=Number(count)||0; if(count===0) return 'Be the first to support this month — your seva inspires others.'; return `You joined ${count} supporters this month — thank you!`; }
+export async function loadSocialProof(){
+  const el=document.getElementById('socialProofText'); if(!el) return;
+  try{
+    const res=await fetch('/api/razorpay/history'); const j=await res.json();
+    const thisMonth=new Date().toISOString().slice(0,7);
+    const count=(j.data||j||[]).filter(d=> (d.created_at||'').startsWith(thisMonth)).length;
+    el.textContent=formatSocialProof(count);
+  }catch(e){ el.textContent=formatSocialProof(0); }
+}
+if(typeof module!=='undefined' && module.exports){ module.exports.getImpactText=getImpactText; module.exports.formatSocialProof=formatSocialProof; module.exports.loadSocialProof=loadSocialProof; }
+if(typeof window!=='undefined'){ window.SevaCalc={getImpactText, formatSocialProof, loadSocialProof}; if(window.Seva){ window.Seva.getImpactText=getImpactText; window.Seva.formatSocialProof=formatSocialProof; window.Seva.loadSocialProof=loadSocialProof; } }
 if(typeof document!=='undefined'){
   document.addEventListener('DOMContentLoaded',()=>{
     const impact=document.getElementById('impactText');
@@ -294,4 +305,5 @@ if(typeof document!=='undefined'){
     const inp=document.getElementById('sevaOnceAmount'); if(inp) inp.addEventListener('input',()=>upd(inp.value));
     const qr=document.getElementById('sevaQrAmount'); if(qr) qr.addEventListener('input',()=>upd(qr.value));
   });
+  document.addEventListener('DOMContentLoaded', loadSocialProof);
 }

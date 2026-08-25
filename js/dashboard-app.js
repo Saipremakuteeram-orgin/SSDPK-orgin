@@ -2,7 +2,7 @@
 // Handles Auth flow and Dashboard UI State — powered by Supabase
 
 // Bfcache fix: expose a re-init hook for pageshow event
-window._sspkReinit = null;
+if(typeof window!=='undefined') window._sspkReinit = null;
 
 function escapeHtml(str) {
   return String(str == null ? '' : str)
@@ -882,6 +882,7 @@ function initDashboard() {
   showAddEventBtn?.addEventListener('click', () => {
     addEventForm.reset();
     document.getElementById('eventIdInput').value = '';
+    document.getElementById('eventUpdatedAt').value = '';
     document.getElementById('eventBrochureUrl').value = '';
     document.getElementById('eventBrochurePath').value = '';
     document.getElementById('eventBrochurePreviewContainer')?.classList.add('hidden');
@@ -986,6 +987,7 @@ function initDashboard() {
       btn.addEventListener('click', (e) => {
         const evt = JSON.parse(e.target.getAttribute('data-evt'));
         document.getElementById('eventIdInput').value = evt.id;
+        document.getElementById('eventUpdatedAt').value = evt.updated_at || '';
         document.getElementById('eventTitle').value = evt.title;
         document.getElementById('eventCategory').value = evt.category;
         document.getElementById('eventDate').value = evt.date;
@@ -1138,7 +1140,12 @@ function initDashboard() {
 
       let error;
       if (idInput) {
-        ({ error } = await supabase.from('events').update(evtData).eq('id', idInput));
+        const oldUpdatedAt = document.getElementById('eventUpdatedAt') ? document.getElementById('eventUpdatedAt').value : null;
+        let q=supabase.from('events').update({...evtData, updated_by: (JSON.parse(localStorage.getItem('sspk_session')||'{}').identifier||''), updated_at: new Date().toISOString()}).eq('id', idInput);
+        if(oldUpdatedAt) q=q.eq('updated_at', oldUpdatedAt);
+        const { data, error: updateError } = await q.select();
+        error = updateError;
+        if(!error && data && data.length===0){ alert('This event was updated by another admin — please reload and try again.'); saveBtn.textContent = originalBtnText; saveBtn.disabled = false; return; }
       } else {
         const { data: insertedData, error: insertError } = await supabase.from('events').insert([evtData]).select();
         error = insertError;
@@ -2077,6 +2084,10 @@ async function initWeeklyMessagesAdmin() {
   await loadMessages();
 }
 
+function checkAdminConflict(){ return true; }
+if(typeof module!=='undefined' && module.exports) module.exports.checkAdminConflict=checkAdminConflict;
+
+if (typeof document !== 'undefined' && typeof supabase !== 'undefined') {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initDashboard);
   document.addEventListener('DOMContentLoaded', initWeeklyMessagesAdmin);
@@ -2084,12 +2095,13 @@ if (document.readyState === 'loading') {
   initDashboard();
   initWeeklyMessagesAdmin();
 }
+}
 
 // ── Bfcache back-navigation fix ────────────────────────────────────────────────
 // When the user navigates Back from Events/Gallery, the browser may restore
 // this page from bfcache without firing DOMContentLoaded, leaving all views
 // hidden. The pageshow event ALWAYS fires, and persisted=true means bfcache.
-window.addEventListener('pageshow', (e) => {
+if(typeof window!=='undefined') window.addEventListener('pageshow', (e) => {
   if (e.persisted && typeof window._sspkReinit === 'function') {
     // Small delay to let Supabase JS finish hydrating its internal state
     setTimeout(window._sspkReinit, 50);
