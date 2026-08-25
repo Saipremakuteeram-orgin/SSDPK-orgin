@@ -424,10 +424,18 @@ function initDashboard() {
     view.classList.remove('hidden');
   }
 
-  const doLogout = async () => {
+  const doLogout = () => {
+    // Prompt sign-out: clear local state synchronously, fire Supabase signOut in background, replace
     clearAuth();
-    await supabase.auth.signOut();
-    window.location.href = 'login.html';
+    try { localStorage.removeItem('sspk-auth'); } catch(e) {}
+    try {
+      if (typeof supabase !== 'undefined' && supabase.auth && typeof supabase.auth.signOut === 'function') {
+        supabase.auth.signOut().catch(function(err){ console.warn('supabase signOut:', err); });
+      } else if (window.supabase && window.supabase.auth) {
+        window.supabase.auth.signOut().catch(function(err){ console.warn('supabase signOut:', err); });
+      }
+    } catch(e) {}
+    window.location.replace('login.html?v=1');
   };
 
   logoutBtn?.addEventListener('click', doLogout);

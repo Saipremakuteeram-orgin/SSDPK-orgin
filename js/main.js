@@ -56,16 +56,22 @@
       
       navLinks.innerHTML = linksHtml;
 
-      // Handle sign out
+      // Handle sign out — prompt: clear all auth keys synchronously, fire Supabase signOut in background, replace
       var navLogoutBtn = document.getElementById('navLogoutBtn');
       if (navLogoutBtn) {
         navLogoutBtn.addEventListener('click', function(e) {
           e.preventDefault();
-          localStorage.removeItem('sspk_session');
-          if (window.supabase) {
-            window.supabase.auth.signOut().catch(function(err) { console.warn(err); });
-          }
-          window.location.href = 'login.html';
+          try { localStorage.removeItem('sspk_session'); } catch(e2) {}
+          try { localStorage.removeItem('sspk_trusted_device'); } catch(e2) {}
+          try { localStorage.removeItem('sspk_member_data'); } catch(e2) {}
+          try { localStorage.removeItem('sspk-auth'); } catch(e2) {}
+          // Fire Supabase signOut without awaiting — do not block redirect
+          try {
+            if (window.supabase && window.supabase.auth && typeof window.supabase.auth.signOut === 'function') {
+              window.supabase.auth.signOut().catch(function(err) { console.warn('supabase signOut:', err); });
+            }
+          } catch(e2) {}
+          window.location.replace('login.html?v=1');
         });
       }
 
@@ -84,6 +90,8 @@
   // Run renderDynamicNav
   renderDynamicNav();
   window.addEventListener('DOMContentLoaded', renderDynamicNav);
+  // bfcache: re-render nav when page restored from back-forward cache
+  window.addEventListener('pageshow', function(e){ if(e.persisted) renderDynamicNav(); });
 
   // Lightbox
   var lightbox = document.getElementById('lightbox');
