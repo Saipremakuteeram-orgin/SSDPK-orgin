@@ -1180,4 +1180,6 @@ footer a:hover { color: white; text-decoration: none; }
 .seva-panel .btn {
   margin-top: 14px;
 }
+.donation-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:12px}
+@media(max-width:480px){.donation-tiers{grid-template-columns:1fr}}
 

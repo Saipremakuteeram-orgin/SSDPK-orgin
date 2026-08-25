@@ -274,3 +274,24 @@ if (typeof window !== 'undefined') {
     initSeva();
   }
 }
+
+export function getImpactText(amount){
+  amount=Number(amount)||0;
+  if(amount>=1101) return `₹${amount} — Sponsor a Homam + prasadam for devotees`;
+  if(amount>=501) return `₹${amount} — Veda student support for 1 month`;
+  if(amount>=202) return `₹${amount} — ${Math.floor(amount/101)} meals for families`;
+  if(amount>=101) return `₹${amount} — 1 meal for 3 families (Anna Danam)`;
+  if(amount>0) return `₹${amount} — Every rupee sustains seva`;
+  return 'Choose an amount to see impact';
+}
+if(typeof module!=='undefined' && module.exports) module.exports.getImpactText=getImpactText;
+if(typeof window!=='undefined'){ window.SevaCalc={getImpactText}; if(window.Seva) window.Seva.getImpactText=getImpactText; }
+if(typeof document!=='undefined'){
+  document.addEventListener('DOMContentLoaded',()=>{
+    const impact=document.getElementById('impactText');
+    const upd=(v)=>{ if(impact) impact.textContent=getImpactText(v); };
+    document.querySelectorAll('.donation-tier').forEach(b=>b.addEventListener('click',()=>upd(b.dataset.amount)));
+    const inp=document.getElementById('sevaOnceAmount'); if(inp) inp.addEventListener('input',()=>upd(inp.value));
+    const qr=document.getElementById('sevaQrAmount'); if(qr) qr.addEventListener('input',()=>upd(qr.value));
+  });
+}
