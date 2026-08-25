@@ -56,7 +56,7 @@ docs/superpowers/specs/2026-08-03-*
 
 # ── Dependencies & Build Artifacts ──────────────────────────
 node_modules/
-package-lock.json
+# package-lock.json committed for deterministic Vercel builds (do not ignore)
 __pycache__/
 *.py[cod]
 *.pyo
