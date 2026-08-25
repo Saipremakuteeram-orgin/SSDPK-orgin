@@ -23,7 +23,7 @@ import {
   validateEventReport,
   reportContentType,
   reportDisposition
-} from '../api/shared/weekly-common.cjs';
+} from '../api/shared/_weekly-common.cjs';
 
 describe('weekly-common helpers', () => {
   it('telegramMethodFor maps media types', () => {
@@ -206,7 +206,7 @@ describe('admin-auth', () => {
   });
 
   it('isAdminEmail is case-insensitive against env list', async () => {
-    const { isAdminEmail } = await import('../api/shared/admin-auth.cjs');
+    const { isAdminEmail } = await import('../api/shared/_admin-auth.cjs');
     expect(isAdminEmail('SK143Sathya@Gmail.com')).toBe(true);
     expect(isAdminEmail('second@example.com')).toBe(true);
     expect(isAdminEmail('other@example.com')).toBe(false);
@@ -214,14 +214,14 @@ describe('admin-auth', () => {
   });
 
   it('authenticateAdmin returns null without a Bearer token', async () => {
-    const { authenticateAdmin } = await import('../api/shared/admin-auth.cjs');
+    const { authenticateAdmin } = await import('../api/shared/_admin-auth.cjs');
     const sb = { auth: { getUser: async () => ({ data: { user: { email: 'x@y.z' } }, error: null }) } };
     expect(await authenticateAdmin(sb, undefined)).toBeNull();
     expect(await authenticateAdmin(sb, 'token-no-bearer')).toBeNull();
   });
 
   it('authenticateAdmin returns user for a valid token', async () => {
-    const { authenticateAdmin } = await import('../api/shared/admin-auth.cjs');
+    const { authenticateAdmin } = await import('../api/shared/_admin-auth.cjs');
     const sb = {
       auth: { getUser: async () => ({ data: { user: { id: 'u1', email: 'sk143sathya@gmail.com' } }, error: null }) }
     };
@@ -229,7 +229,7 @@ describe('admin-auth', () => {
   });
 
   it('authenticateAdmin returns null on auth error', async () => {
-    const { authenticateAdmin } = await import('../api/shared/admin-auth.cjs');
+    const { authenticateAdmin } = await import('../api/shared/_admin-auth.cjs');
     const sb = { auth: { getUser: async () => ({ data: null, error: { message: 'expired' } }) } };
     expect(await authenticateAdmin(sb, 'Bearer abc')).toBeNull();
   });
@@ -250,14 +250,14 @@ describe('telegram-bot', () => {
   });
 
   it('callTelegramApi returns error when token missing', async () => {
-    const { callTelegramApi } = await import('../api/shared/telegram-bot.cjs');
+    const { callTelegramApi } = await import('../api/shared/_telegram-bot.cjs');
     delete process.env.TELEGRAM_BOT_TOKEN;
     const r = await callTelegramApi('sendMessage', new FormData());
     expect(r).toEqual({ ok: false, error: 'TELEGRAM_BOT_TOKEN is not configured' });
   });
 
   it('sendTextToTelegram posts sendMessage and returns message_id', async () => {
-    const { sendTextToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendTextToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ ok: true, result: { message_id: 77 } })
@@ -271,7 +271,7 @@ describe('telegram-bot', () => {
   });
 
   it('sendMediaToTelegram posts sendAudio for audio with chat_id', async () => {
-    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendMediaToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ ok: true, result: { message_id: 12 } })
@@ -284,7 +284,7 @@ describe('telegram-bot', () => {
   });
 
   it('sendMediaToTelegram falls back to sendDocument when sendAudio fails', async () => {
-    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendMediaToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: false, json: async () => ({ ok: false, description: 'can not be played' }) })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, result: { message_id: 55, document: { file_id: 'DOC123' } } }) });
@@ -298,7 +298,7 @@ describe('telegram-bot', () => {
   });
 
   it('sendMediaToTelegram falls back to sendDocument for video too', async () => {
-    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendMediaToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: false, json: async () => ({ ok: false, description: 'bad format' }) })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, result: { message_id: 66, document: { file_id: 'DOC66' } } }) });
@@ -311,7 +311,7 @@ describe('telegram-bot', () => {
   });
 
   it('sendMediaToTelegram propagates error when document fallback also fails', async () => {
-    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendMediaToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({ ok: false, json: async () => ({ ok: false, description: 'chat not found' }) }));
     const r = await sendMediaToTelegram({ mediaType: 'audio', buffer: Buffer.from('x'), filename: 'a.mp3', mime: 'audio/mpeg' });
     expect(r).toEqual({ ok: false, error: 'chat not found' });
@@ -319,7 +319,7 @@ describe('telegram-bot', () => {
   });
 
   it('propagates Telegram error description', async () => {
-    const { callTelegramApi } = await import('../api/shared/telegram-bot.cjs');
+    const { callTelegramApi } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: false,
       json: async () => ({ ok: false, description: 'chat not found' })
@@ -329,7 +329,7 @@ describe('telegram-bot', () => {
   });
 
   it('sendPhotoToTelegram posts sendPhoto and returns message_id', async () => {
-    const { sendPhotoToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendPhotoToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ ok: true, result: { message_id: 99 } })
@@ -340,14 +340,14 @@ describe('telegram-bot', () => {
   });
 
   it('sendPhotoToTelegram errors when channel missing', async () => {
-    const { sendPhotoToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendPhotoToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     delete process.env.TELEGRAM_CHANNEL_ID;
     const r = await sendPhotoToTelegram({ buffer: Buffer.from('img'), mime: 'image/jpeg', filename: 'thumb.jpg' });
     expect(r).toEqual({ ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' });
   });
 
   it('sendDocumentToTelegram posts sendDocument and returns message_id + file_id', async () => {
-    const { sendDocumentToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendDocumentToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ ok: true, result: { message_id: 31, document: { file_id: 'DOCREPORT1' } } })
@@ -362,7 +362,7 @@ describe('telegram-bot', () => {
   });
 
   it('sendDocumentToTelegram errors when channel missing', async () => {
-    const { sendDocumentToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendDocumentToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     delete process.env.TELEGRAM_CHANNEL_ID;
     const r = await sendDocumentToTelegram({ buffer: Buffer.from('x'), filename: 'report.pdf', mime: 'application/pdf' });
     expect(r).toEqual({ ok: false, error: 'TELEGRAM_CHANNEL_ID is not configured' });
@@ -384,7 +384,7 @@ describe('telegram-bot file_id + getFile', () => {
   });
 
   it('sendMediaToTelegram returns fileId for audio', async () => {
-    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendMediaToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ ok: true, result: { message_id: 1, audio: { file_id: 'AUDIO123' } } })
@@ -394,7 +394,7 @@ describe('telegram-bot file_id + getFile', () => {
   });
 
   it('sendMediaToTelegram returns fileId for video', async () => {
-    const { sendMediaToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendMediaToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ ok: true, result: { message_id: 2, video: { file_id: 'VIDEO456' } } })
@@ -404,7 +404,7 @@ describe('telegram-bot file_id + getFile', () => {
   });
 
   it('sendPhotoToTelegram returns fileId from the largest photo size', async () => {
-    const { sendPhotoToTelegram } = await import('../api/shared/telegram-bot.cjs');
+    const { sendPhotoToTelegram } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({
       ok: true,
       json: async () => ({ ok: true, result: { message_id: 3, photo: [{ file_id: 'small', file_size: 10 }, { file_id: 'big', file_size: 100 }] } })
@@ -414,7 +414,7 @@ describe('telegram-bot file_id + getFile', () => {
   });
 
   it('getTelegramFileStream calls getFile then streams the file url', async () => {
-    const { getTelegramFileStream } = await import('../api/shared/telegram-bot.cjs');
+    const { getTelegramFileStream } = await import('../api/shared/_telegram-bot.cjs');
     const fakeStream = { ok: true, body: 'STREAM' };
     global.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, result: { file_path: 'docs/file_1.mp3' } }) })
@@ -427,7 +427,7 @@ describe('telegram-bot file_id + getFile', () => {
   });
 
   it('getTelegramFileStream returns error when getFile fails', async () => {
-    const { getTelegramFileStream } = await import('../api/shared/telegram-bot.cjs');
+    const { getTelegramFileStream } = await import('../api/shared/_telegram-bot.cjs');
     global.fetch = vi.fn(async () => ({ ok: false, json: async () => ({ ok: false, description: 'bad file_id' }) }));
     const r = await getTelegramFileStream('NOPE');
     expect(r.ok).toBe(false);
@@ -435,7 +435,7 @@ describe('telegram-bot file_id + getFile', () => {
   });
 
   it('sendMediaToTelegram fileId falls back to empty string', async () => {
-    const { getFileId } = await import('../api/shared/telegram-bot.cjs');
+    const { getFileId } = await import('../api/shared/_telegram-bot.cjs');
     expect(getFileId({ audio: { file_id: 'X' } })).toBe('X');
     expect(getFileId({ video: { file_id: 'Y' } })).toBe('Y');
     expect(getFileId({ document: { file_id: 'D' } })).toBe('D');

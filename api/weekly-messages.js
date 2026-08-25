@@ -21,8 +21,8 @@ const {
   validateEventReport,
   reportContentType,
   reportDisposition
-} = require('./shared/weekly-common.cjs');
-const { authenticateAdmin } = require('./shared/admin-auth.cjs');
+} = require('./shared/_weekly-common.cjs');
+const { authenticateAdmin } = require('./shared/_admin-auth.cjs');
 const {
   sendMediaToTelegram,
   sendDocumentToTelegram,
@@ -30,7 +30,7 @@ const {
   sendPhotoToTelegram,
   getChannelId,
   getTelegramFileStream
-} = require('./shared/telegram-bot.cjs');
+} = require('./shared/_telegram-bot.cjs');
 
 const OPTIONAL_FIELDS = ['description', 'category', 'language', 'duration', 'thumbnail_url'];
 

@@ -1,6 +1,6 @@
 // tests/razorpay-api-helpers.test.js
 // The Vercel serverless functions run as CommonJS and must require() a
-// CommonJS helpers module (api/razorpay/helpers.cjs). This guards the
+// CommonJS helpers module (api/razorpay/_helpers.cjs). This guards the
 // Defect-A fix: previously they required() an ESM file, which crashes.
 import { describe, it, expect } from 'vitest';
 import { createHmac } from 'node:crypto';
@@ -11,9 +11,9 @@ import {
   buildSubscriptionPayload,
   verifySignature,
   mapWebhookToDonation
-} from '../api/razorpay/helpers.cjs';
+} from '../api/razorpay/_helpers.cjs';
 
-describe('api/razorpay/helpers.cjs (CommonJS, used by Vercel functions)', () => {
+describe('api/razorpay/_helpers.cjs (CommonJS, used by Vercel functions)', () => {
   it('is requireable as CommonJS and exposes validateAmount', () => {
     expect(validateAmount('500')).toBe(500);
     expect(validateAmount('abc')).toBeNull();

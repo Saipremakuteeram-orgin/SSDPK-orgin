@@ -25,6 +25,7 @@ client_secret.json.enc
 api/*
 !api/config.js
 !api/razorpay/
+!api/razorpay.js
 !api/shared/
 !api/_mail.js
 !api/notify-event.js
