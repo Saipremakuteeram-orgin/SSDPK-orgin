@@ -645,6 +645,7 @@
 <script src="/js/supabase-client.js?v=1.1.0"></script>
 <script src="/js/main.js?v=1.4.1"></script>
 <script src="/js/seo-inject.js" defer></script>
+<script src="/js/share.js" defer></script>
 <script>
 // Calendar, Drawer, and Tabular Events Logic
 (function() {
@@ -900,6 +901,7 @@
           openModal(evt);
         });
         actionTd.appendChild(viewBtn);
+        var shareBtn=document.createElement('button'); shareBtn.className='table-btn-view'; shareBtn.style.marginLeft='8px'; shareBtn.textContent='Share'; shareBtn.setAttribute('data-share', location.origin+'/events?id='+evt.id); shareBtn.setAttribute('data-title', evt.title); actionTd.appendChild(shareBtn);
 
         tr.appendChild(dateTd);
         tr.appendChild(nameTd);
@@ -1016,6 +1018,7 @@
             '<div class="drawer-coordinator-name">' + evt.coordinator + '</div>' +
             '<div class="drawer-coordinator-phone">&#x1F4DE; ' + evt.contact + '</div>' +
           '</div>' +
+          '<button class="table-btn-view" style="margin-top:12px;width:100%;" data-share="'+location.origin+'/events?id='+evt.id+'" data-title="'+evt.title.replace(/"/g,'&quot;')+'">Share</button>' +
         '</div>';
     });
 
@@ -1164,6 +1167,7 @@
             '<div class="drawer-coordinator-name">' + evt.coordinator + '</div>' +
             '<div class="drawer-coordinator-phone">&#x1F4DE; ' + evt.contact + '</div>' +
           '</div>' +
+          '<button class="table-btn-view" style="margin-top:12px;width:100%;" data-share="'+location.origin+'/events?id='+evt.id+'" data-title="'+evt.title.replace(/"/g,'&quot;')+'">Share</button>' +
         '</div>';
     });
 

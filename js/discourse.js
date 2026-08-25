@@ -83,7 +83,8 @@
           ? (m.media_type === 'text'
               ? '<div class="discourse-text">' + excerpt + '</div>'
               : '<p class="discourse-excerpt">' + excerpt + '</p>')
-          : '');
+          : '') +
+        '<button class="table-btn-view" style="margin-top:12px;" data-share="'+escapeHtml((typeof location!=="undefined"&&location.origin?location.origin:"https://saidharmasamrakshanapremakuteeram.qzz.io")+"/discourse?id="+ (m.id||""))+'" data-title="'+title+'">Share</button>';
 
     if (m.media_type === 'text') {
       return '<article class="discourse-card">' + body + '</div></article>';
