@@ -73,13 +73,7 @@ module.exports = async function handler(req, res) {
 
   // ALWAYS create / sync the budget Function in the CRM for this event,
   // independent of whether emails were sent. Best-effort, never throws.
-  // [DIAGNOSTIC] surface the CRM push result for debugging.
-  let crmDiag = 'skipped';
-  try {
-    crmDiag = await pushEventToCrm(event);
-  } catch (e) {
-    crmDiag = 'error: ' + e.message;
-  }
+  pushEventToCrm(event).catch(() => {});
 
   if (!result.ok && result.error) {
     return res.status(500).json({ error: result.error, crmSynced: true });
@@ -90,7 +84,6 @@ module.exports = async function handler(req, res) {
     failed: result.failed,
     total: messages.length,
     results: result.results,
-    crmSynced: true,
-    crmDiag: crmDiag
+    crmSynced: true
   });
 };
