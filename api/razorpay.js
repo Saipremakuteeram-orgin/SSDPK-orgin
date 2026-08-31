@@ -164,6 +164,8 @@ async function handleWebhook(req, res) {
     const { error } = await sb.from('donations').upsert({ ...row, webhook_raw: event }, { onConflict: 'payment_id' });
     if (error) { console.error('donations upsert error:', error.message); return res.status(500).json({ error: 'DB insert failed' }); }
     await sendTelegramAlert('Seva received: Rs ' + row.amount + ' (' + row.purpose + ') via ' + row.method);
+    // Fire-and-forget: record this donation as a CRM income transaction.
+    pushDonationToCrm(row).catch(() => {});
     return res.status(200).json({ received: true });
   } catch (e) { console.error('webhook processing error:', e.message); return res.status(500).json({ error: 'Processing failed' }); }
 }
@@ -172,3 +174,26 @@ function readBody(req) {
   return new Promise((resolve) => { let d = ''; req.on('data', (c) => { d += c; }); req.on('end', () => resolve(d)); });
 }
 function parseJson(body) { try { return JSON.parse(body || '{}'); } catch (e) { return {}; } }
+
+// ── Mirror a captured donation to the Trust CRM as a digital-credit (income)
+// transaction. Best-effort — never blocks the user's donation. Reads
+// CRM_WEBHOOK_URL / CRM_WEBHOOK_SECRET from the server environment (Vercel). ──
+async function pushDonationToCrm(row) {
+  const url = process.env.CRM_WEBHOOK_URL;
+  const secret = process.env.CRM_WEBHOOK_SECRET;
+  if (!url || !secret) return;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const base = url.replace(/\/$/, '');
+    await fetch(base + '/api/webhooks/website-donation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Trust-Webhook-Key': secret },
+      body: JSON.stringify({ donation: row }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+  } catch (err) {
+    console.error('[razorpay webhook] CRM donation push failed (non-fatal):', err.message);
+  }
+}
