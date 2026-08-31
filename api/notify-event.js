@@ -11,22 +11,29 @@ const { cors, readBody, sendBatch, fromEmail } = require('./_mail.js');
 async function pushEventToCrm(event) {
   const url = process.env.CRM_WEBHOOK_URL;
   const secret = process.env.CRM_WEBHOOK_SECRET;
-  if (!url || !secret) return; // bridge disabled — nothing to do
-  try {
-    const ctrl = new AbortController();
-    // 20s timeout: Render free-tier cold starts can exceed 8s, which previously
-    // caused the push to abort before CRM received it.
-    const t = setTimeout(() => ctrl.abort(), 20000);
-    await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Trust-Webhook-Key': secret },
-      body: JSON.stringify({ event }),
-      signal: ctrl.signal,
-    });
-    clearTimeout(t);
-  } catch (err) {
-    console.error('[notify-event] CRM push failed (non-fatal):', err.message);
+  if (!url || !secret) return 'disabled:url=' + (!!url) + ',secret=' + (!!secret);
+  let last = '';
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 45000);
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Trust-Webhook-Key': secret },
+        body: JSON.stringify({ event }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(t);
+      const txt = await resp.text();
+      if (resp.status === 200) return 'status=200 body=' + txt.slice(0, 200);
+      last = 'status=' + resp.status + ' body=' + txt.slice(0, 200);
+      if (resp.status === 401) return last; // auth wrong, no point retrying
+    } catch (err) {
+      last = 'attempt' + attempt + '-fetch-error: ' + err.message;
+    }
+    if (attempt < 3) await new Promise(r => setTimeout(r, 3000));
   }
+  return 'failed-after-retries: ' + last;
 }
 
 module.exports = async function handler(req, res) {
@@ -66,7 +73,13 @@ module.exports = async function handler(req, res) {
 
   // ALWAYS create / sync the budget Function in the CRM for this event,
   // independent of whether emails were sent. Best-effort, never throws.
-  pushEventToCrm(event).catch(() => {});
+  // [DIAGNOSTIC] surface the CRM push result for debugging.
+  let crmDiag = 'skipped';
+  try {
+    crmDiag = await pushEventToCrm(event);
+  } catch (e) {
+    crmDiag = 'error: ' + e.message;
+  }
 
   if (!result.ok && result.error) {
     return res.status(500).json({ error: result.error, crmSynced: true });
@@ -77,6 +90,7 @@ module.exports = async function handler(req, res) {
     failed: result.failed,
     total: messages.length,
     results: result.results,
-    crmSynced: true
+    crmSynced: true,
+    crmDiag: crmDiag
   });
 };
