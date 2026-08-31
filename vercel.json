@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "framework": null,
+  "functions": {
+    "api/notify-event.js": { "maxDuration": 60 }
+  },
   "rewrites": [
     { "source": "/", "destination": "/pages/index" },
     { "source": "/index.html", "destination": "/pages/index" },

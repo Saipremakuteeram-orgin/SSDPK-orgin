@@ -55,7 +55,13 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'event with a title is required' });
   }
 
-  // Email is best-effort and MUST NOT block the CRM sync below.
+  // Kick off the CRM budget-Function sync FIRST (before the email send) so it
+  // gets the full function timeout window. Render cold starts can take >10s,
+  // and Vercel's default 10s limit would otherwise kill the push after the
+  // (slower) email batch completes. Best-effort; never blocks the response.
+  const crmPush = pushEventToCrm(event);
+
+  // Email is best-effort and MUST NOT block the CRM sync above.
   let result = { sent: 0, failed: 0, total: 0, results: [] };
   const messages = [];
   if (emails.length > 0) {
@@ -71,9 +77,9 @@ module.exports = async function handler(req, res) {
     result = await sendBatch(messages);
   }
 
-  // ALWAYS create / sync the budget Function in the CRM for this event,
-  // independent of whether emails were sent. Best-effort, never throws.
-  pushEventToCrm(event).catch(() => {});
+  // Don't block the HTTP response on the CRM push, but let it finish in the
+  // background (maxDuration is raised to 60s in vercel.json for this route).
+  crmPush.catch(() => {});
 
   if (!result.ok && result.error) {
     return res.status(500).json({ error: result.error, crmSynced: true });
