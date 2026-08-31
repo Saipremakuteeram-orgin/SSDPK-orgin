@@ -45,32 +45,36 @@ module.exports = async function handler(req, res) {
   if (!event || !event.title) {
     return res.status(400).json({ error: 'event with a title is required' });
   }
-  if (emails.length === 0) {
-    return res.status(200).json({ sent: 0, failed: 0, total: 0, skipped: 'no recipient emails' });
-  }
 
-  const baseUrl = 'https://' + (req.headers.host || 'sathyasaipremakuterram.org');
-  const email = buildEventEmail(event, baseUrl, fromEmail());
-  const chunks = chunkArray(emails, 100);
-  const messages = [];
-  chunks.forEach(function (chunk) {
-    chunk.forEach(function (to) {
-      messages.push(Object.assign({ to: to }, email));
+  // Email is best-effort and MUST NOT block the CRM sync below.
+  let result = { sent: 0, failed: 0, total: 0, results: [] };
+  if (emails.length > 0) {
+    const baseUrl = 'https://' + (req.headers.host || 'sathyasaipremakuterram.org');
+    const email = buildEventEmail(event, baseUrl, fromEmail());
+    const chunks = chunkArray(emails, 100);
+    const messages = [];
+    chunks.forEach(function (chunk) {
+      chunk.forEach(function (to) {
+        messages.push(Object.assign({ to: to }, email));
+      });
     });
-  });
 
-  const result = await sendBatch(messages);
-  if (!result.ok && result.error) {
-    return res.status(500).json({ error: result.error });
+    result = await sendBatch(messages);
   }
 
-  // Fire-and-forget: create a budget Function in the CRM for this event.
+  // ALWAYS create / sync the budget Function in the CRM for this event,
+  // independent of whether emails were sent. Best-effort, never throws.
   pushEventToCrm(event).catch(() => {});
+
+  if (!result.ok && result.error) {
+    return res.status(500).json({ error: result.error, crmSynced: true });
+  }
 
   return res.status(200).json({
     sent: result.sent,
     failed: result.failed,
     total: messages.length,
-    results: result.results
+    results: result.results,
+    crmSynced: true
   });
 };

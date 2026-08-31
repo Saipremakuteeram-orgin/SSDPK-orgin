@@ -1159,23 +1159,24 @@ function initDashboard() {
         error = insertError;
         if (!error && insertedData && insertedData.length > 0) {
           const newEvent = insertedData[0];
-          // Fetch all registered user emails
+          // Fetch all registered user emails (may be empty — that's fine).
           const { data: users, error: usersError } = await supabase
             .from('members')
             .select('email')
             .not('email', 'is', null);
 
-          if (!usersError && users && users.length > 0) {
-            const emails = users.map(u => u.email).filter(Boolean);
-            if (emails.length > 0) {
-              // Trigger Vercel function to notify users
-              fetch('/api/notify-event', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ event: newEvent, emails })
-              }).catch(err => console.error('Failed to send event notifications:', err));
-            }
-          }
+          const emails = (!usersError && users && users.length)
+            ? users.map(u => u.email).filter(Boolean)
+            : [];
+
+          // Trigger Vercel function to notify users AND sync the CRM budget
+          // Function. Fired even when there are no member emails so the CRM
+          // always reflects new events.
+          fetch('/api/notify-event', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event: newEvent, emails })
+          }).catch(err => console.error('Failed to send event notifications:', err));
         }
       }
 
