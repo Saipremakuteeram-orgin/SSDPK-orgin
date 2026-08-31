@@ -48,11 +48,11 @@ module.exports = async function handler(req, res) {
 
   // Email is best-effort and MUST NOT block the CRM sync below.
   let result = { sent: 0, failed: 0, total: 0, results: [] };
+  const messages = [];
   if (emails.length > 0) {
     const baseUrl = 'https://' + (req.headers.host || 'sathyasaipremakuterram.org');
     const email = buildEventEmail(event, baseUrl, fromEmail());
     const chunks = chunkArray(emails, 100);
-    const messages = [];
     chunks.forEach(function (chunk) {
       chunk.forEach(function (to) {
         messages.push(Object.assign({ to: to }, email));
