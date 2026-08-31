@@ -5,6 +5,28 @@
 const { chunkArray, buildEventEmail } = require('../js/mail-helpers.js');
 const { cors, readBody, sendBatch, fromEmail } = require('./_mail.js');
 
+// ── Optional: mirror the new event to the Trust CRM so a budget Function is
+// auto-created. Best-effort — never blocks the email send. Reads CRM_WEBHOOK_URL
+// and CRM_WEBHOOK_SECRET from the server environment (set in Vercel). ──
+async function pushEventToCrm(event) {
+  const url = process.env.CRM_WEBHOOK_URL;
+  const secret = process.env.CRM_WEBHOOK_SECRET;
+  if (!url || !secret) return; // bridge disabled — nothing to do
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Trust-Webhook-Key': secret },
+      body: JSON.stringify({ event }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+  } catch (err) {
+    console.error('[notify-event] CRM push failed (non-fatal):', err.message);
+  }
+}
+
 module.exports = async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -41,6 +63,10 @@ module.exports = async function handler(req, res) {
   if (!result.ok && result.error) {
     return res.status(500).json({ error: result.error });
   }
+
+  // Fire-and-forget: create a budget Function in the CRM for this event.
+  pushEventToCrm(event).catch(() => {});
+
   return res.status(200).json({
     sent: result.sent,
     failed: result.failed,
