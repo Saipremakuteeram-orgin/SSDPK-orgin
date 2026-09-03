@@ -1205,7 +1205,7 @@ footer a:hover { color: white; text-decoration: none; }
 
 @media (max-width: 768px) {
   .nav-links {
-    display: none;
+    display: none !important;
     position: absolute;
     top: var(--nav-height);
     left: 0;
@@ -1216,7 +1216,7 @@ footer a:hover { color: white; text-decoration: none; }
     padding: 12px 20px;
     gap: 4px;
   }
-  .nav-links.open { display: flex; }
+  .nav-links.open { display: flex !important; }
   .nav-toggle { display: block; }
   .nav-links a { padding: 12px 16px; }
   .nav-links a.donate-btn { margin-top: 8px; }
