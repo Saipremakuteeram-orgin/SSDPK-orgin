@@ -34,7 +34,7 @@
   --shadow-sm: 0 2px 8px oklch(20% 0.02 45 / 0.06);
   --shadow-md: 0 8px 32px oklch(20% 0.02 45 / 0.08), 0 0 15px oklch(62% 0.16 50 / 0.08);
   --max-width: 1200px;
-  --nav-height: 72px;
+  --nav-height: 64px;
   --font-display: 'ComicSansMS3', 'Comic Sans MS', cursive;
   --font-body:    'ComicSansMS3', 'Comic Sans MS', cursive;
   --font-heading: 'ComicSansMS3', 'Comic Sans MS', cursive;
@@ -110,7 +110,7 @@ nav {
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: var(--nav-height);
   background: #f8f9fa;
   padding: 0 20px;
   display: flex;
@@ -983,11 +983,29 @@ footer a:hover { color: white; text-decoration: none; }
 
   /* Nav mobile polish */
   .nav-links {
+    display: none !important;
+    position: absolute;
     top: var(--nav-height);
-    padding: 8px 12px;
-    gap: 2px;
+    left: 0;
+    right: 0;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 8px 12px;
+    gap: 2px;
+    max-height: calc(100vh - var(--nav-height));
+    overflow-y: auto;
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.25s ease, opacity 0.25s ease, visibility 0.25s ease;
+    z-index: 99;
+  }
+  .nav-links.open {
+    display: flex !important;
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
   }
   .nav-links a {
     padding: 14px 16px;
@@ -996,23 +1014,33 @@ footer a:hover { color: white; text-decoration: none; }
     min-height: 48px;
     display: flex;
     align-items: center;
+    transition: background 0.15s ease;
   }
-  .nav-links a.donate-btn {
-    margin-top: 6px;
-    text-align: center;
+  .nav-toggle {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-  }
-  #langSwitcher {
-    padding-left: 12px;
-    margin-left: 8px;
+    border-radius: var(--radius-sm);
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    cursor: pointer;
+    z-index: 101;
   }
   .nav-brand {
-    font-size: 15px;
-    gap: 8px;
+    font-size: 0;
+    gap: 0;
   }
-  .nav-logo-img {
+  .nav-brand .nav-logo-img {
     width: 36px;
     height: 36px;
+  }
+  #langSwitcher {
+    padding-left: 8px;
+    margin-left: 4px;
   }
 
   /* Hero mobile */
@@ -1204,25 +1232,6 @@ footer a:hover { color: white; text-decoration: none; }
 }
 
 @media (max-width: 768px) {
-  .nav-links {
-    display: none !important;
-    position: absolute;
-    top: var(--nav-height);
-    left: 0;
-    right: 0;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    flex-direction: column;
-    padding: 12px 20px;
-    gap: 4px;
-  }
-  .nav-links.open { display: flex !important; }
-  .nav-toggle { display: block; }
-  .nav-links a { padding: 12px 16px; }
-  .nav-links a.donate-btn { margin-top: 8px; }
-  #langSwitcher { order: 10; flex: 0 0 auto; margin-left: auto; padding-left: 16px; }
-  .nav-brand { flex: 0 0 auto; }
-
   .grid-2, .grid-3, .grid-4 {
     grid-template-columns: 1fr;
   }
