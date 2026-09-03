@@ -26,6 +26,11 @@
     });
   }
 
+  var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+  if (isTouchDevice) {
+    document.body.classList.add('touch-device');
+  }
+
   function renderDynamicNav() {
     var navLinks = document.getElementById('navLinks');
     if (navLinks) {
@@ -214,7 +219,8 @@
   });
 
   // 3D Tilt Card Interaction
-  document.addEventListener('mousemove', function(e) {
+  if (!isTouchDevice) {
+    document.addEventListener('mousemove', function(e) {
     var card = e.target.closest('[data-tilt]');
     if (!card) return;
 
@@ -236,6 +242,7 @@
   });
 
   document.addEventListener('mouseout', function(e) {
+    if (isTouchDevice) return;
     var card = e.target.closest('[data-tilt]');
     if (!card) return;
 
@@ -250,6 +257,7 @@
       inner.style.transform = 'translateZ(0px) scale(1)';
     }
   });
+  }
 
   // Rebuild HTML elements with 3D Morph & Glassmorphism classes dynamically
   function upgradeRedesign() {
@@ -328,7 +336,8 @@
     container.className = 'divine-particles';
     document.body.appendChild(container);
 
-    for (var i = 0; i < 15; i++) {
+    var count = isTouchDevice ? 6 : 15;
+    for (var i = 0; i < count; i++) {
       var p = document.createElement('div');
       p.className = 'divine-particle';
       p.style.left = Math.random() * 100 + '%';
@@ -511,6 +520,7 @@
   // ══════════════════════════════════════════════════════════════
   function initParallax() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (isTouchDevice) return;
     var els = document.querySelectorAll('[data-parallax]');
     if (!els.length) return;
 

@@ -930,6 +930,272 @@ footer a:hover { color: white; text-decoration: none; }
   color: var(--muted);
 }
 
+/* ---- Mobile UX Optimization ---- */
+/* ========================================
+   Clean, touch-friendly mobile experience
+   ======================================== */
+
+/* Touch device baseline: reduce motion and tilt by default */
+@media (hover: none) and (pointer: coarse) {
+  .tilt-card {
+    transform: none !important;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+  }
+  .tilt-card-inner {
+    transform: none !important;
+  }
+  .cursor-glow {
+    display: none !important;
+  }
+  .divine-particles {
+    display: none !important;
+  }
+  [data-animate="fade-up"],
+  [data-animate="fade-down"],
+  [data-animate="fade-left"],
+  [data-animate="fade-right"],
+  [data-animate="scale-in"] {
+    transform: none;
+    transition: opacity 0.4s ease;
+  }
+  .card:hover {
+    transform: none;
+  }
+  .btn-primary:hover,
+  .btn-outline:hover {
+    transform: none;
+  }
+}
+
+/* Mobile-first spacing and typography */
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: calc(var(--nav-height) + 16px);
+  }
+  body {
+    padding-top: var(--nav-height);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .container {
+    padding: 0 16px;
+  }
+
+  /* Nav mobile polish */
+  .nav-links {
+    top: var(--nav-height);
+    padding: 8px 12px;
+    gap: 2px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-links a {
+    padding: 14px 16px;
+    font-size: 15px;
+    border-radius: var(--radius-sm);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+  .nav-links a.donate-btn {
+    margin-top: 6px;
+    text-align: center;
+    justify-content: center;
+  }
+  #langSwitcher {
+    padding-left: 12px;
+    margin-left: 8px;
+  }
+  .nav-brand {
+    font-size: 15px;
+    gap: 8px;
+  }
+  .nav-logo-img {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Hero mobile */
+  .hero {
+    min-height: 70vh;
+    padding: calc(var(--nav-height) + 48px) 16px 64px;
+  }
+  .hero-badge {
+    font-size: 11px;
+    padding: 6px 16px;
+    letter-spacing: 0.06em;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 16px;
+  }
+
+  /* Section spacing */
+  .section {
+    padding: 48px 0;
+  }
+  .section-title {
+    font-size: clamp(24px, 5vw, 32px);
+    margin-bottom: 6px;
+  }
+  .section-subtitle {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+  .section-divider {
+    width: 48px;
+    height: 2px;
+    margin: 10px auto 20px;
+  }
+
+  /* Cards */
+  .card {
+    border-radius: var(--radius-md);
+  }
+  .feature-card {
+    padding: 24px 16px;
+  }
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 17px;
+    margin-bottom: 6px;
+  }
+  .card-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Grids */
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    gap: 20px;
+  }
+
+  /* Tables */
+  .impact-table {
+    display: block;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+  }
+  .impact-table th,
+  .impact-table td {
+    padding: 10px 12px;
+    white-space: nowrap;
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0 28px;
+    margin-top: 56px;
+  }
+  footer h4 {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  footer p,
+  footer a {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  /* Forms */
+  .input-group input,
+  .input-group textarea,
+  .auth-container input,
+  .chatbot-input input {
+    font-size: 16px;
+    padding: 14px;
+  }
+  .btn {
+    padding: 14px 20px;
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  /* Back to top */
+  .back-to-top {
+    bottom: 24px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  /* FAQ */
+  .faq-list summary {
+    padding: 16px;
+    font-size: 15px;
+  }
+  .faq-list details p {
+    padding: 0 16px 16px;
+    font-size: 14px;
+  }
+
+  /* Skip link */
+  .skip-link {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 15px;
+  }
+  .hero {
+    min-height: 65vh;
+    padding-top: calc(var(--nav-height) + 36px);
+    padding-bottom: 56px;
+  }
+  .hero h1 {
+    font-size: clamp(26px, 7vw, 36px);
+  }
+  .hero p {
+    font-size: 15px;
+  }
+  .section {
+    padding: 36px 0;
+  }
+  .section-title {
+    font-size: clamp(22px, 6vw, 28px);
+  }
+  .donation-section {
+    padding: 20px 16px;
+    border-radius: var(--radius-md);
+  }
+  .lightbox-view-area {
+    height: 300px;
+  }
+  .chatbot-window {
+    width: calc(100vw - 24px);
+    right: 12px;
+    bottom: 84px;
+    height: calc(100vh - 110px);
+  }
+  .chatbot-notification {
+    max-width: 200px;
+    font-size: 12px;
+  }
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 1024px) {
   footer .container {
